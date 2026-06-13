@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls d:\\\\BPA_Landing_Page\\\\admin-panel\\\\src 2>/dev/null || find /mnt/d/BPA_Landing_Page/admin-panel -maxdepth 3 -type d 2>/dev/null | head -30)",
+      "Read(//mnt/d/BPA_Landing_Page/**)",
+      "PowerShell(cd \"d:\\\\BPA_Landing_Page\\\\backend-api\"; $env:PRISMA_MIGRATE_SKIP_GENERATE=\"false\"; npx prisma migrate dev --name campaign_management_phase_3 --create-only 2>&1)",
+      "Bash(PRISMA_MIGRATE_SKIP_GENERATE=false npx prisma db push)",
+      "Bash(mkdir -p \"d:/BPA_Landing_Page/admin-panel/src/app/\\(admin\\)/campaigns/[id]/certificates/components\")",
+      "Bash(mkdir -p \"d:/BPA_Landing_Page/admin-panel/src/app/\\(admin\\)/campaigns/[id]/analytics/components\")",
+      "Bash(mkdir -p \"d:/BPA_Landing_Page/admin-panel/src/app/\\(admin\\)/campaigns/[id]/qr-logs/components\")",
+      "Bash(cd \"/d/BPA_Landing_Page/backend-api\" && cat package.json | grep -E '\"dependencies\"' -A 50 | head -60)",
+      "Read(//d/d/BPA_Landing_Page/backend-api/**)",
+      "Bash(npx next *)",
+      "Bash(# Check ALL dynamic route pages across both apps for any remaining sync params usage *)",
+      "Read(//d/BPA_Landing_Page/admin-panel/*/[*/]*/**)",
+      "Bash(xargs grep -rL \"use client\")",
+      "Bash(Get-ChildItem \"D:\\\\BPA_Landing_Page\" -Directory)",
+      "Bash(Select-Object -ExpandProperty Name)",
+      "PowerShell(if \\(!\\(Test-Path \"d:\\\\BPA_Landing_Page\\\\docs\"\\)\\) { New-Item -ItemType Directory \"d:\\\\BPA_Landing_Page\\\\docs\" })",
+      "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\BPA_Landing_Page\\\\backend-api\\\\prisma\\\\migrations\\\\20260612120000_location_unique_constraints\")",
+      "Bash(xargs grep -l \"FTP\\\\|Ftp\")",
+      "Bash(xargs grep -l \"campaign\\\\|Campaign\")",
+      "Bash(mkdir -p \"d:\\\\BPA_Landing_Page\\\\admin-panel\\\\src\\\\app\\\\\\(admin\\)\\\\campaigns\\\\[id]\\\\media\\\\components\")"
+    ],
+    "additionalDirectories": [
+      "d:\\BPA_Landing_Page\\admin-panel\\src\\app\\(admin)\\campaigns\\[id]",
+      "d:\\BPA_Landing_Page\\admin-panel\\src\\app\\(admin)\\campaigns\\[id]\\certificates",
+      "d:\\BPA_Landing_Page\\admin-panel\\src\\app\\(admin)\\campaigns\\[id]\\analytics",
+      "d:\\BPA_Landing_Page\\admin-panel\\src\\app\\(admin)\\campaigns\\[id]\\qr-logs",
+      "d:\\BPA_Landing_Page\\admin-panel\\src\\app\\(admin)\\campaigns\\[id]\\media"
+    ]
+  }
+}
