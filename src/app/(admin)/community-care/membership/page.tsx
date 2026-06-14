@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Row, Col, Card, Spinner } from 'react-bootstrap';
+import { Row, Col, Card, Spinner, Table, Badge, ProgressBar } from 'react-bootstrap';
 import { communityMembershipApi } from '@/lib/api/community-membership.api';
 
 export default function MembershipDashboardPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetch = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
       const res = await communityMembershipApi.getDashboard();
       setData(res.data);
@@ -16,7 +16,7 @@ export default function MembershipDashboardPage() {
     finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   if (loading) return <div className="text-center py-5"><Spinner animation="border" /></div>;
 
@@ -28,6 +28,9 @@ export default function MembershipDashboardPage() {
     { label: 'Upgrade Requests', value: data?.pendingUpgrades ?? 0, color: 'danger' },
     { label: 'Offer Active', value: data?.offerActive ? 'Yes' : 'No', color: data?.offerActive ? 'success' : 'secondary' },
   ];
+
+  const zoneDemand: any[] = data?.zoneDemand ?? [];
+  const maxScore = zoneDemand[0]?.demandScore ?? 1;
 
   return (
     <>
@@ -46,6 +49,56 @@ export default function MembershipDashboardPage() {
           </Col>
         ))}
       </Row>
+
+      {zoneDemand.length > 0 && (
+        <Card className="mt-4 shadow-sm">
+          <Card.Header className="d-flex align-items-center justify-content-between">
+            <h5 className="mb-0">Zone Demand Ranking</h5>
+            <small className="text-muted">Score = paid × 2 + pending × 1</small>
+          </Card.Header>
+          <Card.Body className="p-0">
+            <Table hover responsive className="mb-0">
+              <thead>
+                <tr>
+                  <th style={{ width: 50 }}>Rank</th>
+                  <th>Zone</th>
+                  <th>Paid Members</th>
+                  <th>Total (incl. pending)</th>
+                  <th>Demand Score</th>
+                  <th>Progress</th>
+                </tr>
+              </thead>
+              <tbody>
+                {zoneDemand.map((z: any) => {
+                  const pct = maxScore > 0 ? Math.min(100, Math.round((z.demandScore / maxScore) * 100)) : 0;
+                  return (
+                    <tr key={z.id}>
+                      <td>
+                        <Badge bg={z.rank === 1 ? 'success' : 'secondary'}>#{z.rank}</Badge>
+                      </td>
+                      <td>
+                        <span className="fw-semibold">{z.name}</span>
+                        <br />
+                        <small className="text-muted">{z.city}, {z.district}</small>
+                      </td>
+                      <td>{z.paidPurchases}</td>
+                      <td>{z.totalPurchases}</td>
+                      <td><strong>{z.demandScore}</strong></td>
+                      <td style={{ minWidth: 120 }}>
+                        <ProgressBar
+                          now={pct}
+                          variant={z.rank === 1 ? 'success' : 'info'}
+                          style={{ height: 8 }}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          </Card.Body>
+        </Card>
+      )}
     </>
   );
 }

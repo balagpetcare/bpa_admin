@@ -1225,6 +1225,7 @@ export interface CareFundZoneStat {
   targetAmountBdt: number
   currentAmountBdt: number
   progressPercent: number
+  carePartnerMembers?: number
 }
 
 export interface RecentContributionItem {

@@ -80,6 +80,13 @@ export default function PurchaseDetailPage() {
               <ListGroup.Item><strong>Mobile:</strong> {purchase.memberMobile}</ListGroup.Item>
               <ListGroup.Item><strong>Email:</strong> {purchase.memberEmail || '-'}</ListGroup.Item>
               <ListGroup.Item><strong>Address:</strong> {purchase.memberAddress || '-'}</ListGroup.Item>
+              {purchase.preferredZone && (
+                <ListGroup.Item>
+                  <strong>Preferred Zone:</strong>{' '}
+                  {purchase.preferredZone.name}
+                  <span className="text-muted ms-1 small">({purchase.preferredZone.city})</span>
+                </ListGroup.Item>
+              )}
             </ListGroup>
           </Card>
         </Col>
