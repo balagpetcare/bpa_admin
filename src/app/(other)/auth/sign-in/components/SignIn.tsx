@@ -1,13 +1,23 @@
 'use client'
-import logoDark from '@/assets/images/logo-dark.png'
-import logoLight from '@/assets/images/logo-light.png'
 import smallImg from '@/assets/images/small/img-10.jpg'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
 import Image from 'next/image'
-import { useEffect } from 'react'
 import LoginFrom from './LoginFrom'
 import { Card, Col, Row } from 'react-bootstrap'
 import Link from 'next/link'
+
+const BpaAuthLogo = () => (
+  <div className="d-flex align-items-center gap-2">
+    <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" aria-label="BPA">
+      <circle cx="18" cy="18" r="18" fill="#1a6e38" />
+      <text x="18" y="24" textAnchor="middle" fill="white" fontSize="11" fontFamily="Arial,sans-serif" fontWeight="700">BPA</text>
+    </svg>
+    <div style={{ lineHeight: 1.15 }}>
+      <div style={{ fontWeight: 700, fontSize: 15, color: '#1a3c4d' }}>Bangladesh Pet Association</div>
+      <div style={{ fontSize: 11, color: '#6c757d' }}>Admin Dashboard</div>
+    </div>
+  </div>
+)
 
 const SignIn = () => {
   return (
@@ -19,11 +29,8 @@ const SignIn = () => {
               <Col lg={6} className="py-lg-5">
                 <div className="d-flex flex-column h-100 justify-content-center">
                   <div className="auth-logo mb-4">
-                    <Link href="/dashboard" className="logo-dark">
-                      <Image src={logoDark} height={24} alt="logo dark" />
-                    </Link>
-                    <Link href="/dashboard" className="logo-light">
-                      <Image src={logoLight} height={24} alt="logo light" />
+                    <Link href="/dashboard">
+                      <BpaAuthLogo />
                     </Link>
                   </div>
                   <h2 className="fw-bold fs-24">Sign In</h2>

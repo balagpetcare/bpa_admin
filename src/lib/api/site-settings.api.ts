@@ -4,21 +4,39 @@ export interface SiteSettings {
   id: string
   createdAt: string
   updatedAt: string
+  // Identity
   siteName: string
   siteTagline: string | null
   organizationName: string
+  // Contact
   officialPhone: string | null
   supportPhone: string | null
+  emergencyPhone: string | null
+  whatsappNumber: string | null
+  generalEmail: string | null
   supportEmail: string | null
+  officeHours: string | null
+  // Address
   officeAddress: string | null
+  addressLine1: string | null
+  addressLine2: string | null
+  area: string | null
+  city: string | null
+  postalCode: string | null
+  country: string | null
+  mapEmbedUrl: string | null
+  mapLink: string | null
+  // Branding
   primaryLogoUrl: string | null
   secondaryLogoUrl: string | null
   faviconUrl: string | null
   defaultMetaTitle: string | null
   defaultMetaDescription: string | null
+  // Social
   facebookUrl: string | null
   youtubeUrl: string | null
   linkedinUrl: string | null
+  // Public messages
   registrationErrorTitle: string
   registrationErrorMessage: string
   emergencyNotice: string | null

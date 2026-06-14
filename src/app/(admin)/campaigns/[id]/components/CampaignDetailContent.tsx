@@ -1,7 +1,7 @@
 'use client'
 
-import { useCallback } from 'react'
-import { Card, Button, Row, Col, Badge, Table } from 'react-bootstrap'
+import { useCallback, useState } from 'react'
+import { Alert, Card, Button, Row, Col, Badge, Table } from 'react-bootstrap'
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
 import PageHeader from '@/components/ui/PageHeader'
@@ -25,6 +25,7 @@ const LIFECYCLE_ACTIONS: { status: string; action: string; label: string; varian
 export default function CampaignDetailContent({ campaignId }: { campaignId: string }) {
   const { can } = usePermission()
   const { mutate } = useApiMutation<unknown, unknown>()
+  const [reopenError, setReopenError] = useState<string | null>(null)
 
   const fetchFn = useCallback(() => campaignsApi.getById(campaignId), [campaignId])
   const { data: campaign, loading, error, refetch } = useApi(fetchFn, [campaignId])
@@ -47,9 +48,17 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
   }
 
   async function handleReopen() {
-    if (!confirm('Are you sure you want to reopen this cancelled campaign?')) return
-    await mutate(() => campaignsApi.reopen(campaignId), undefined)
-    refetch()
+    if (!confirm('Are you sure you want to reopen this campaign? Status will change to Registration Open.')) return
+    setReopenError(null)
+    try {
+      await campaignsApi.reopen(campaignId)
+      refetch()
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err)
+      setReopenError(msg.includes('registration close date') || msg.includes('close date')
+        ? 'Please update the registration close date before reopening.'
+        : msg || 'Failed to reopen campaign.')
+    }
   }
 
   if (loading) return <LoadingOverlay loading><div style={{ minHeight: 400 }} /></LoadingOverlay>
@@ -87,12 +96,12 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
                 <Icon icon={nextAction.icon} className="me-1 fs-18" />{nextAction.label}
               </Button>
             )}
-            {campaign.status === 'draft' && can('campaigns:update') && (
+            {can('campaigns:update') && (
               <Link href={`/campaigns/${campaignId}/edit`} className="btn btn-outline-primary d-flex align-items-center">
                 <Icon icon="solar:pen-bold-duotone" className="me-1 fs-18" />Edit
               </Link>
             )}
-            {['cancelled'].includes(campaign.status) && can('campaigns:lifecycle') && (
+            {['registration_closed', 'completed'].includes(campaign.status) && can('campaigns:lifecycle') && (
               <Button variant="outline-warning" onClick={handleReopen} className="d-flex align-items-center">
                 <Icon icon="solar:refresh-bold-duotone" className="me-1 fs-18" />Reopen
               </Button>
@@ -105,6 +114,12 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
           </div>
         }
       />
+
+      {reopenError && (
+        <Alert variant="danger" dismissible onClose={() => setReopenError(null)} className="mb-3">
+          {reopenError}
+        </Alert>
+      )}
 
       {/* Summary Cards */}
       <Row className="g-3 mb-4">

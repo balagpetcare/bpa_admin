@@ -57,9 +57,22 @@ export default function CampaignListContent() {
     refetch()
   }
 
-  async function handleLifecycle(id: string, action: 'publish' | 'openRegistration' | 'closeRegistration' | 'complete' | 'cancel' | 'reopen') {
+  async function handleLifecycle(id: string, action: 'publish' | 'openRegistration' | 'closeRegistration' | 'complete' | 'cancel') {
     await mutate(() => campaignsApi[action](id), undefined)
     refetch()
+  }
+
+  async function handleReopen(id: string) {
+    if (!confirm('Are you sure you want to reopen this campaign? Status will change to Registration Open.')) return
+    try {
+      await campaignsApi.reopen(id)
+      refetch()
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err)
+      alert(msg.includes('registration close date') || msg.includes('close date')
+        ? 'Please update the registration close date before reopening.'
+        : msg || 'Failed to reopen campaign.')
+    }
   }
 
   return (
@@ -133,10 +146,8 @@ export default function CampaignListContent() {
                               <Icon icon="solar:check-circle-bold" />
                             </Button>
                           )}
-                          {c.status === 'cancelled' && can('campaigns:lifecycle') && (
-                            <Button variant="soft-warning" size="sm" title="Reopen" onClick={() => {
-                              if (confirm('Are you sure you want to reopen this cancelled campaign?')) handleLifecycle(c.id, 'reopen')
-                            }}>
+                          {['registration_closed', 'completed'].includes(c.status) && can('campaigns:lifecycle') && (
+                            <Button variant="soft-warning" size="sm" title="Reopen Campaign" onClick={() => handleReopen(c.id)}>
                               <Icon icon="solar:refresh-bold" />
                             </Button>
                           )}
