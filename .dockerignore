@@ -1,0 +1,31 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Dependencies (installed fresh inside Docker)
+node_modules
+
+# Next.js build output (rebuilt inside Docker)
+.next
+
+# Environment files — never bake secrets into the image
+.env
+.env.local
+.env.*.local
+!.env.local.example
+
+# Development tools
+*.log
+coverage
+
+# Editor / OS
+.DS_Store
+.vscode
+*.swp
+*.swo
+Thumbs.db
+
+# Documentation
+*.md
+!README.md

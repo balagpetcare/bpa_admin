@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone *)",
+      "Bash(ls -la /tmp/eps_nodejs 2>&1 | head -30)",
+      "Read(//tmp/**)",
+      "Read(//c/Users/balag/AppData/Local/Temp/eps_nodejs/**)",
+      "PowerShell(node -e \"const eps = require\\('eps-gateway-nodejs'\\); console.log\\(Object.keys\\(eps\\)\\)\")",
+      "PowerShell(node -e \"const {EPS} = require\\('eps-gateway-nodejs'\\); console.log\\(typeof EPS, EPS.name\\)\")",
+      "Bash(Get-ChildItem -Path \"d:\\\\BPA_Landing_Page\\\\backend-api\\\\src\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Read(//d/BPA_Landing_Page/**)",
+      "Bash(grep -r \"req\\\\\\\\.headers\" d:\\\\BPA_Landing_Page\\\\backend-api\\\\src --include=\"*.ts\")",
+      "Bash(npm install *)",
+      "Bash(node -e \"require\\('sanitize-html'\\); console.log\\('ok'\\)\")",
+      "Bash(New-Item -ItemType Directory -Force \"D:\\\\BPA_Landing_Page\\\\backend-api\\\\prisma\\\\migrations\\\\20260611000001_security_hardening\")",
+      "Bash(Out-Null)",
+      "Bash(npx prisma *)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('engines:', d.get\\('engines',{}\\)\\); print\\('packageManager:', d.get\\('packageManager','npm'\\)\\)\")"
+    ],
+    "additionalDirectories": [
+      "D:\\BPA_Landing_Page"
+    ]
+  }
+}

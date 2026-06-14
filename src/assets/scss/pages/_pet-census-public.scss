@@ -1,0 +1,232 @@
+.pet-census-public {
+  background:
+    radial-gradient(circle at top left, rgba(255, 108, 47, 0.18), transparent 32%),
+    radial-gradient(circle at top right, rgba(17, 83, 61, 0.18), transparent 28%),
+    linear-gradient(180deg, #fbf8f1 0%, #ffffff 38%, #f6f9f7 100%);
+  color: #183126;
+  min-height: 100vh;
+}
+
+.pet-census-kicker {
+  color: #ff6c2f;
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pet-census-lead {
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.pet-census-sublead {
+  color: #52665c;
+  font-size: 1rem;
+  max-width: 42rem;
+}
+
+.pet-census-landing,
+.pet-census-form-shell,
+.pet-census-simple-shell,
+.pet-census-section,
+.pet-census-home-cta {
+  padding: 4rem 0;
+}
+
+.pet-census-landing__grid {
+  align-items: center;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
+}
+
+.pet-census-landing__copy h1,
+.pet-census-form-shell__intro h1,
+.pet-census-simple-card h1 {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1.05;
+  margin: 1rem 0;
+  max-width: 14ch;
+}
+
+.pet-census-actions,
+.pet-census-home-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.pet-census-stats {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 2rem;
+}
+
+.pet-census-stats div,
+.pet-census-note-card,
+.pet-census-feature-card,
+.pet-census-simple-card,
+.pet-census-home-cta__panel,
+.pet-census-privacy,
+.pet-census-privacy-box {
+  backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(24, 49, 38, 0.08);
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 60px rgba(24, 49, 38, 0.08);
+}
+
+.pet-census-stats div {
+  padding: 1.25rem;
+}
+
+.pet-census-stats strong {
+  display: block;
+  font-size: 1.5rem;
+}
+
+.pet-census-stats span {
+  color: #52665c;
+  display: block;
+  margin-top: 0.35rem;
+}
+
+.pet-census-note-card,
+.pet-census-feature-card,
+.pet-census-privacy-box {
+  padding: 1.5rem;
+}
+
+.pet-census-upload-preview {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+}
+
+.pet-census-upload-preview__image {
+  background: #f4f6f5;
+  border-radius: 1rem;
+  height: 96px;
+  overflow: hidden;
+  width: 96px;
+}
+
+.pet-census-upload-preview__image img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.pet-census-note-card__eyebrow {
+  color: #11533d;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pet-census-note-card h2,
+.pet-census-section__heading h2 {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  margin: 0.75rem 0 1rem;
+}
+
+.pet-census-note-card ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.pet-census-section__heading {
+  margin-bottom: 1.5rem;
+}
+
+.pet-census-section--privacy {
+  padding-top: 0;
+}
+
+.pet-census-privacy,
+.pet-census-home-cta__panel {
+  align-items: center;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: space-between;
+  padding: 1.75rem 2rem;
+}
+
+.pet-census-form-shell__intro {
+  margin: 0 auto 1.75rem;
+  max-width: 60rem;
+}
+
+.pet-census-form-shell__intro p {
+  color: #52665c;
+  font-size: 1rem;
+  max-width: 44rem;
+}
+
+.pet-census-form-card {
+  border: 0;
+  border-radius: 1.75rem;
+  margin: 0 auto;
+  max-width: 70rem;
+  overflow: hidden;
+}
+
+.pet-census-form-card__section + .pet-census-form-card__section {
+  border-top: 1px solid rgba(24, 49, 38, 0.08);
+  margin-top: 2rem;
+  padding-top: 2rem;
+}
+
+.pet-census-form-card__section h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.pet-census-simple-card {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 3rem;
+  text-align: center;
+}
+
+.pet-census-home-cta {
+  background: #ffffff;
+}
+
+.pet-census-home-cta__panel h2 {
+  font-size: clamp(1.8rem, 3vw, 2.75rem);
+  margin: 0.5rem 0;
+}
+
+@media (max-width: 991.98px) {
+  .pet-census-landing__grid,
+  .pet-census-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .pet-census-privacy,
+  .pet-census-home-cta__panel {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .pet-census-landing,
+  .pet-census-form-shell,
+  .pet-census-simple-shell,
+  .pet-census-section,
+  .pet-census-home-cta {
+    padding: 3rem 0;
+  }
+
+  .pet-census-simple-card {
+    padding: 2rem 1.25rem;
+  }
+}
