@@ -16,8 +16,9 @@ export default function BenefitsPage() {
   const fetch = useCallback(async () => {
     try {
       const [bRes, tRes] = await Promise.all([communityMembershipApi.listBenefits(), communityMembershipApi.listTiers()]);
-      setBenefits(bRes.data ?? []);
-      setTiers(tRes.data ?? []);
+      // api.get() already unwraps json.data — both are arrays
+      setBenefits(bRes ?? []);
+      setTiers(tRes ?? []);
     } catch { /* noop */ }
     finally { setLoading(false); }
   }, []);

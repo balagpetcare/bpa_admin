@@ -15,25 +15,30 @@ export default function ProgramSettingsPage() {
 
   const fetch = useCallback(async () => {
     try {
+      // api.ts already unwraps json.data, so res is the program object directly
       const res = await communityMembershipApi.getProgram();
-      const p = res.data;
-      if (p) {
+      if (res && res.nameEn) {
         setForm({
-          nameEn: p.nameEn, nameBn: p.nameBn,
-          descriptionEn: p.descriptionEn || '', descriptionBn: p.descriptionBn || '',
-          offerStartAt: p.offerStartAt ? p.offerStartAt.slice(0, 16) : '',
-          offerEndAt: p.offerEndAt ? p.offerEndAt.slice(0, 16) : '',
-          priceAfterOffer: p.priceAfterOffer || 'USE_REGULAR_PRICE',
-          offerBannerEn: p.offerBannerEn || '', offerBannerBn: p.offerBannerBn || '',
-          legalDisclaimer: p.legalDisclaimer || '',
-          cardValidityLabel: p.cardValidityLabel || '5-Year Card Validity',
-          isActive: p.isActive,
+          nameEn: res.nameEn,
+          nameBn: res.nameBn,
+          descriptionEn: res.descriptionEn || '',
+          descriptionBn: res.descriptionBn || '',
+          offerEnabled: res.offerStartAt && res.offerEndAt ? true : false,
+          offerStartAt: res.offerStartAt ? res.offerStartAt.slice(0, 16) : '',
+          offerEndAt: res.offerEndAt ? res.offerEndAt.slice(0, 16) : '',
+          priceAfterOffer: res.priceAfterOffer || 'USE_REGULAR_PRICE',
+          offerBannerEn: res.offerBannerEn || '',
+          offerBannerBn: res.offerBannerBn || '',
+          legalDisclaimer: res.legalDisclaimer || '',
+          cardValidityLabel: res.cardValidityLabel || '5-Year Card Validity',
+          isActive: res.isActive,
         });
       }
     } catch {
-      /* If API returns error, form stays null so "Create default" button shows */
+      /* If API errors, form stays null so "Create default" button shows */
+    } finally {
+      setLoading(false);
     }
-    finally { setLoading(false); }
   }, []);
 
   useEffect(() => { fetch(); }, [fetch]);
@@ -42,7 +47,7 @@ export default function ProgramSettingsPage() {
     setCreating(true);
     setError('');
     try {
-      // The GET endpoint auto-creates on the backend now, so just re-fetch
+      // The backend auto-creates on GET, so just re-fetch
       await communityMembershipApi.getProgram();
       await fetch();
     } catch {
@@ -59,16 +64,23 @@ export default function ProgramSettingsPage() {
     setError('');
     try {
       const data: any = { ...form };
-      if (data.offerStartAt) data.offerStartAt = new Date(data.offerStartAt).toISOString();
-      else data.offerStartAt = null;
-      if (data.offerEndAt) data.offerEndAt = new Date(data.offerEndAt).toISOString();
-      else data.offerEndAt = null;
+      if (!data.offerEnabled) {
+        data.offerStartAt = null;
+        data.offerEndAt = null;
+      } else {
+        if (data.offerStartAt) data.offerStartAt = new Date(data.offerStartAt).toISOString();
+        else data.offerStartAt = null;
+        if (data.offerEndAt) data.offerEndAt = new Date(data.offerEndAt).toISOString();
+        else data.offerEndAt = null;
+      }
+      delete data.offerEnabled;
       await communityMembershipApi.updateProgram(data);
       setSuccess(true);
     } catch {
       setError('Failed to update');
+    } finally {
+      setSaving(false);
     }
-    finally { setSaving(false); }
   };
 
   if (loading) return <div className="text-center py-5"><Spinner animation="border" /></div>;
@@ -109,15 +121,19 @@ export default function ProgramSettingsPage() {
               <Col md={6}><Form.Group><Form.Label>Description (BN)</Form.Label><Form.Control as="textarea" rows={3} value={form.descriptionBn} onChange={(e) => setForm({ ...form, descriptionBn: e.target.value })} /></Form.Group></Col>
               <Col md={12}><Form.Group><Form.Label>Legal Disclaimer</Form.Label><Form.Control as="textarea" rows={4} value={form.legalDisclaimer} onChange={(e) => setForm({ ...form, legalDisclaimer: e.target.value })} /></Form.Group></Col>
               <Col md={6}><Form.Group><Form.Label>Card Validity Label (e.g. &quot;5-Year Card Validity&quot;)</Form.Label><Form.Control value={form.cardValidityLabel} onChange={(e) => setForm({ ...form, cardValidityLabel: e.target.value })} /></Form.Group></Col>
-              <Col md={4}><Form.Group><Form.Label>Offer Start</Form.Label><Form.Control type="datetime-local" value={form.offerStartAt} onChange={(e) => setForm({ ...form, offerStartAt: e.target.value })} /></Form.Group></Col>
-              <Col md={4}><Form.Group><Form.Label>Offer End</Form.Label><Form.Control type="datetime-local" value={form.offerEndAt} onChange={(e) => setForm({ ...form, offerEndAt: e.target.value })} /></Form.Group></Col>
-              <Col md={4}><Form.Group><Form.Label>After Offer Expires</Form.Label><Form.Select value={form.priceAfterOffer} onChange={(e) => setForm({ ...form, priceAfterOffer: e.target.value })}>
+
+              <Col md={12}><hr /><h5 className="text-(--bpa-navy)">Offer / Countdown Settings</h5></Col>
+
+              <Col md={12}><Form.Group><Form.Check type="switch" label="Enable Launch Offer Pricing" checked={form.offerEnabled} onChange={(e) => setForm({ ...form, offerEnabled: e.target.checked })} /></Form.Group></Col>
+              <Col md={6}><Form.Group><Form.Label>Offer Start</Form.Label><Form.Control type="datetime-local" value={form.offerStartAt} onChange={(e) => setForm({ ...form, offerStartAt: e.target.value })} disabled={!form.offerEnabled} /></Form.Group></Col>
+              <Col md={6}><Form.Group><Form.Label>Offer End</Form.Label><Form.Control type="datetime-local" value={form.offerEndAt} onChange={(e) => setForm({ ...form, offerEndAt: e.target.value })} disabled={!form.offerEnabled} /></Form.Group></Col>
+              <Col md={6}><Form.Group><Form.Label>After Offer Expires</Form.Label><Form.Select value={form.priceAfterOffer} onChange={(e) => setForm({ ...form, priceAfterOffer: e.target.value })}>
                 <option value="USE_REGULAR_PRICE">Use Regular Price</option>
-                <option value="HIDE_TIER">Hide Tier</option>
+                <option value="HIDE_TIER">Hide Tier (block purchase)</option>
                 <option value="SHOW_EXPIRED_MESSAGE">Show Expired Message</option>
               </Form.Select></Form.Group></Col>
-              <Col md={6}><Form.Group><Form.Label>Offer Banner (EN)</Form.Label><Form.Control value={form.offerBannerEn} onChange={(e) => setForm({ ...form, offerBannerEn: e.target.value })} /></Form.Group></Col>
-              <Col md={6}><Form.Group><Form.Label>Offer Banner (BN)</Form.Label><Form.Control value={form.offerBannerBn} onChange={(e) => setForm({ ...form, offerBannerBn: e.target.value })} /></Form.Group></Col>
+              <Col md={6}><Form.Group><Form.Label>Offer Banner (EN)</Form.Label><Form.Control value={form.offerBannerEn} onChange={(e) => setForm({ ...form, offerBannerEn: e.target.value })} disabled={!form.offerEnabled} /></Form.Group></Col>
+              <Col md={6}><Form.Group><Form.Label>Offer Banner (BN)</Form.Label><Form.Control value={form.offerBannerBn} onChange={(e) => setForm({ ...form, offerBannerBn: e.target.value })} disabled={!form.offerEnabled} /></Form.Group></Col>
               <Col md={12}><Form.Group><Form.Check type="switch" label="Program Active" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} /></Form.Group></Col>
             </Row>
             <div className="mt-3">

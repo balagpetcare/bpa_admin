@@ -20,8 +20,8 @@ export default function PurchasesPage() {
       if (search) params.search = search;
       if (status) params.status = status;
       const res = await communityMembershipApi.listPurchases(params);
-      setPurchases(res.data ?? []);
-      setMeta(res.meta ?? {});
+      // api.get() unwraps json.data — returns items array directly (meta is not returned)
+      setPurchases(res ?? []);
     } catch { /* noop */ }
     finally { setLoading(false); }
   }, [search, status]);

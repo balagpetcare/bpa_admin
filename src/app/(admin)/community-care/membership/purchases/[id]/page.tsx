@@ -23,8 +23,9 @@ export default function PurchaseDetailPage() {
         communityMembershipApi.getPurchase(id),
         communityMembershipApi.getPurchaseCard(id).catch(() => null),
       ]);
-      setPurchase(pRes.data);
-      setCard(cRes?.data ?? null);
+      // api.get() unwraps json.data — pRes is the purchase object directly
+      setPurchase(pRes);
+      setCard(cRes);
     } catch { /* noop */ }
     finally { setLoading(false); }
   }, [id]);

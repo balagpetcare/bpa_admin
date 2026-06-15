@@ -16,8 +16,8 @@ export default function EditDocumentPage() {
   const fetch = useCallback(async () => {
     try {
       const res = await communityMembershipApi.getDocument(id);
-      const d = res.data;
-      if (d) setForm({ titleEn: d.titleEn, titleBn: d.titleBn, contentEn: d.contentEn || '', contentBn: d.contentBn || '', isActive: d.isActive });
+      // api.get() unwraps json.data — res is the document object directly
+      if (res && res.titleEn) setForm({ titleEn: res.titleEn, titleBn: res.titleBn, contentEn: res.contentEn || '', contentBn: res.contentBn || '', isActive: res.isActive });
     } catch { /* noop */ }
     finally { setLoading(false); }
   }, [id]);

@@ -12,7 +12,8 @@ export default function UpgradesPage() {
   const fetch = useCallback(async () => {
     try {
       const res = await communityMembershipApi.listUpgrades();
-      setUpgrades(res.data ?? []);
+      // api.get() unwraps json.data — returns array directly
+      setUpgrades(res ?? []);
     } catch { /* noop */ }
     finally { setLoading(false); }
   }, []);

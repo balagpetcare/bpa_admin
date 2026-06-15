@@ -13,7 +13,7 @@ export default function DocumentsPage() {
   const fetch = useCallback(async () => {
     try {
       const res = await communityMembershipApi.listDocuments();
-      setDocs(res.data ?? []);
+      setDocs(res ?? []);
     } catch { /* noop */ }
     finally { setLoading(false); }
   }, []);

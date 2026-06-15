@@ -25,9 +25,9 @@ export default function ServicesPage() {
         communityMembershipApi.listDiscounts(),
         communityMembershipApi.listTiers(),
       ]);
-      setServices(svcRes.data ?? []);
-      setDiscounts(discRes.data ?? []);
-      setTiers(tierRes.data ?? []);
+      setServices(svcRes ?? []);
+      setDiscounts(discRes ?? []);
+      setTiers(tierRes ?? []);
     } catch { /* noop */ }
     finally { setLoading(false); }
   }, []);

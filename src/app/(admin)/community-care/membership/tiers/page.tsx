@@ -12,8 +12,9 @@ export default function TiersPage() {
 
   const fetch = useCallback(async () => {
     try {
+      // api.get() unwraps json.data — returns items array directly
       const res = await communityMembershipApi.listTiers();
-      setTiers(res.data ?? []);
+      setTiers(res ?? []);
     } catch { /* noop */ }
     finally { setLoading(false); }
   }, []);

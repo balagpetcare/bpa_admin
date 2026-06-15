@@ -10,8 +10,9 @@ export default function MembershipDashboardPage() {
 
   const fetchData = useCallback(async () => {
     try {
+      // api.get() unwraps json.data, so res is the dashboard object directly
       const res = await communityMembershipApi.getDashboard();
-      setData(res.data);
+      setData(res);
     } catch { /* noop */ }
     finally { setLoading(false); }
   }, []);
