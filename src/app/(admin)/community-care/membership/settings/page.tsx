@@ -9,7 +9,9 @@ export default function ProgramSettingsPage() {
   const [form, setForm] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [creating, setCreating] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
 
   const fetch = useCallback(async () => {
     try {
@@ -23,19 +25,38 @@ export default function ProgramSettingsPage() {
           offerEndAt: p.offerEndAt ? p.offerEndAt.slice(0, 16) : '',
           priceAfterOffer: p.priceAfterOffer || 'USE_REGULAR_PRICE',
           offerBannerEn: p.offerBannerEn || '', offerBannerBn: p.offerBannerBn || '',
+          legalDisclaimer: p.legalDisclaimer || '',
+          cardValidityLabel: p.cardValidityLabel || '5-Year Card Validity',
           isActive: p.isActive,
         });
       }
-    } catch { /* noop */ }
+    } catch {
+      /* If API returns error, form stays null so "Create default" button shows */
+    }
     finally { setLoading(false); }
   }, []);
 
   useEffect(() => { fetch(); }, [fetch]);
 
+  const handleCreateDefault = async () => {
+    setCreating(true);
+    setError('');
+    try {
+      // The GET endpoint auto-creates on the backend now, so just re-fetch
+      await communityMembershipApi.getProgram();
+      await fetch();
+    } catch {
+      setError('Failed to create default program. The API may need to be running.');
+    } finally {
+      setCreating(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setSuccess(false);
+    setError('');
     try {
       const data: any = { ...form };
       if (data.offerStartAt) data.offerStartAt = new Date(data.offerStartAt).toISOString();
@@ -44,17 +65,40 @@ export default function ProgramSettingsPage() {
       else data.offerEndAt = null;
       await communityMembershipApi.updateProgram(data);
       setSuccess(true);
-    } catch { alert('Failed to update'); }
+    } catch {
+      setError('Failed to update');
+    }
     finally { setSaving(false); }
   };
 
   if (loading) return <div className="text-center py-5"><Spinner animation="border" /></div>;
-  if (!form) return <div className="text-center py-5">Program settings not found</div>;
+
+  if (!form) {
+    return (
+      <>
+        <PageHeader title="Program Settings" breadcrumbs={[{ label: 'Membership', href: '/community-care/membership' }, { label: 'Settings' }]} />
+        <Card className="text-center">
+          <Card.Body className="py-5">
+            <p className="text-muted mb-3">Program settings not found.</p>
+            {error && <Alert variant="danger">{error}</Alert>}
+            <Button variant="success" onClick={handleCreateDefault} disabled={creating}>
+              {creating ? 'Creating...' : 'Create Default Program Settings'}
+            </Button>
+            <p className="text-muted mt-3 small">
+              This will create the default BPA Community Care Partner Card Program with standard settings.
+              You can edit them after creation.
+            </p>
+          </Card.Body>
+        </Card>
+      </>
+    );
+  }
 
   return (
     <>
-      <PageHeader title="Offer Countdown Settings" breadcrumbs={[{ label: 'Membership', href: '/community-care/membership' }, { label: 'Settings' }]} />
+      <PageHeader title="Program Settings" breadcrumbs={[{ label: 'Membership', href: '/community-care/membership' }, { label: 'Settings' }]} />
       {success && <Alert variant="success" dismissible onClose={() => setSuccess(false)}>Settings saved successfully!</Alert>}
+      {error && <Alert variant="danger" dismissible onClose={() => setError('')}>{error}</Alert>}
       <Card>
         <Card.Body>
           <Form onSubmit={handleSubmit}>
@@ -63,6 +107,8 @@ export default function ProgramSettingsPage() {
               <Col md={6}><Form.Group><Form.Label>Program Name (BN)</Form.Label><Form.Control value={form.nameBn} onChange={(e) => setForm({ ...form, nameBn: e.target.value })} /></Form.Group></Col>
               <Col md={6}><Form.Group><Form.Label>Description (EN)</Form.Label><Form.Control as="textarea" rows={3} value={form.descriptionEn} onChange={(e) => setForm({ ...form, descriptionEn: e.target.value })} /></Form.Group></Col>
               <Col md={6}><Form.Group><Form.Label>Description (BN)</Form.Label><Form.Control as="textarea" rows={3} value={form.descriptionBn} onChange={(e) => setForm({ ...form, descriptionBn: e.target.value })} /></Form.Group></Col>
+              <Col md={12}><Form.Group><Form.Label>Legal Disclaimer</Form.Label><Form.Control as="textarea" rows={4} value={form.legalDisclaimer} onChange={(e) => setForm({ ...form, legalDisclaimer: e.target.value })} /></Form.Group></Col>
+              <Col md={6}><Form.Group><Form.Label>Card Validity Label (e.g. &quot;5-Year Card Validity&quot;)</Form.Label><Form.Control value={form.cardValidityLabel} onChange={(e) => setForm({ ...form, cardValidityLabel: e.target.value })} /></Form.Group></Col>
               <Col md={4}><Form.Group><Form.Label>Offer Start</Form.Label><Form.Control type="datetime-local" value={form.offerStartAt} onChange={(e) => setForm({ ...form, offerStartAt: e.target.value })} /></Form.Group></Col>
               <Col md={4}><Form.Group><Form.Label>Offer End</Form.Label><Form.Control type="datetime-local" value={form.offerEndAt} onChange={(e) => setForm({ ...form, offerEndAt: e.target.value })} /></Form.Group></Col>
               <Col md={4}><Form.Group><Form.Label>After Offer Expires</Form.Label><Form.Select value={form.priceAfterOffer} onChange={(e) => setForm({ ...form, priceAfterOffer: e.target.value })}>

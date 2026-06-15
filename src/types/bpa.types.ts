@@ -876,6 +876,7 @@ export interface PublicHomepagePayload {
 // ─── Community Pet Care (Phase 4) ─────────────────────────────────
 
 export type CommunityZoneStatus = 'active' | 'inactive' | 'coming_soon'
+export type ZoneClinicStatus = 'planned' | 'priority' | 'in_progress' | 'active' | 'paused'
 
 export interface CommunityZone {
   id: string
@@ -889,6 +890,11 @@ export interface CommunityZone {
   currentContributors: number
   targetAmountBdt: string
   currentAmountBdt: string
+  targetMembers: number | null
+  priorityOrder: number | null
+  clinicStatus: ZoneClinicStatus
+  publicVisible: boolean
+  expectedLaunchNote: string | null
   clinicAddress: string | null
   clinicPhone: string | null
   mapEmbedUrl: string | null
@@ -900,6 +906,23 @@ export interface CommunityZone {
   isActive: boolean
   createdAt: string
   updatedAt: string
+}
+
+export interface ZoneDemandRanking {
+  id: string
+  name: string
+  slug: string
+  clinicStatus: ZoneClinicStatus
+  targetMembers: number
+  activeCards: number
+  paidPurchases: number
+  pendingPurchases: number
+  revenueAmount: number
+  priorityScore: number
+  lastPurchaseDate: string | null
+  publicVisible: boolean
+  priorityOrder: number | null
+  description: string | null
 }
 
 export type ContributionType = 'care_partner'

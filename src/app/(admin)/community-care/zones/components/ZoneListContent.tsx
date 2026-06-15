@@ -49,11 +49,16 @@ export default function ZoneListContent() {
         title="Community Zones"
         breadcrumbs={[{ label: 'Community Care Fund' }, { label: 'Zones' }]}
         action={
-          can('community_zones:create') ? (
-            <Link href="/community-care/zones/create" className="btn btn-primary">
-              <Icon icon="solar:add-circle-bold" className="me-1" />New Zone
+          <div className="d-flex gap-2">
+            <Link href="/community-care/zone-demand" className="btn btn-outline-primary">
+              <Icon icon="solar:ranking-bold" className="me-1" />Clinic Priority
             </Link>
-          ) : undefined
+            {can('community_zones:create') && (
+              <Link href="/community-care/zones/create" className="btn btn-primary">
+                <Icon icon="solar:add-circle-bold" className="me-1" />New Zone
+              </Link>
+            )}
+          </div>
         }
       />
       <ApiErrorAlert error={error as ApiError | null} />

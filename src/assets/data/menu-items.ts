@@ -237,6 +237,12 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       url: '/community-care/zones',
     },
     {
+      key: 'zone-demand',
+      label: 'Clinic Priority',
+      icon: 'solar:ranking-bold-duotone',
+      url: '/community-care/zone-demand',
+    },
+    {
       key: 'contribution-plans',
       label: 'Plans',
       icon: 'solar:tag-price-bold-duotone',
