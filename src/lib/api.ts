@@ -1,6 +1,4 @@
 import { getSession, signOut } from 'next-auth/react'
-import { getServerSession } from 'next-auth/next'
-import { options as authOptions } from '@/app/api/auth/[...nextauth]/options'
 import type { ApiResponse, ApiErrorResponse } from '@/types/bpa.types'
 
 export class ApiError extends Error {
@@ -18,12 +16,16 @@ export class ApiError extends Error {
 const BASE_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1'
 
 async function getAccessToken(): Promise<string | null> {
-  // Server-side: use getServerSession
   if (typeof window === 'undefined') {
+    // Dynamic imports keep these server-only modules out of the client bundle.
+    // options.ts has a module-level throw when BACKEND_API_URL is absent; in the
+    // browser that env var is always undefined (no NEXT_PUBLIC_ prefix), so a
+    // static import would crash the client on every page load in production.
+    const { getServerSession } = await import('next-auth/next')
+    const { options: authOptions } = await import('@/app/api/auth/[...nextauth]/options')
     const session = await getServerSession(authOptions)
     return session?.accessToken ?? null
   }
-  // Client-side: use getSession (reads from cookie)
   const session = await getSession()
   return session?.accessToken ?? null
 }

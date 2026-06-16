@@ -15,13 +15,13 @@ interface KpiItem {
 function buildKpis(s: AnalyticsSummary): KpiItem[] {
   return [
     { icon: 'solar:users-group-two-rounded-bold-duotone', label: 'Total Users',      value: s.totalUsers ?? 0,          variant: 'primary', href: '/users' },
-    { icon: 'solar:document-text-bold-duotone',           label: 'Total News',       value: s.totalNews,                variant: 'info',    href: '/cms/news' },
-    { icon: 'solar:calendar-bold-duotone',                label: 'Total Events',     value: s.totalEvents,              variant: 'success', href: '/cms/events' },
+    { icon: 'solar:document-text-bold-duotone',           label: 'Total News',       value: s.totalNews ?? 0,           variant: 'info',    href: '/cms/news' },
+    { icon: 'solar:calendar-bold-duotone',                label: 'Total Events',     value: s.totalEvents ?? 0,         variant: 'success', href: '/cms/events' },
     { icon: 'solar:hand-heart-bold-duotone',              label: 'Volunteers',       value: s.totalVolunteers ?? 0,     variant: 'warning', href: '/volunteers' },
     { icon: 'solar:letter-bold-duotone',                  label: 'Total Contacts',   value: s.totalContacts ?? 0,       variant: 'secondary', href: '/contacts' },
     { icon: 'solar:gallery-bold-duotone',                 label: 'Media Files',      value: s.totalMedia ?? 0,          variant: 'dark',    href: '/media' },
-    { icon: 'solar:clock-circle-bold-duotone',            label: 'Pending Volunteers', value: s.pendingVolunteers,      variant: 'warning', href: '/volunteers?status=pending' },
-    { icon: 'solar:bell-bold-duotone',                    label: 'Unread Contacts',  value: s.unreadContacts,           variant: 'danger',  href: '/contacts?status=unread' },
+    { icon: 'solar:clock-circle-bold-duotone',            label: 'Pending Volunteers', value: s.pendingVolunteers ?? 0, variant: 'warning', href: '/volunteers?status=pending' },
+    { icon: 'solar:bell-bold-duotone',                    label: 'Unread Contacts',  value: s.unreadContacts ?? 0,      variant: 'danger',  href: '/contacts?status=unread' },
   ]
 }
 
