@@ -1,42 +1,162 @@
 'use client'
 import LoginFrom from './LoginFrom'
-import { Col, Row } from 'react-bootstrap'
-import Link from 'next/link'
 
-const BpaAuthLogo = () => (
-  <div className="d-flex align-items-center gap-2">
-    <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" aria-label="BPA">
-      <circle cx="18" cy="18" r="18" fill="#1a6e38" />
-      <text x="18" y="24" textAnchor="middle" fill="white" fontSize="11" fontFamily="Arial,sans-serif" fontWeight="700">BPA</text>
-    </svg>
-    <div style={{ lineHeight: 1.15 }}>
-      <div style={{ fontWeight: 700, fontSize: 15, color: '#1a3c4d' }}>Bangladesh Pet Association</div>
-      <div style={{ fontSize: 11, color: '#6c757d' }}>Admin Dashboard</div>
-    </div>
-  </div>
+const FEATURES = [
+  { icon: '🐾', label: 'Vaccination Campaign Management' },
+  { icon: '🫂', label: 'Community Care Partner Network' },
+  { icon: '📋', label: 'Digital Certificates & QR Verification' },
+  { icon: '📊', label: 'Real-time Analytics & Reporting' },
+]
+
+const BpaLogomark = ({ size = 44 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="22" cy="22" r="22" fill="#1a6e38" />
+    <circle cx="22" cy="22" r="16" fill="rgba(255,255,255,0.08)" />
+    <text x="22" y="28" textAnchor="middle" fill="white" fontSize="12" fontFamily="Arial,sans-serif" fontWeight="800">BPA</text>
+  </svg>
 )
 
 const SignIn = () => {
   return (
-    <div className="d-flex flex-column vh-100 p-3">
-      <div className="d-flex flex-column flex-grow-1">
-        <Row className="h-100 justify-content-center">
-          <Col lg={5} className="py-lg-5">
-            <div className="d-flex flex-column h-100 justify-content-center">
-              <div className="auth-logo mb-4">
-                <Link href="/dashboard">
-                  <BpaAuthLogo />
-                </Link>
+    <div style={{ display: 'flex', minHeight: '100vh' }}>
+
+      {/* ── Left – Form panel ───────────────────────────── */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        maxWidth: 480,
+        padding: '2.5rem 2rem',
+        background: '#fff',
+        boxShadow: '4px 0 24px rgba(0,0,0,0.06)',
+        zIndex: 1,
+        flexShrink: 0,
+      }}>
+        <div style={{ width: '100%', maxWidth: 380 }}>
+
+          {/* Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 40 }}>
+            <BpaLogomark size={44} />
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 14, color: '#1a3c4d', lineHeight: 1.25 }}>
+                Bangladesh Pet Association
               </div>
-              <h2 className="fw-bold fs-24">Sign In</h2>
-              <p className="text-muted mt-1 mb-4">Enter your email address and password to access the admin panel.</p>
-              <div className="mb-5">
-                <LoginFrom />
-              </div>
+              <div style={{ fontSize: 11, color: '#6c757d', marginTop: 1 }}>Admin Dashboard</div>
             </div>
-          </Col>
-        </Row>
+          </div>
+
+          <h2 style={{ fontSize: 26, fontWeight: 800, color: '#0d1b2a', marginBottom: 6 }}>
+            Welcome back
+          </h2>
+          <p style={{ fontSize: 14, color: '#64748b', marginBottom: 28, lineHeight: 1.6 }}>
+            Sign in to manage BPA campaigns, members, and community programs.
+          </p>
+
+          <LoginFrom />
+
+          <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: 12, marginTop: 32 }}>
+            &copy; {new Date().getFullYear()} Bangladesh Pet Association
+          </p>
+        </div>
       </div>
+
+      {/* ── Right – Brand panel (hidden on small screens) ─ */}
+      <div
+        className="d-none d-lg-flex"
+        style={{
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          padding: '3rem',
+          background: 'linear-gradient(150deg, #0b3621 0%, #1a6e38 55%, #2da058 100%)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+
+        {/* Decorative circles */}
+        <span style={{
+          position: 'absolute', top: -100, right: -100,
+          width: 380, height: 380, borderRadius: '50%',
+          background: 'rgba(255,255,255,0.04)',
+          pointerEvents: 'none',
+        }} />
+        <span style={{
+          position: 'absolute', bottom: -80, left: -80,
+          width: 280, height: 280, borderRadius: '50%',
+          background: 'rgba(255,255,255,0.05)',
+          pointerEvents: 'none',
+        }} />
+        <span style={{
+          position: 'absolute', top: '45%', right: '8%',
+          width: 140, height: 140, borderRadius: '50%',
+          background: 'rgba(255,255,255,0.03)',
+          pointerEvents: 'none',
+        }} />
+
+        {/* Top BPA wordmark */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, position: 'relative' }}>
+          <svg width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="28" cy="28" r="28" fill="rgba(255,255,255,0.12)" />
+            <circle cx="28" cy="28" r="22" fill="rgba(255,255,255,0.08)" />
+            <text x="28" y="35" textAnchor="middle" fill="white" fontSize="14" fontFamily="Arial,sans-serif" fontWeight="800">BPA</text>
+          </svg>
+          <div>
+            <div style={{ color: 'rgba(255,255,255,0.92)', fontWeight: 700, fontSize: 18, lineHeight: 1.2 }}>
+              Bangladesh Pet Association
+            </div>
+            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 2 }}>
+              Serving pets and owners nationwide
+            </div>
+          </div>
+        </div>
+
+        {/* Centre: headline + features */}
+        <div style={{ position: 'relative' }}>
+          <div style={{
+            color: 'rgba(255,255,255,0.4)',
+            fontSize: 11, fontWeight: 600,
+            letterSpacing: 2.5, textTransform: 'uppercase',
+            marginBottom: 18,
+          }}>
+            Administration Portal
+          </div>
+          <h1 style={{
+            color: '#fff', fontSize: 42, fontWeight: 800,
+            lineHeight: 1.15, marginBottom: 20, letterSpacing: -0.5,
+          }}>
+            Empowering<br />pet welfare<br />across Bangladesh
+          </h1>
+          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 15, lineHeight: 1.75, maxWidth: 400, marginBottom: 36 }}>
+            Manage vaccination drives, issue digital certificates, track community care memberships, and monitor real-time campaign analytics.
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {FEATURES.map((f, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div style={{
+                  width: 40, height: 40, borderRadius: 10,
+                  background: 'rgba(255,255,255,0.1)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 20, flexShrink: 0,
+                }}>
+                  {f.icon}
+                </div>
+                <span style={{ color: 'rgba(255,255,255,0.82)', fontSize: 14, fontWeight: 500 }}>
+                  {f.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom caption */}
+        <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, position: 'relative' }}>
+          BPA Admin v2 &nbsp;·&nbsp; Community Care Edition
+        </div>
+      </div>
+
     </div>
   )
 }

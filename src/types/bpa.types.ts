@@ -13,7 +13,9 @@ export interface BpaUser {
   name: string
   email: string
   roles: string[]
-  permissions: string[]
+  // Permissions are not stored in the JWT/session cookie (would exceed 4 KB limit).
+  // Load them on-demand via /api/proxy/permissions when fine-grained checks are needed.
+  permissions?: string[]
 }
 
 export interface ApiSuccessResponse<T = unknown> {

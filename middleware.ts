@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // Not authenticated or session expired
+  // Not authenticated or session expired → redirect to sign-in
   if (!token || token.error === 'RefreshTokenExpired') {
     const signInUrl = new URL('/auth/sign-in', request.url)
     signInUrl.searchParams.set('redirectTo', pathname)
@@ -22,17 +22,35 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    // Core admin
     '/dashboard/:path*',
+    '/analytics/:path*',
+    // CMS
     '/cms/:path*',
-    '/users/:path*',
-    '/roles/:path*',
+    // Community
+    '/members/:path*',
     '/volunteers/:path*',
     '/contacts/:path*',
+    // Administration
+    '/users/:path*',
+    '/roles/:path*',
+    '/permissions/:path*',
+    // Assets & Config
     '/media/:path*',
     '/seo/:path*',
-    '/analytics/:path*',
+    '/site-settings/:path*',
+    '/settings/:path*',
+    // Campaigns
+    '/campaigns/:path*',
+    '/doctors/:path*',
+    '/pets/:path*',
+    '/locations/:path*',
+    // Community Care Fund
+    '/community-care/:path*',
+    // Payments & Logs
     '/payments/:path*',
     '/logs/:path*',
-    '/members/:path*',
+    '/sms-logs/:path*',
+    '/email-logs/:path*',
   ],
 }

@@ -4,8 +4,6 @@ import type { JWT } from 'next-auth/jwt'
 
 const BACKEND_API_URL = process.env['BACKEND_API_URL']
 
-// In production the app must not fall back to an HTTP localhost URL — credentials
-// would be transmitted in plaintext. Fail loudly at startup if the var is absent.
 if (!BACKEND_API_URL && process.env['NODE_ENV'] === 'production') {
   throw new Error(
     'BACKEND_API_URL environment variable must be set in production. ' +
@@ -15,7 +13,6 @@ if (!BACKEND_API_URL && process.env['NODE_ENV'] === 'production') {
 
 const BACKEND_API = BACKEND_API_URL ?? 'http://localhost:4000/api/v1'
 
-// Attempt to refresh the access token using the stored refresh token
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     const res = await fetch(`${BACKEND_API}/auth/refresh`, {
@@ -70,12 +67,15 @@ export const options: NextAuthOptions = {
 
         const { user, accessToken, refreshToken, accessTokenExpires } = json.data
 
+        // Permissions are intentionally excluded from the session token.
+        // Including them (~32 KB for super_admin) produces a JWT that exceeds
+        // the 4 KB cookie limit, causing Nginx 502 errors.
+        // Permissions are loaded on-demand via /api/proxy/permissions when needed.
         return {
           id: user.id,
           name: user.name,
           email: user.email,
           roles: user.roles ?? [],
-          permissions: user.permissions ?? [],
           accessToken,
           refreshToken,
           accessTokenExpires,
@@ -92,12 +92,11 @@ export const options: NextAuthOptions = {
 
   session: {
     strategy: 'jwt',
-    maxAge: 24 * 60 * 60, // 24 hours
+    maxAge: 24 * 60 * 60,
   },
 
   callbacks: {
     async jwt({ token, user }) {
-      // Initial sign-in: populate token from the user returned by authorize()
       if (user) {
         return {
           ...token,
@@ -109,17 +108,14 @@ export const options: NextAuthOptions = {
             name: user.name ?? '',
             email: user.email ?? '',
             roles: user.roles,
-            permissions: user.permissions,
           },
         }
       }
 
-      // Token still valid with 60-second buffer
       if (Date.now() < token.accessTokenExpires - 60_000) {
         return token
       }
 
-      // Access token expired — attempt refresh
       return refreshAccessToken(token)
     },
 
