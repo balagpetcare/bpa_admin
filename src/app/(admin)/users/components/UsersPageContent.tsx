@@ -18,7 +18,7 @@ export default function UsersPageContent() {
   const [editUser, setEditUser] = useState<AdminUser | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
 
-  const { data, loading, error, refetch } = useApi(() => usersApi.list({ limit: 200 }), [])
+  const { data, loading, error, refetch } = useApi(() => usersApi.list({ limit: 100 }), [])
 
   const users = data?.data ?? []
 

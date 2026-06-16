@@ -1,52 +1,51 @@
 'use client'
 
-import avatar1 from '@/assets/images/users/avatar-1.jpg'
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
-import Image from 'next/image'
 import Link from 'next/link'
+import { signOut, useSession } from 'next-auth/react'
 import { Dropdown, DropdownHeader, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap'
 
+const AdminAvatar = ({ name }: { name?: string | null }) => {
+  const initials = name
+    ? name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
+    : 'AD'
+  return (
+    <span
+      className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
+      style={{ width: 32, height: 32, background: '#1a6e38', fontSize: 12, flexShrink: 0 }}>
+      {initials}
+    </span>
+  )
+}
+
 const ProfileDropdown = () => {
+  const { data: session } = useSession()
+  const displayName = session?.user?.name ?? 'Admin'
+
   return (
     <Dropdown className="topbar-item">
       <DropdownToggle
         as={'a'}
         type="button"
         className="topbar-button content-none"
-        id="page-header-user-dropdown "
+        id="page-header-user-dropdown"
         data-bs-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false">
         <span className="d-flex align-items-center">
-          <Image className="rounded-circle" width={32} src={avatar1} alt="avatar-3" />
+          <AdminAvatar name={displayName} />
         </span>
       </DropdownToggle>
       <DropdownMenu className="dropdown-menu-end">
         <DropdownHeader as={'h6'} className="dropdown-header">
-          Welcome Gaston!
+          {displayName}
         </DropdownHeader>
-        <DropdownItem as={Link} href="/profile">
-          <IconifyIcon icon="bx:user-circle" className="text-muted fs-18 align-middle me-1" />
-          <span className="align-middle">Profile</span>
-        </DropdownItem>
-        <DropdownItem as={Link} href="/apps/chat">
-          <IconifyIcon icon="bx:message-dots" className="text-muted fs-18 align-middle me-1" />
-          <span className="align-middle">Messages</span>
-        </DropdownItem>
-        <DropdownItem as={Link} href="/pages/pricing">
-          <IconifyIcon icon="bx:wallet" className="text-muted fs-18 align-middle me-1" />
-          <span className="align-middle">Pricing</span>
-        </DropdownItem>
-        <DropdownItem as={Link} href="/support/faqs">
-          <IconifyIcon icon="bx:help-circle" className="text-muted fs-18 align-middle me-1" />
-          <span className="align-middle">Help</span>
-        </DropdownItem>
         <DropdownItem as={Link} href="/auth/lock-screen">
           <IconifyIcon icon="bx:lock" className="text-muted fs-18 align-middle me-1" />
           <span className="align-middle">Lock screen</span>
         </DropdownItem>
         <div className="dropdown-divider my-1" />
-        <DropdownItem as={Link} className=" text-danger" href="/auth/sign-in">
+        <DropdownItem className="text-danger" onClick={() => signOut({ callbackUrl: '/auth/sign-in' })}>
           <IconifyIcon icon="bx:log-out" className="fs-18 align-middle me-1" />
           <span className="align-middle">Logout</span>
         </DropdownItem>
