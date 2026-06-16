@@ -13,7 +13,9 @@ export interface BpaUser {
   name: string
   email: string
   roles: string[]
-  permissions: string[]
+  // permissions is intentionally NOT stored in the NextAuth JWT/session cookie.
+  // The permissions array can be very large and causes cookie overflow → Nginx 502.
+  // Fetch permissions from /auth/me using the accessToken if the UI needs them.
 }
 
 export interface ApiSuccessResponse<T = unknown> {

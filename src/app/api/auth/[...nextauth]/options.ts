@@ -53,29 +53,43 @@ export const options: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null
 
-        const res = await fetch(`${BACKEND_API}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: credentials.email,
-            password: credentials.password,
-          }),
-        })
+        let res: Response
+        try {
+          res = await fetch(`${BACKEND_API}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          })
+        } catch (err) {
+          // Network error — backend unreachable
+          throw new Error('Cannot reach authentication server. Please try again.')
+        }
 
-        const json = await res.json()
+        let json: { success: boolean; data?: { user: { id: string; name: string; email: string; roles: string[] }; accessToken: string; refreshToken: string; accessTokenExpires: number }; error?: { message: string } }
+        try {
+          json = await res.json()
+        } catch {
+          throw new Error('Authentication server returned an invalid response.')
+        }
 
         if (!res.ok || !json.success) {
           throw new Error(json.error?.message ?? 'Invalid credentials')
         }
 
-        const { user, accessToken, refreshToken, accessTokenExpires } = json.data
+        const { user, accessToken, refreshToken, accessTokenExpires } = json.data!
 
+        // IMPORTANT: Do NOT include user.permissions here.
+        // The permissions array can be very large (100+ entries) and will bloat
+        // the NextAuth JWT cookie past the 4096-byte browser/Nginx limit → 502.
+        // If the UI needs permissions, fetch them from /auth/me using the accessToken.
         return {
           id: user.id,
           name: user.name,
           email: user.email,
           roles: user.roles ?? [],
-          permissions: user.permissions ?? [],
           accessToken,
           refreshToken,
           accessTokenExpires,
@@ -104,12 +118,13 @@ export const options: NextAuthOptions = {
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
           accessTokenExpires: user.accessTokenExpires,
+          // Store only the minimal user identity — never include permissions array.
+          // Large permission sets exceed cookie size limits and cause Nginx 502.
           user: {
             id: user.id,
             name: user.name ?? '',
             email: user.email ?? '',
-            roles: user.roles,
-            permissions: user.permissions,
+            roles: user.roles ?? [],
           },
         }
       }
