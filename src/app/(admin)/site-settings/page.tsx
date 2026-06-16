@@ -393,7 +393,7 @@ export default function SiteSettingsPage() {
                         <Form.Group>
                           <Form.Label>Google Maps Link</Form.Label>
                           <Form.Control type="url" value={f('mapLink')} onChange={e => set('mapLink', e.target.value)} placeholder="https://maps.google.com/?q=..." />
-                          <Form.Text className="text-muted">Used for "View on Google Maps" button on contact page.</Form.Text>
+                          <Form.Text className="text-muted">Used for &quot;View on Google Maps&quot; button on contact page.</Form.Text>
                         </Form.Group>
                       </Col>
                       <Col md={12}>

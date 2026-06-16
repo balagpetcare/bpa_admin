@@ -36,7 +36,7 @@ const SelectFormInput = <
             ) : (
               <>{label}</>
             ))}
-          {/* @ts-ignore */}
+          {/* @ts-expect-error -- react-select type incompatibility with react-hook-form Controller */}
           <ReactSelect<Option>
             {...other}
             {...field}
