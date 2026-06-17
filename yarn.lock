@@ -441,6 +441,34 @@
   resolved "https://registry.npmjs.org/@humanwhocodes/retry/-/retry-0.4.3.tgz"
   integrity sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==
 
+"@iconify-json/bi@^1.2.7":
+  version "1.2.7"
+  resolved "https://registry.npmjs.org/@iconify-json/bi/-/bi-1.2.7.tgz"
+  integrity sha512-IPz8WNxmLkH1I9msl+0Q4OnmjjvP4uU0Z61a4i4sqonB6vKSbMGUWuGn8/YuuszlReVj8rf+3gNv5JU8Xoljyg==
+  dependencies:
+    "@iconify/types" "*"
+
+"@iconify-json/bx@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.npmjs.org/@iconify-json/bx/-/bx-1.2.3.tgz"
+  integrity sha512-ihvX+2d688otgW7MAvUEdKVln+fZ28BJTlygazKUU/+RCODWT+2KObjAHe8+KPs4VhC8V6Tgoy1qrX0Myn/upA==
+  dependencies:
+    "@iconify/types" "*"
+
+"@iconify-json/iconamoon@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.npmjs.org/@iconify-json/iconamoon/-/iconamoon-1.2.2.tgz"
+  integrity sha512-Xn7YeSDniPgutPr0qil/iQwQelq975OYQ/i2twGjcK4DjGOXBrBC+6q45WtVuQbFfXzM7bgijv4yVnxy0OqUdQ==
+  dependencies:
+    "@iconify/types" "*"
+
+"@iconify-json/solar@^1.2.5":
+  version "1.2.5"
+  resolved "https://registry.npmjs.org/@iconify-json/solar/-/solar-1.2.5.tgz"
+  integrity sha512-WMAiNwchU8zhfrySww6KQBRIBbsQ6SvgIu2yA+CHGyMima/0KQwT5MXogrZPJGoQF+1Ye3Qj6K+1CiyNn3YkoA==
+  dependencies:
+    "@iconify/types" "*"
+
 "@iconify/react@^6.0.2":
   version "6.0.2"
   resolved "https://registry.npmjs.org/@iconify/react/-/react-6.0.2.tgz"
@@ -448,7 +476,7 @@
   dependencies:
     "@iconify/types" "^2.0.0"
 
-"@iconify/types@^2.0.0":
+"@iconify/types@*", "@iconify/types@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@iconify/types/-/types-2.0.0.tgz"
   integrity sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==

@@ -52,5 +52,7 @@ export const config = {
     '/logs/:path*',
     '/sms-logs/:path*',
     '/email-logs/:path*',
+    // Staff QR scan
+    '/campaign-scan/:path*',
   ],
 }
