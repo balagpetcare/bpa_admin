@@ -73,7 +73,7 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       key: 'members',
       label: 'Members',
       icon: 'solar:card-bold-duotone',
-      url: '/members',
+      url: '/community-care/membership',
     },
     {
       key: 'volunteers',

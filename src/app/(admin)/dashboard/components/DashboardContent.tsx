@@ -2,7 +2,6 @@
 
 import { useCallback } from 'react'
 import { Row, Col } from 'react-bootstrap'
-import ApiErrorAlert from '@/components/ui/ApiErrorAlert'
 import DashboardKpiCards from './DashboardKpiCards'
 import RecentNewsWidget from './RecentNewsWidget'
 import RecentEventsWidget from './RecentEventsWidget'
@@ -15,16 +14,42 @@ import { newsApi } from '@/lib/api/news.api'
 import { eventsApi } from '@/lib/api/events.api'
 import { contactsApi } from '@/lib/api/contacts.api'
 import { volunteersApi } from '@/lib/api/volunteers.api'
-import type { ApiError } from '@/lib/api'
+import { ApiError } from '@/lib/api'
+import type { AnalyticsSummary, PaginatedResult } from '@/types/bpa.types'
+
+// Swallow 404/NOT_FOUND so unimplemented endpoints don't crash the dashboard.
+// Other errors (401, 500, network) still surface normally.
+function safe404<T>(fn: () => Promise<T>, fallback: T): () => Promise<T> {
+  return async () => {
+    try {
+      return await fn()
+    } catch (err) {
+      if (err instanceof ApiError && (err.status === 404 || err.code === 'NOT_FOUND')) {
+        return fallback
+      }
+      throw err
+    }
+  }
+}
+
+const emptyPage = <T,>(): PaginatedResult<T> => ({
+  data: [],
+  meta: { page: 1, limit: 5, total: 0, totalPages: 0, hasNext: false, hasPrev: false },
+})
+
+const emptyAnalyticsSummary: AnalyticsSummary = {
+  totalUsers: 0, totalNews: 0, totalEvents: 0, totalVolunteers: 0,
+  totalContacts: 0, totalMedia: 0, pendingVolunteers: 0, unreadContacts: 0, totalPayments: 0,
+}
 
 export default function DashboardContent() {
-  const summaryFn = useCallback(() => analyticsApi.summary(), [])
-  const newsFn = useCallback(() => newsApi.list({ limit: 5, page: 1 }), [])
-  const eventsFn = useCallback(() => eventsApi.list({ limit: 5, page: 1, upcoming: true }), [])
-  const contactsFn = useCallback(() => contactsApi.list({ limit: 5, status: 'unread' }), [])
-  const volunteersFn = useCallback(() => volunteersApi.list({ limit: 5, status: 'pending' }), [])
+  const summaryFn = useCallback(safe404(() => analyticsApi.summary(), emptyAnalyticsSummary), [])
+  const newsFn = useCallback(safe404(() => newsApi.list({ limit: 5, page: 1 }), emptyPage()), [])
+  const eventsFn = useCallback(safe404(() => eventsApi.list({ limit: 5, page: 1, upcoming: true }), emptyPage()), [])
+  const contactsFn = useCallback(safe404(() => contactsApi.list({ limit: 5, status: 'unread' }), emptyPage()), [])
+  const volunteersFn = useCallback(safe404(() => volunteersApi.list({ limit: 5, status: 'pending' }), emptyPage()), [])
 
-  const { data: summary, loading: sumLoading, error: sumError } = useApi(summaryFn, [])
+  const { data: summary, loading: sumLoading } = useApi(summaryFn, [])
   const { data: newsData } = useApi(newsFn, [])
   const { data: eventsData } = useApi(eventsFn, [])
   const { data: contactsData } = useApi(contactsFn, [])
@@ -35,15 +60,8 @@ export default function DashboardContent() {
   const contacts = contactsData?.data ?? []
   const volunteers = volunteersData?.data ?? []
 
-  const emptyAnalyticsSummary = {
-    totalUsers: 0, totalNews: 0, totalEvents: 0, totalVolunteers: 0,
-    totalContacts: 0, totalMedia: 0, pendingVolunteers: 0, unreadContacts: 0, totalPayments: 0,
-  }
-
   return (
     <div className="container-fluid">
-      <ApiErrorAlert error={sumError as ApiError | null} />
-
       <DashboardKpiCards summary={sumLoading ? emptyAnalyticsSummary : (summary ?? emptyAnalyticsSummary)} />
 
       <Row className="g-3 mb-4">
