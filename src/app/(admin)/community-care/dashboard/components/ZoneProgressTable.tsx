@@ -19,12 +19,13 @@ export default function ZoneProgressTable({ zones }: Props) {
             <tr>
               <th>Zone</th>
               <th>Contributors</th>
+              <th>Care Partner Members</th>
               <th style={{ minWidth: 120 }}>Progress</th>
             </tr>
           </thead>
           <tbody>
             {zones.length === 0 ? (
-              <tr><td colSpan={3} className="text-center py-4 text-muted">No zones yet</td></tr>
+              <tr><td colSpan={4} className="text-center py-4 text-muted">No zones yet</td></tr>
             ) : zones.map((z) => (
               <tr key={z.id}>
                 <td>
@@ -33,6 +34,9 @@ export default function ZoneProgressTable({ zones }: Props) {
                 </td>
                 <td>
                   <div className="small">{z.currentContributors} / {z.targetContributors}</div>
+                </td>
+                <td>
+                  <div className="small fw-semibold">{z.carePartnerMembers ?? 0}</div>
                 </td>
                 <td>
                   <ProgressBar

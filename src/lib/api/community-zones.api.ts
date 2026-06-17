@@ -10,6 +10,11 @@ export interface ZoneCreatePayload {
   division: string
   targetContributors: number
   targetAmountBdt: number
+  targetMembers?: number
+  priorityOrder?: number
+  clinicStatus?: string
+  expectedLaunchNote?: string
+  publicVisible?: boolean
   clinicAddress?: string
   clinicPhone?: string
   mapEmbedUrl?: string
@@ -25,6 +30,7 @@ export type ZoneUpdatePayload = Partial<ZoneCreatePayload>
 export const communityZonesApi = {
   list: (params?: PaginationQuery & { status?: string }) =>
     api.getPaginated<CommunityZone>('/admin/community-zones', params),
+  getDemandRanking: () => api.get<any[]>('/admin/community-zones/demand-ranking'),
   getById: (id: string) => api.get<CommunityZone>(`/admin/community-zones/${id}`),
   create: (data: ZoneCreatePayload) => api.post<CommunityZone>('/admin/community-zones', data),
   update: (id: string, data: ZoneUpdatePayload) =>

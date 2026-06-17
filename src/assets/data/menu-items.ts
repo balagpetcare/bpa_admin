@@ -163,6 +163,61 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       url: '/locations',
     },
 
+    // ─── COMMUNITY CARE MEMBERSHIP ────────────────────────────────
+    {
+      key: 'community-care-membership-title',
+      label: 'MEMBERSHIP',
+      isTitle: true,
+    },
+    {
+      key: 'membership-dashboard',
+      label: 'Membership Dashboard',
+      icon: 'solar:card-bold-duotone',
+      url: '/community-care/membership',
+    },
+    {
+      key: 'membership-tiers',
+      label: 'Tiers & Pricing',
+      icon: 'solar:tag-price-bold-duotone',
+      url: '/community-care/membership/tiers',
+    },
+    {
+      key: 'membership-services',
+      label: 'Services & Discounts',
+      icon: 'solar:test-tube-bold-duotone',
+      url: '/community-care/membership/services',
+    },
+    {
+      key: 'membership-benefits',
+      label: 'Benefits',
+      icon: 'solar:gift-bold-duotone',
+      url: '/community-care/membership/benefits',
+    },
+    {
+      key: 'membership-purchases',
+      label: 'Purchases',
+      icon: 'solar:cart-bold-duotone',
+      url: '/community-care/membership/purchases',
+    },
+    {
+      key: 'membership-upgrades',
+      label: 'Upgrade Requests',
+      icon: 'solar:arrow-up-bold-duotone',
+      url: '/community-care/membership/upgrades',
+    },
+    {
+      key: 'membership-documents',
+      label: 'PDF Documents',
+      icon: 'solar:file-text-bold-duotone',
+      url: '/community-care/membership/documents',
+    },
+    {
+      key: 'membership-settings',
+      label: 'Offer Countdown',
+      icon: 'solar:clock-bold-duotone',
+      url: '/community-care/membership/settings',
+    },
+
     // ─── COMMUNITY CARE FUND ──────────────────────────────────────
     {
       key: 'community-care-fund',
@@ -180,6 +235,12 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       label: 'Zones',
       icon: 'solar:map-point-wave-bold-duotone',
       url: '/community-care/zones',
+    },
+    {
+      key: 'zone-demand',
+      label: 'Clinic Priority',
+      icon: 'solar:ranking-bold-duotone',
+      url: '/community-care/zone-demand',
     },
     {
       key: 'contribution-plans',

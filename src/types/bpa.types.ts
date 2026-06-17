@@ -13,9 +13,9 @@ export interface BpaUser {
   name: string
   email: string
   roles: string[]
-  // Permissions are not stored in the JWT/session cookie (would exceed 4 KB limit).
-  // Load them on-demand via /api/proxy/permissions when fine-grained checks are needed.
-  permissions?: string[]
+  // permissions is intentionally NOT stored in the NextAuth JWT/session cookie.
+  // The permissions array can be very large and causes cookie overflow → Nginx 502.
+  // Fetch permissions from /auth/me using the accessToken if the UI needs them.
 }
 
 export interface ApiSuccessResponse<T = unknown> {
@@ -878,6 +878,7 @@ export interface PublicHomepagePayload {
 // ─── Community Pet Care (Phase 4) ─────────────────────────────────
 
 export type CommunityZoneStatus = 'active' | 'inactive' | 'coming_soon'
+export type ZoneClinicStatus = 'planned' | 'priority' | 'in_progress' | 'active' | 'paused'
 
 export interface CommunityZone {
   id: string
@@ -891,6 +892,11 @@ export interface CommunityZone {
   currentContributors: number
   targetAmountBdt: string
   currentAmountBdt: string
+  targetMembers: number | null
+  priorityOrder: number | null
+  clinicStatus: ZoneClinicStatus
+  publicVisible: boolean
+  expectedLaunchNote: string | null
   clinicAddress: string | null
   clinicPhone: string | null
   mapEmbedUrl: string | null
@@ -902,6 +908,23 @@ export interface CommunityZone {
   isActive: boolean
   createdAt: string
   updatedAt: string
+}
+
+export interface ZoneDemandRanking {
+  id: string
+  name: string
+  slug: string
+  clinicStatus: ZoneClinicStatus
+  targetMembers: number
+  activeCards: number
+  paidPurchases: number
+  pendingPurchases: number
+  revenueAmount: number
+  priorityScore: number
+  lastPurchaseDate: string | null
+  publicVisible: boolean
+  priorityOrder: number | null
+  description: string | null
 }
 
 export type ContributionType = 'care_partner'
@@ -1227,6 +1250,7 @@ export interface CareFundZoneStat {
   targetAmountBdt: number
   currentAmountBdt: number
   progressPercent: number
+  carePartnerMembers?: number
 }
 
 export interface RecentContributionItem {

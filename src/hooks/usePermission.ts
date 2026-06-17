@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react'
 export function usePermission() {
   const { data: session } = useSession()
 
-  const permissions: string[] = session?.user?.permissions ?? []
+  const permissions: string[] = (session?.user as any)?.permissions ?? []
   const roles: string[] = session?.user?.roles ?? []
 
   // Check a single permission string like "news:publish"
