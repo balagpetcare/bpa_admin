@@ -214,7 +214,7 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
     {
       key: 'membership-settings',
       label: 'Offer Countdown',
-      icon: 'solar:clock-bold-duotone',
+      icon: 'solar:clock-circle-bold-duotone',
       url: '/community-care/membership/settings',
     },
 

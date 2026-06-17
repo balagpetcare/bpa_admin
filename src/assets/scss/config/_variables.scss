@@ -1664,7 +1664,7 @@ $breadcrumb-margin-bottom:          1rem;
 $breadcrumb-bg:                     transparent;
 $breadcrumb-divider-color:          var(--#{$prefix}secondary-color);
 $breadcrumb-active-color:           var(--#{$prefix}secondary-color);
-$breadcrumb-divider:                quote("\ea50");
+$breadcrumb-divider:                quote("›");
 $breadcrumb-divider-flipped:        $breadcrumb-divider;
 $breadcrumb-border-radius:          $border-radius;
 // scss-docs-end breadcrumb-variables

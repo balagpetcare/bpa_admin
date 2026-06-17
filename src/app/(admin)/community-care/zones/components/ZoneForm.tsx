@@ -139,7 +139,7 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
               </Col>
             </Row>
 
-            <h5 className="mb-3 text-uppercase bg-light p-2"><Icon icon="solar:Stethoscope-bold" className="me-1" /> Clinic & Demand Settings</h5>
+            <h5 className="mb-3 text-uppercase bg-light p-2"><Icon icon="solar:stethoscope-bold" className="me-1" /> Clinic & Demand Settings</h5>
             <Row className="g-3 mb-4">
               <Col md={4}>
                 <Form.Group>
