@@ -66,6 +66,10 @@ export default function PurchaseDetailPage() {
   const manualTxn = purchase.payment?.payload?.manualTransaction;
   const paymentPayload = purchase.payment?.payload || {};
 
+  const apiOrigin = (process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1').replace('/api/v1', '');
+  const receiptPdfUrl = `${apiOrigin}/api/v1/public/memberships/${purchase.id}/receipt.pdf`;
+  const cardPdfUrl = `${apiOrigin}/api/v1/public/memberships/${purchase.id}/card.pdf`;
+
   return (
     <>
       <PageHeader title="Purchase Detail" breadcrumbs={[{ label: 'Purchases', href: '/community-care/membership/purchases' }, { label: purchase.memberName }]} />
@@ -128,6 +132,7 @@ export default function PurchaseDetailPage() {
             <ListGroup variant="flush">
               <ListGroup.Item><strong>Gateway:</strong> {purchase.payment?.gateway || '-'}</ListGroup.Item>
               <ListGroup.Item><strong>Merchant Txn ID:</strong> {purchase.payment?.merchantTxnId || '-'}</ListGroup.Item>
+              <ListGroup.Item><strong>Gateway Ref / EPS Txn ID:</strong> {purchase.payment?.gatewayRef || purchase.payment?.epsTxnId || '-'}</ListGroup.Item>
               <ListGroup.Item><strong>Payment Status:</strong> <Badge bg={purchase.payment?.status === 'success' ? 'success' : 'warning'}>{purchase.payment?.status || 'none'}</Badge></ListGroup.Item>
               {manualTxn && (
                 <>
@@ -154,7 +159,26 @@ export default function PurchaseDetailPage() {
                 <ListGroup.Item><strong>QR Token:</strong> <code className="text-xs">{card.qrToken}</code></ListGroup.Item>
                 <ListGroup.Item><strong>Download Token:</strong> {card.downloadToken ? <code>{card.downloadToken}</code> : '-'}</ListGroup.Item>
                 <ListGroup.Item><strong>PDF Generated:</strong> {card.pdfDocumentKey ? <Badge bg="success">Yes</Badge> : <Badge bg="secondary">No</Badge>}</ListGroup.Item>
+                {isPaid && (
+                  <ListGroup.Item className="d-flex gap-2 py-3">
+                    <a href={receiptPdfUrl} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">Download Receipt</a>
+                    <a href={cardPdfUrl} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">Download Card</a>
+                  </ListGroup.Item>
+                )}
               </ListGroup>
+            </Card>
+          </Col>
+        )}
+
+        {purchase.payment?.payload && (
+          <Col md={12} className="mt-3">
+            <Card>
+              <Card.Header><h5 className="mb-0 text-sm">Raw Gateway Payload</h5></Card.Header>
+              <Card.Body>
+                <pre className="mb-0 text-xs" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                  {JSON.stringify(purchase.payment.payload, null, 2)}
+                </pre>
+              </Card.Body>
             </Card>
           </Col>
         )}

@@ -12,6 +12,7 @@ const SECTION = {
   branding: 'Branding',
   contact: 'Contact & Address',
   social: 'Social Media',
+  receipt: 'Donation Receipt',
   messages: 'Public Messages',
 } as const
 
@@ -21,14 +22,17 @@ type Section = keyof typeof SECTION
 const URL_FIELDS: (keyof UpdateSiteSettingsDto)[] = [
   'primaryLogoUrl', 'secondaryLogoUrl', 'faviconUrl',
   'facebookUrl', 'youtubeUrl', 'linkedinUrl', 'mapLink',
+  'websiteUrl',
 ]
 const NULLABLE_FIELDS: (keyof UpdateSiteSettingsDto)[] = [
-  'siteTagline',
+  'siteTagline', 'tagline',
   'officialPhone', 'supportPhone', 'emergencyPhone', 'whatsappNumber',
-  'generalEmail', 'supportEmail', 'officeHours',
-  'officeAddress', 'addressLine1', 'addressLine2', 'area', 'city', 'postalCode', 'country',
-  'mapEmbedUrl',
+  'generalEmail', 'supportEmail', 'contactEmail', 'vaccinationEmail',
+  'primaryPhone', 'secondaryPhone', 'officeHours',
+  'officeAddress', 'addressLine1', 'addressLine2', 'addressLine', 'area', 'city', 'postalCode', 'country',
+  'mapEmbedUrl', 'legalName',
   'defaultMetaTitle', 'defaultMetaDescription', 'emergencyNotice',
+  'receiptFooterNote', 'donationReceiptTermsBn', 'donationReceiptTermsEn',
 ]
 
 function sanitizePayload(form: UpdateSiteSettingsDto): UpdateSiteSettingsDto {
@@ -56,7 +60,10 @@ export default function SiteSettingsPage() {
           // Identity
           siteName: s.siteName,
           siteTagline: s.siteTagline ?? '',
+          tagline: s.tagline ?? '',
           organizationName: s.organizationName,
+          legalName: s.legalName ?? '',
+          websiteUrl: s.websiteUrl ?? '',
           // Contact
           officialPhone: s.officialPhone ?? '',
           supportPhone: s.supportPhone ?? '',
@@ -64,11 +71,16 @@ export default function SiteSettingsPage() {
           whatsappNumber: s.whatsappNumber ?? '',
           generalEmail: s.generalEmail ?? '',
           supportEmail: s.supportEmail ?? '',
+          contactEmail: s.contactEmail ?? '',
+          vaccinationEmail: s.vaccinationEmail ?? '',
+          primaryPhone: s.primaryPhone ?? '',
+          secondaryPhone: s.secondaryPhone ?? '',
           officeHours: s.officeHours ?? '',
           // Address
           officeAddress: s.officeAddress ?? '',
           addressLine1: s.addressLine1 ?? '',
           addressLine2: s.addressLine2 ?? '',
+          addressLine: s.addressLine ?? '',
           area: s.area ?? '',
           city: s.city ?? '',
           postalCode: s.postalCode ?? '',
@@ -81,6 +93,9 @@ export default function SiteSettingsPage() {
           faviconUrl: s.faviconUrl ?? null,
           defaultMetaTitle: s.defaultMetaTitle ?? '',
           defaultMetaDescription: s.defaultMetaDescription ?? '',
+          receiptFooterNote: s.receiptFooterNote ?? '',
+          donationReceiptTermsBn: s.donationReceiptTermsBn ?? '',
+          donationReceiptTermsEn: s.donationReceiptTermsEn ?? '',
           // Social
           facebookUrl: s.facebookUrl ?? '',
           youtubeUrl: s.youtubeUrl ?? '',
@@ -168,6 +183,7 @@ export default function SiteSettingsPage() {
                         key === 'branding'  ? 'solar:palette-bold-duotone' :
                         key === 'contact'   ? 'solar:phone-bold-duotone' :
                         key === 'social'    ? 'solar:share-bold-duotone' :
+                        key === 'receipt'   ? 'solar:document-text-bold-duotone' :
                         'solar:chat-square-bold-duotone'
                       } />
                       {SECTION[key]}
@@ -186,6 +202,7 @@ export default function SiteSettingsPage() {
                   activeSection === 'branding'  ? 'solar:palette-bold-duotone' :
                   activeSection === 'contact'   ? 'solar:phone-bold-duotone' :
                   activeSection === 'social'    ? 'solar:share-bold-duotone' :
+                  activeSection === 'receipt'   ? 'solar:document-text-bold-duotone' :
                   'solar:chat-square-bold-duotone'
                 } />
                 {SECTION[activeSection]}
@@ -196,22 +213,40 @@ export default function SiteSettingsPage() {
                   {/* ── BRANDING ── */}
                   {activeSection === 'branding' && (
                     <>
-                      <Col md={6}>
+                      <Col md={4}>
                         <Form.Group>
                           <Form.Label>Site Name</Form.Label>
                           <Form.Control value={f('siteName')} onChange={e => set('siteName', e.target.value)} placeholder="Bangladesh Pet Association" />
                         </Form.Group>
                       </Col>
-                      <Col md={6}>
+                      <Col md={4}>
                         <Form.Group>
                           <Form.Label>Organization Name</Form.Label>
                           <Form.Control value={f('organizationName')} onChange={e => set('organizationName', e.target.value)} />
                         </Form.Group>
                       </Col>
-                      <Col md={12}>
+                      <Col md={4}>
+                        <Form.Group>
+                          <Form.Label>Legal Name</Form.Label>
+                          <Form.Control value={f('legalName')} onChange={e => set('legalName', e.target.value)} placeholder="Bangladesh Pet Association" />
+                        </Form.Group>
+                      </Col>
+                      <Col md={6}>
                         <Form.Group>
                           <Form.Label>Site Tagline</Form.Label>
                           <Form.Control value={f('siteTagline')} onChange={e => set('siteTagline', e.target.value)} placeholder="Caring for every pet, every life." />
+                        </Form.Group>
+                      </Col>
+                      <Col md={6}>
+                        <Form.Group>
+                          <Form.Label>Tagline (Short)</Form.Label>
+                          <Form.Control value={f('tagline')} onChange={e => set('tagline', e.target.value)} placeholder="Building a Better Future for Pets" />
+                        </Form.Group>
+                      </Col>
+                      <Col md={12}>
+                        <Form.Group>
+                          <Form.Label>Website URL</Form.Label>
+                          <Form.Control type="url" value={f('websiteUrl')} onChange={e => set('websiteUrl', e.target.value)} placeholder="https://bangladeshpetassociation.com" />
                         </Form.Group>
                       </Col>
 
@@ -298,6 +333,19 @@ export default function SiteSettingsPage() {
                       </Col>
                       <Col md={4}>
                         <Form.Group>
+                          <Form.Label>Primary Phone</Form.Label>
+                          <Form.Control type="tel" value={f('primaryPhone')} onChange={e => set('primaryPhone', e.target.value)} placeholder="01XXXXXXXXX" />
+                          <Form.Text className="text-muted">Main contact phone.</Form.Text>
+                        </Form.Group>
+                      </Col>
+                      <Col md={4}>
+                        <Form.Group>
+                          <Form.Label>Secondary Phone</Form.Label>
+                          <Form.Control type="tel" value={f('secondaryPhone')} onChange={e => set('secondaryPhone', e.target.value)} placeholder="01XXXXXXXXX" />
+                        </Form.Group>
+                      </Col>
+                      <Col md={4}>
+                        <Form.Group>
                           <Form.Label>Support Phone</Form.Label>
                           <Form.Control type="tel" value={f('supportPhone')} onChange={e => set('supportPhone', e.target.value)} placeholder="01XXXXXXXXX" />
                           <Form.Text className="text-danger fw-semibold">Shown when payment/registration is unavailable.</Form.Text>
@@ -321,17 +369,29 @@ export default function SiteSettingsPage() {
                       <Col md={12}>
                         <div className="fw-semibold text-muted small text-uppercase mb-1 mt-2">Email Addresses</div>
                       </Col>
-                      <Col md={6}>
+                      <Col md={3}>
                         <Form.Group>
                           <Form.Label>General Email</Form.Label>
                           <Form.Control type="email" value={f('generalEmail')} onChange={e => set('generalEmail', e.target.value)} placeholder="info@bpa.org.bd" />
-                          <Form.Text className="text-muted">Primary contact email shown publicly.</Form.Text>
+                          <Form.Text className="text-muted">Primary contact email.</Form.Text>
                         </Form.Group>
                       </Col>
-                      <Col md={6}>
+                      <Col md={3}>
                         <Form.Group>
                           <Form.Label>Support Email</Form.Label>
                           <Form.Control type="email" value={f('supportEmail')} onChange={e => set('supportEmail', e.target.value)} placeholder="support@bpa.org.bd" />
+                        </Form.Group>
+                      </Col>
+                      <Col md={3}>
+                        <Form.Group>
+                          <Form.Label>Contact Email</Form.Label>
+                          <Form.Control type="email" value={f('contactEmail')} onChange={e => set('contactEmail', e.target.value)} placeholder="info@bangladeshpetassociation.com" />
+                        </Form.Group>
+                      </Col>
+                      <Col md={3}>
+                        <Form.Group>
+                          <Form.Label>Vaccination Email</Form.Label>
+                          <Form.Control type="email" value={f('vaccinationEmail')} onChange={e => set('vaccinationEmail', e.target.value)} placeholder="vaccination2026@bangladeshpetassociation.com" />
                         </Form.Group>
                       </Col>
 
@@ -347,6 +407,13 @@ export default function SiteSettingsPage() {
                       {/* ─ Address ─ */}
                       <Col md={12}>
                         <div className="fw-semibold text-muted small text-uppercase mb-1 mt-2">Office Address</div>
+                      </Col>
+                      <Col md={12}>
+                        <Form.Group>
+                          <Form.Label>Full Address Line</Form.Label>
+                          <Form.Control value={f('addressLine')} onChange={e => set('addressLine', e.target.value)} placeholder="Plot 10, Road 5, Block A, Bashundhara R/A, Dhaka" />
+                          <Form.Text className="text-muted">A single line format of the office address.</Form.Text>
+                        </Form.Group>
                       </Col>
                       <Col md={6}>
                         <Form.Group>
@@ -425,6 +492,48 @@ export default function SiteSettingsPage() {
                         <Form.Group>
                           <Form.Label>LinkedIn URL</Form.Label>
                           <Form.Control type="url" value={f('linkedinUrl')} onChange={e => set('linkedinUrl', e.target.value)} placeholder="https://linkedin.com/company/bpa" />
+                        </Form.Group>
+                      </Col>
+                    </>
+                  )}
+
+                  {/* ── DONATION RECEIPT ── */}
+                  {activeSection === 'receipt' && (
+                    <>
+                      <Col md={12}>
+                        <Form.Group>
+                          <Form.Label>Receipt Footer Note</Form.Label>
+                          <Form.Control
+                            as="textarea" rows={2}
+                            value={f('receiptFooterNote')}
+                            onChange={e => set('receiptFooterNote', e.target.value)}
+                            placeholder="e.g. Bangladesh Pet Association is a registered animal welfare organization."
+                          />
+                          <Form.Text className="text-muted">Shown in the official receipt footer note.</Form.Text>
+                        </Form.Group>
+                      </Col>
+                      <Col md={12}>
+                        <Form.Group>
+                          <Form.Label>Donation Receipt Terms (Bangla)</Form.Label>
+                          <Form.Control
+                            as="textarea" rows={3}
+                            value={f('donationReceiptTermsBn')}
+                            onChange={e => set('donationReceiptTermsBn', e.target.value)}
+                            placeholder="অনুদান নীতি ও শর্তাবলী..."
+                          />
+                          <Form.Text className="text-muted">Bangla translation of policy/terms printed on the receipt.</Form.Text>
+                        </Form.Group>
+                      </Col>
+                      <Col md={12}>
+                        <Form.Group>
+                          <Form.Label>Donation Receipt Terms (English)</Form.Label>
+                          <Form.Control
+                            as="textarea" rows={3}
+                            value={f('donationReceiptTermsEn')}
+                            onChange={e => set('donationReceiptTermsEn', e.target.value)}
+                            placeholder="Donation policy and terms..."
+                          />
+                          <Form.Text className="text-muted">English translation of policy/terms printed on the receipt.</Form.Text>
                         </Form.Group>
                       </Col>
                     </>

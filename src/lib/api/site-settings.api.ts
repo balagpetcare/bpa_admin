@@ -7,7 +7,10 @@ export interface SiteSettings {
   // Identity
   siteName: string
   siteTagline: string | null
+  tagline: string | null
   organizationName: string
+  legalName: string | null
+  websiteUrl: string | null
   // Contact
   officialPhone: string | null
   supportPhone: string | null
@@ -15,11 +18,16 @@ export interface SiteSettings {
   whatsappNumber: string | null
   generalEmail: string | null
   supportEmail: string | null
+  contactEmail: string | null
+  vaccinationEmail: string | null
+  primaryPhone: string | null
+  secondaryPhone: string | null
   officeHours: string | null
   // Address
   officeAddress: string | null
   addressLine1: string | null
   addressLine2: string | null
+  addressLine: string | null
   area: string | null
   city: string | null
   postalCode: string | null
@@ -32,6 +40,9 @@ export interface SiteSettings {
   faviconUrl: string | null
   defaultMetaTitle: string | null
   defaultMetaDescription: string | null
+  receiptFooterNote: string | null
+  donationReceiptTermsBn: string | null
+  donationReceiptTermsEn: string | null
   // Social
   facebookUrl: string | null
   youtubeUrl: string | null
