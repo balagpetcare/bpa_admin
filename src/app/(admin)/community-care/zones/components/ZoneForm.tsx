@@ -6,6 +6,7 @@ import { Icon } from '@iconify/react'
 import { useRouter } from 'next/navigation'
 import PageHeader from '@/components/ui/PageHeader'
 import ApiErrorAlert from '@/components/ui/ApiErrorAlert'
+import LocationSelector, { type LocationValue } from '@/components/location/LocationSelector'
 import { useApiMutation } from '@/hooks/useApi'
 import { communityZonesApi, type ZoneCreatePayload } from '@/lib/api/community-zones.api'
 import type { ApiError } from '@/lib/api'
@@ -34,6 +35,12 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
   const router = useRouter()
   const { mutate, loading, error } = useApiMutation<CommunityZone, unknown>()
   const isEdit = !!zoneId
+
+  const [locationValue, setLocationValue] = useState<LocationValue>({
+    divisionId: initialValues?.divisionId ?? undefined,
+    districtId: initialValues?.districtId ?? undefined,
+    upazilaId: initialValues?.upazilaId ?? undefined,
+  })
 
   const [form, setForm] = useState({
     name: initialValues?.name ?? '',
@@ -69,6 +76,9 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
       city: form.city,
       district: form.district,
       division: form.division,
+      divisionId: locationValue.divisionId ?? undefined,
+      districtId: locationValue.districtId ?? undefined,
+      upazilaId: locationValue.upazilaId ?? undefined,
       targetContributors: Number(form.targetContributors),
       targetAmountBdt: Number(form.targetAmountBdt),
       targetMembers: Number(form.targetMembers),
@@ -119,22 +129,36 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
                   <Form.Control as="textarea" rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="List major areas covered by this zone..." />
                 </Form.Group>
               </Col>
+              <Col md={12}>
+                <Form.Label className="fw-semibold">Location (Division / District / Upazila)</Form.Label>
+                <LocationSelector
+                  value={locationValue}
+                  onChange={setLocationValue}
+                  showUnion={false}
+                  showCityCorporation={false}
+                  showZone={false}
+                  showWard={false}
+                  showAddressLine={false}
+                  locale="en"
+                />
+              </Col>
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>City <span className="text-danger">*</span></Form.Label>
-                  <Form.Control value={form.city} onChange={(e) => set('city', e.target.value)} required />
+                  <Form.Label>City (text fallback) <span className="text-danger">*</span></Form.Label>
+                  <Form.Control value={form.city} onChange={(e) => set('city', e.target.value)} required placeholder="e.g. Dhaka" />
+                  <Form.Text className="text-muted">Keep for legacy display</Form.Text>
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>District <span className="text-danger">*</span></Form.Label>
-                  <Form.Control value={form.district} onChange={(e) => set('district', e.target.value)} required />
+                  <Form.Label>District (text fallback) <span className="text-danger">*</span></Form.Label>
+                  <Form.Control value={form.district} onChange={(e) => set('district', e.target.value)} required placeholder="e.g. Dhaka District" />
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>Division <span className="text-danger">*</span></Form.Label>
-                  <Form.Control value={form.division} onChange={(e) => set('division', e.target.value)} required />
+                  <Form.Label>Division (text fallback) <span className="text-danger">*</span></Form.Label>
+                  <Form.Control value={form.division} onChange={(e) => set('division', e.target.value)} required placeholder="e.g. Dhaka" />
                 </Form.Group>
               </Col>
             </Row>

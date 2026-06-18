@@ -8,6 +8,9 @@ export interface ZoneCreatePayload {
   city: string
   district: string
   division: string
+  divisionId?: string | null
+  districtId?: string | null
+  upazilaId?: string | null
   targetContributors: number
   targetAmountBdt: number
   targetMembers?: number
