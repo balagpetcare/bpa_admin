@@ -360,6 +360,10 @@ export type PetGender = 'male' | 'female' | 'unknown'
 export interface PetOwner {
   id: string; userId: string | null; name: string; email: string | null; phone: string | null
   address: string | null; createdAt: string; _count?: { pets: number }
+  // Location tree FK fields (optional — populated when set)
+  divisionId?: string | null; districtId?: string | null; upazilaId?: string | null
+  unionId?: string | null; cityCorporationId?: string | null
+  cityZoneId?: string | null; wardId?: string | null; addressLine?: string | null
 }
 
 export interface Pet {

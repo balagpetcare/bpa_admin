@@ -6,6 +6,7 @@ import { Icon } from '@iconify/react'
 import PageHeader from '@/components/ui/PageHeader'
 import ApiErrorAlert from '@/components/ui/ApiErrorAlert'
 import LoadingOverlay from '@/components/ui/LoadingOverlay'
+import LocationSelector, { type LocationValue } from '@/components/location/LocationSelector'
 import { useApi, useApiMutation } from '@/hooks/useApi'
 import { usePermission } from '@/hooks/usePermission'
 import { petsApi } from '@/lib/api/pets.api'
@@ -26,6 +27,7 @@ export default function PetsContent() {
   const [editingOwner, setEditingOwner] = useState<PetOwner | null>(null)
   const [editingPet, setEditingPet] = useState<Pet | null>(null)
   const [ownerForm, setOwnerForm] = useState({ name: '', email: '', phone: '', address: '' })
+  const [ownerLocationValue, setOwnerLocationValue] = useState<LocationValue>({})
   const [petForm, setPetForm] = useState({ petOwnerId: '', name: '', species: 'dog' as PetType, breed: '', gender: 'unknown' as PetGender, dateOfBirth: '', weightKg: '', microchipNumber: '', notes: '' })
   const { mutate, loading: saving } = useApiMutation<unknown, unknown>()
 
@@ -39,14 +41,33 @@ export default function PetsContent() {
 
   function switchTab(t: Tab) { setTab(t); setPage(1); setSearch('') }
 
-  function openCreateOwner() { setEditingOwner(null); setOwnerForm({ name: '', email: '', phone: '', address: '' }); setShowModal(true) }
-  function openEditOwner(o: PetOwner) { setEditingOwner(o); setOwnerForm({ name: o.name, email: o.email ?? '', phone: o.phone ?? '', address: o.address ?? '' }); setShowModal(true) }
+  function openCreateOwner() { setEditingOwner(null); setOwnerForm({ name: '', email: '', phone: '', address: '' }); setOwnerLocationValue({}); setShowModal(true) }
+  function openEditOwner(o: PetOwner) {
+    setEditingOwner(o)
+    setOwnerForm({ name: o.name, email: o.email ?? '', phone: o.phone ?? '', address: o.address ?? '' })
+    setOwnerLocationValue({
+      divisionId: o.divisionId ?? undefined,
+      districtId: o.districtId ?? undefined,
+      upazilaId: o.upazilaId ?? undefined,
+      unionId: o.unionId ?? undefined,
+      cityCorporationId: o.cityCorporationId ?? undefined,
+      cityZoneId: o.cityZoneId ?? undefined,
+      wardId: o.wardId ?? undefined,
+    })
+    setShowModal(true)
+  }
   function openCreatePet() { setEditingPet(null); setPetForm({ petOwnerId: '', name: '', species: 'dog', breed: '', gender: 'unknown', dateOfBirth: '', weightKg: '', microchipNumber: '', notes: '' }); setShowModal(true) }
   function openEditPet(p: Pet) { setEditingPet(p); setPetForm({ petOwnerId: p.petOwnerId, name: p.name, species: p.species, breed: p.breed ?? '', gender: p.gender, dateOfBirth: p.dateOfBirth ?? '', weightKg: p.weightKg ?? '', microchipNumber: p.microchipNumber ?? '', notes: p.notes ?? '' }); setShowModal(true) }
 
   async function handleSaveOwner() {
     if (!ownerForm.name.trim()) return
-    const dto = { name: ownerForm.name, email: ownerForm.email || undefined, phone: ownerForm.phone || undefined, address: ownerForm.address || undefined }
+    const dto = {
+      name: ownerForm.name,
+      email: ownerForm.email || undefined,
+      phone: ownerForm.phone || undefined,
+      address: ownerForm.address || undefined,
+      ...ownerLocationValue,
+    }
     if (editingOwner) { await mutate(() => petsApi.updateOwner(editingOwner.id, dto), undefined) }
     else { await mutate(() => petsApi.createOwner(dto), undefined) }
     setShowModal(false); rOwners()
@@ -186,6 +207,17 @@ export default function PetsContent() {
                   <Form.Control value={ownerForm[f]} onChange={(e) => setOwnerForm(o => ({ ...o, [f]: e.target.value }))} required={f === 'name'} />
                 </Form.Group>
               ))}
+              <Form.Label className="fw-semibold small mt-2">Location (Division / District / Upazila)</Form.Label>
+              <LocationSelector
+                value={ownerLocationValue}
+                onChange={setOwnerLocationValue}
+                showUnion={false}
+                showCityCorporation={false}
+                showZone={false}
+                showWard={false}
+                showAddressLine={false}
+                locale="en"
+              />
             </Form>
           </Modal.Body>
           <Modal.Footer>

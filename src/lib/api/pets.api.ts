@@ -17,9 +17,19 @@ export const petsApi = {
       params as Record<string, string | number | boolean | undefined>,
     ),
   getOwner: (id: string) => api.get<PetOwner>(`/admin/pets/owners/${id}`),
-  createOwner: (dto: { name: string; email?: string; phone?: string; address?: string }) =>
+  createOwner: (dto: {
+    name: string; email?: string; phone?: string; address?: string;
+    divisionId?: string; districtId?: string; upazilaId?: string;
+    unionId?: string; cityCorporationId?: string; cityZoneId?: string; wardId?: string;
+    addressLine?: string;
+  }) =>
     api.post<PetOwner>('/admin/pets/owners', dto),
-  updateOwner: (id: string, dto: Partial<{ name: string; email: string; phone: string; address: string }>) =>
+  updateOwner: (id: string, dto: Partial<{
+    name: string; email: string; phone: string; address: string;
+    divisionId: string | null; districtId: string | null; upazilaId: string | null;
+    unionId: string | null; cityCorporationId: string | null; cityZoneId: string | null;
+    wardId: string | null; addressLine: string | null;
+  }>) =>
     api.patch<PetOwner>(`/admin/pets/owners/${id}`, dto),
   deleteOwner: (id: string) => api.delete<void>(`/admin/pets/owners/${id}`),
 
