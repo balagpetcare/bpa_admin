@@ -439,6 +439,12 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       url: '/logs/sms',
     },
     {
+      key: 'logs-sms-failed',
+      label: 'Failed SMS',
+      icon: 'solar:danger-bold-duotone',
+      url: '/logs/sms?status=failed&isOtp=false',
+    },
+    {
       key: 'logs-email',
       label: 'Email Logs',
       icon: 'solar:letter-opened-bold-duotone',

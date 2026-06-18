@@ -267,20 +267,48 @@ export interface Payment {
 
 // ─── SMS Logs ──────────────────────────────────────────────────────
 
-export type SmsStatus = 'queued' | 'sent' | 'delivered' | 'failed' | 'undelivered'
+export type SmsStatus = 'queued' | 'sending' | 'sent' | 'delivered' | 'failed' | 'undelivered' | 'cancelled' | 'skipped'
+
+export interface SmsAttempt {
+  id: string
+  attemptNumber: number
+  status: SmsStatus
+  provider: string
+  providerMessageId: string | null
+  errorCode: string | null
+  errorMessage: string | null
+  attemptedBy: string | null
+  attemptedAt: string
+}
 
 export interface SmsLog {
   id: string
   to: string
-  body: string
+  recipientMasked: string | null
+  body: string | null
+  messageType: string | null
+  module: string | null
+  entityType: string | null
+  entityId: string | null
+  reference: string | null
   status: SmsStatus
   provider: string
   providerRef: string | null
   failureReason: string | null
+  failureDetail: string | null
   payload?: Record<string, unknown> | null
+  attemptCount: number
+  maxAttempts: number
+  lastAttemptAt: string | null
   sentAt: string | null
+  failedAt: string | null
+  lastError: string | null
+  isOtp: boolean
+  idempotencyKey: string | null
+  resentById: string | null
   createdAt: string
   updatedAt: string
+  attempts?: SmsAttempt[]
 }
 
 // ─── Email Logs ─────────────────────────────────────────────────────
