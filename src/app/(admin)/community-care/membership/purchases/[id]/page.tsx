@@ -4,12 +4,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { Card, Row, Col, Badge, Spinner, Button, ListGroup, Modal, Form, Alert } from 'react-bootstrap';
 import { communityMembershipApi } from '@/lib/api/community-membership.api';
+import { smsLogsApi } from '@/lib/api/sms-logs.api';
 import PageHeader from '@/components/ui/PageHeader';
 
 export default function PurchaseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [purchase, setPurchase] = useState<any>(null);
   const [card, setCard] = useState<any>(null);
+  const [smsLogs, setSmsLogs] = useState<any[]>([]);
+  const [showPayload, setShowPayload] = useState(false);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -23,9 +26,18 @@ export default function PurchaseDetailPage() {
         communityMembershipApi.getPurchase(id),
         communityMembershipApi.getPurchaseCard(id).catch(() => null),
       ]);
-      // api.get() unwraps json.data — pRes is the purchase object directly
       setPurchase(pRes);
       setCard(cRes);
+
+      if (pRes?.memberMobile) {
+        const smsRes = await smsLogsApi.list({ search: pRes.memberMobile }).catch(() => null);
+        if (smsRes?.data) {
+          const filtered = smsRes.data.filter((sms: any) =>
+            sms.body.includes(pRes.id) || (cRes?.cardNumber && sms.body.includes(cRes.cardNumber))
+          );
+          setSmsLogs(filtered);
+        }
+      }
     } catch { /* noop */ }
     finally { setLoading(false); }
   }, [id]);
@@ -69,6 +81,9 @@ export default function PurchaseDetailPage() {
   const apiOrigin = (process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1').replace('/api/v1', '');
   const receiptPdfUrl = `${apiOrigin}/api/v1/public/memberships/${purchase.id}/receipt.pdf`;
   const cardPdfUrl = `${apiOrigin}/api/v1/public/memberships/${purchase.id}/card.pdf`;
+  const guidePdfUrl = `${apiOrigin}/api/v1/public/memberships/${purchase.id}/guide.pdf`;
+  const welcomePackPdfUrl = `${apiOrigin}/api/v1/public/memberships/${purchase.id}/welcome-pack.pdf`;
+  const verificationUrl = card?.qrToken ? `${apiOrigin.replace(':4000', ':3000')}/verify/membership-card/${card.qrToken}` : null;
 
   return (
     <>
@@ -157,12 +172,25 @@ export default function PurchaseDetailPage() {
                 <ListGroup.Item><strong>Card Number:</strong> <code>{card.cardNumber}</code></ListGroup.Item>
                 <ListGroup.Item><strong>Status:</strong> <Badge bg={card.status === 'active' ? 'success' : 'secondary'}>{card.status}</Badge></ListGroup.Item>
                 <ListGroup.Item><strong>QR Token:</strong> <code className="text-xs">{card.qrToken}</code></ListGroup.Item>
+                {verificationUrl && (
+                  <ListGroup.Item>
+                    <strong>Verification Link:</strong>{' '}
+                    <a href={verificationUrl} target="_blank" rel="noopener noreferrer" className="text-xs break-all">
+                      {verificationUrl}
+                    </a>
+                  </ListGroup.Item>
+                )}
                 <ListGroup.Item><strong>Download Token:</strong> {card.downloadToken ? <code>{card.downloadToken}</code> : '-'}</ListGroup.Item>
                 <ListGroup.Item><strong>PDF Generated:</strong> {card.pdfDocumentKey ? <Badge bg="success">Yes</Badge> : <Badge bg="secondary">No</Badge>}</ListGroup.Item>
                 {isPaid && (
-                  <ListGroup.Item className="d-flex gap-2 py-3">
-                    <a href={receiptPdfUrl} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">Download Receipt</a>
-                    <a href={cardPdfUrl} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">Download Card</a>
+                  <ListGroup.Item className="py-3">
+                    <strong>Downloads:</strong>
+                    <div className="d-flex flex-wrap gap-2 mt-2">
+                      <a href={receiptPdfUrl} target="_blank" rel="noopener noreferrer" className="btn btn-xs btn-outline-primary">Receipt</a>
+                      <a href={cardPdfUrl} target="_blank" rel="noopener noreferrer" className="btn btn-xs btn-outline-primary">Card</a>
+                      <a href={guidePdfUrl} target="_blank" rel="noopener noreferrer" className="btn btn-xs btn-outline-primary">Guide</a>
+                      <a href={welcomePackPdfUrl} target="_blank" rel="noopener noreferrer" className="btn btn-xs btn-outline-primary">Welcome Pack</a>
+                    </div>
                   </ListGroup.Item>
                 )}
               </ListGroup>
@@ -173,15 +201,65 @@ export default function PurchaseDetailPage() {
         {purchase.payment?.payload && (
           <Col md={12} className="mt-3">
             <Card>
-              <Card.Header><h5 className="mb-0 text-sm">Raw Gateway Payload</h5></Card.Header>
-              <Card.Body>
-                <pre className="mb-0 text-xs" style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                  {JSON.stringify(purchase.payment.payload, null, 2)}
-                </pre>
-              </Card.Body>
+              <Card.Header className="d-flex justify-content-between align-items-center py-2">
+                <h5 className="mb-0 text-sm">Raw Gateway Payload</h5>
+                <Button size="sm" variant="outline-secondary" onClick={() => setShowPayload(!showPayload)}>
+                  {showPayload ? 'Hide Payload' : 'Show Payload'}
+                </Button>
+              </Card.Header>
+              {showPayload && (
+                <Card.Body>
+                  <pre className="mb-0 text-xs" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                    {JSON.stringify(purchase.payment.payload, null, 2)}
+                  </pre>
+                </Card.Body>
+              )}
             </Card>
           </Col>
         )}
+
+        <Col md={12} className="mt-3">
+          <Card>
+            <Card.Header>
+              <h5 className="mb-0">SMS Log / Confirmation Status</h5>
+            </Card.Header>
+            <Card.Body>
+              {smsLogs.length === 0 ? (
+                <p className="text-muted mb-0 small">No SMS records found for this membership purchase.</p>
+              ) : (
+                <div className="table-responsive">
+                  <table className="table table-sm table-bordered text-xs mb-0">
+                    <thead>
+                      <tr>
+                        <th>Recipient</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                        <th>Sent/Created At</th>
+                        <th>Failure Reason</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {smsLogs.map((log: any) => (
+                        <tr key={log.id}>
+                          <td>{log.to}</td>
+                          <td>{log.body}</td>
+                          <td>
+                            <Badge bg={
+                              log.status === 'sent' || log.status === 'delivered' ? 'success' :
+                              log.status === 'queued' ? 'primary' : 'danger'
+                            }>{log.status}</Badge>
+                          </td>
+                          <td>{log.sentAt ? new Date(log.sentAt).toLocaleString() : new Date(log.createdAt).toLocaleString()}</td>
+                          <td className="text-danger">{log.failureReason || '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
       </Row>
 
       <Modal show={showConfirm} onHide={() => setShowConfirm(false)}>
