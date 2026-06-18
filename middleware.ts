@@ -45,6 +45,8 @@ export const config = {
     '/doctors/:path*',
     '/pets/:path*',
     '/locations/:path*',
+    // Donations
+    '/donations/:path*',
     // Community Care Fund
     '/community-care/:path*',
     // Payments & Logs

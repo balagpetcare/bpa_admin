@@ -303,6 +303,73 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       url: '/community-care/sync-logs',
     },
 
+    // ─── DONATIONS ────────────────────────────────────────────────
+    {
+      key: 'donations-title',
+      label: 'DONATIONS',
+      isTitle: true,
+    },
+    {
+      key: 'donations-dashboard',
+      label: 'Donation Dashboard',
+      icon: 'solar:hand-money-bold-duotone',
+      url: '/donations',
+    },
+    {
+      key: 'donations-list',
+      label: 'All Donations',
+      icon: 'solar:dollar-minimalistic-bold-duotone',
+      url: '/donations/list',
+    },
+    {
+      key: 'donation-campaigns',
+      label: 'Campaigns',
+      icon: 'solar:target-bold-duotone',
+      url: '/donations/campaigns',
+    },
+    {
+      key: 'donation-purposes',
+      label: 'Purposes',
+      icon: 'solar:heart-bold-duotone',
+      url: '/donations/purposes',
+    },
+    {
+      key: 'donation-qr-codes',
+      label: 'QR Codes',
+      icon: 'solar:qr-code-bold-duotone',
+      url: '/donations/qr-codes',
+    },
+    {
+      key: 'donation-impact-stories',
+      label: 'Impact Stories',
+      icon: 'solar:star-bold-duotone',
+      url: '/donations/impact-stories',
+    },
+    {
+      key: 'donation-donor-wall',
+      label: 'Donor Wall',
+      icon: 'solar:users-group-two-rounded-bold-duotone',
+      url: '/donations/list?tab=donor-wall',
+    },
+    {
+      key: 'donation-transparency',
+      label: 'Transparency Reports',
+      icon: 'solar:eye-bold-duotone',
+      url: '/donations/transparency-reports',
+    },
+    {
+      key: 'donation-page-cms',
+      label: 'Donation Page CMS',
+      icon: 'solar:pen-bold-duotone',
+      url: '/donations/page-cms',
+    },
+    {
+      key: 'donation-settings',
+      label: 'Settings',
+      icon: 'solar:settings-bold-duotone',
+      url: '/donations/page-cms#settings',
+    },
+
     // ─── COMMUNITY CARE — ENTERPRISE CONTENT ─────────────────────
     {
       key: 'community-care-enterprise',
