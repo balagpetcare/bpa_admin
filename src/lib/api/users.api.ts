@@ -19,6 +19,7 @@ export interface CreateUserDto {
 export interface UpdateUserDto {
   name?: string
   email?: string
+  password?: string
   phone?: string
   isActive?: boolean
   roleIds?: string[]

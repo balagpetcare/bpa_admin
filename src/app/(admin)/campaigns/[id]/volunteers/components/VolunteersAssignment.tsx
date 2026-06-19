@@ -13,6 +13,8 @@ import { usersApi } from '@/lib/api/users.api'
 import type { ApiError } from '@/lib/api'
 import type { CampaignVolunteer, AdminUser } from '@/types/bpa.types'
 
+const ADMIN_USERS_PAGE_SIZE = 100
+
 export default function VolunteersAssignment({ campaignId }: { campaignId: string }) {
   const { can } = usePermission()
   const [showModal, setShowModal] = useState(false)
@@ -20,7 +22,7 @@ export default function VolunteersAssignment({ campaignId }: { campaignId: strin
   const { mutate, loading: saving } = useApiMutation<unknown, unknown>()
 
   const assignedFn = useCallback(() => campaignsApi.listVolunteers(campaignId), [campaignId])
-  const usersFn = useCallback(() => usersApi.list({ limit: 200 }), [])
+  const usersFn = useCallback(() => usersApi.list({ limit: ADMIN_USERS_PAGE_SIZE }), [])
   const { data: assigned, loading, error, refetch } = useApi(assignedFn, [campaignId])
   const { data: usersData } = useApi(usersFn, [])
 

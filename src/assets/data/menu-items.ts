@@ -1,7 +1,7 @@
 import { MenuItemType } from '@/types/menu'
 
 export interface MenuBadges {
-  unreadContacts?: number
+  newInquiries?: number
   pendingVolunteers?: number
 }
 
@@ -26,54 +26,20 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       url: '/analytics',
     },
 
-    // ─── CONTENT ──────────────────────────────────────────────────
+    // ─── COMMUNICATIONS ───────────────────────────────────────────
     {
-      key: 'content',
-      label: 'CONTENT',
+      key: 'communications',
+      label: 'COMMUNICATIONS',
       isTitle: true,
     },
     {
-      key: 'cms-homepage',
-      label: 'Homepage CMS',
-      icon: 'solar:home-angle-bold-duotone',
-      url: '/cms/homepage',
-    },
-    {
-      key: 'cms-news',
-      label: 'News CMS',
-      icon: 'solar:document-text-bold-duotone',
-      url: '/cms/news',
-    },
-    {
-      key: 'cms-events',
-      label: 'Event CMS',
-      icon: 'solar:calendar-bold-duotone',
-      url: '/cms/events',
-    },
-    {
-      key: 'cms-committee',
-      label: 'Committee CMS',
-      icon: 'solar:users-group-two-rounded-bold-duotone',
-      url: '/cms/committee',
-    },
-    {
-      key: 'cms-hero-slider',
-      label: 'Hero Slider CMS',
-      icon: 'solar:slider-horizontal-bold-duotone',
-      url: '/cms/hero-slider',
-    },
-
-    // ─── COMMUNITY ────────────────────────────────────────────────
-    {
-      key: 'community',
-      label: 'COMMUNITY',
-      isTitle: true,
-    },
-    {
-      key: 'members',
-      label: 'Members',
-      icon: 'solar:card-bold-duotone',
-      url: '/community-care/membership',
+      key: 'contact-inquiries',
+      label: 'Contact Inquiries',
+      icon: 'solar:inbox-unread-bold-duotone',
+      url: '/contact-inquiries',
+      badge: badges.newInquiries
+        ? { text: String(badges.newInquiries), variant: 'danger' }
+        : undefined,
     },
     {
       key: 'volunteers',
@@ -85,24 +51,14 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
         : undefined,
     },
     {
-      key: 'contacts',
-      label: 'Contacts',
-      icon: 'solar:letter-bold-duotone',
-      url: '/contacts',
-      badge: badges.unreadContacts
-        ? { text: String(badges.unreadContacts), variant: 'danger' }
-        : undefined,
-    },
-
-    // ─── MAIL SYSTEM ──────────────────────────────────────────────
-    {
-      key: 'mail-system-title',
-      label: 'MAIL SYSTEM',
-      isTitle: true,
+      key: 'notifications',
+      label: 'Notifications',
+      icon: 'solar:bell-bing-bold-duotone',
+      url: '/notifications',
     },
     {
       key: 'mail-inbox',
-      label: 'Mailbox / Inbox',
+      label: 'Mail Inbox',
       icon: 'solar:letter-opened-bold-duotone',
       url: '/mail/inbox',
     },
@@ -113,48 +69,16 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       url: '/mail/compose',
     },
     {
-      key: 'mail-accounts',
-      label: 'Mail Accounts',
-      icon: 'solar:user-bold-duotone',
-      url: '/mail/accounts',
-    },
-
-    // ─── ADMINISTRATION ───────────────────────────────────────────
-    {
-      key: 'administration',
-      label: 'ADMINISTRATION',
-      isTitle: true,
+      key: 'sms-logs',
+      label: 'SMS Logs',
+      icon: 'solar:phone-bold-duotone',
+      url: '/sms-logs',
     },
     {
-      key: 'users',
-      label: 'Users',
-      icon: 'solar:user-bold-duotone',
-      url: '/users',
-    },
-    {
-      key: 'roles',
-      label: 'Roles & Permissions',
-      icon: 'solar:shield-bold-duotone',
-      url: '/roles',
-    },
-
-    // ─── ASSETS & CONFIG ──────────────────────────────────────────
-    {
-      key: 'assets',
-      label: 'ASSETS & CONFIG',
-      isTitle: true,
-    },
-    {
-      key: 'media',
-      label: 'Media Library',
-      icon: 'solar:gallery-bold-duotone',
-      url: '/media',
-    },
-    {
-      key: 'seo',
-      label: 'SEO Management',
-      icon: 'solar:chart-bold-duotone',
-      url: '/seo',
+      key: 'email-logs',
+      label: 'Email Logs',
+      icon: 'solar:letter-bold-duotone',
+      url: '/email-logs',
     },
 
     // ─── CAMPAIGNS ────────────────────────────────────────────────
@@ -165,9 +89,21 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
     },
     {
       key: 'campaigns',
-      label: 'Campaigns',
+      label: 'Vaccination Campaigns',
       icon: 'solar:syringe-bold-duotone',
       url: '/campaigns',
+    },
+    {
+      key: 'my-campaigns',
+      label: 'My Assigned Campaigns',
+      icon: 'solar:user-check-bold-duotone',
+      url: '/my-campaigns',
+    },
+    {
+      key: 'campaign-analytics',
+      label: 'Campaign Analytics',
+      icon: 'solar:chart-2-bold-duotone',
+      url: '/analytics/campaigns',
     },
     {
       key: 'doctors',
@@ -188,9 +124,9 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       url: '/locations',
     },
 
-    // ─── COMMUNITY CARE MEMBERSHIP ────────────────────────────────
+    // ─── MEMBERSHIP ───────────────────────────────────────────────
     {
-      key: 'community-care-membership-title',
+      key: 'membership-title',
       label: 'MEMBERSHIP',
       isTitle: true,
     },
@@ -207,18 +143,6 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       url: '/community-care/membership/tiers',
     },
     {
-      key: 'membership-services',
-      label: 'Services & Discounts',
-      icon: 'solar:test-tube-bold-duotone',
-      url: '/community-care/membership/services',
-    },
-    {
-      key: 'membership-benefits',
-      label: 'Benefits',
-      icon: 'solar:gift-bold-duotone',
-      url: '/community-care/membership/benefits',
-    },
-    {
       key: 'membership-purchases',
       label: 'Purchases',
       icon: 'solar:cart-bold-duotone',
@@ -229,6 +153,18 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       label: 'Upgrade Requests',
       icon: 'solar:arrow-up-bold-duotone',
       url: '/community-care/membership/upgrades',
+    },
+    {
+      key: 'membership-services',
+      label: 'Services & Discounts',
+      icon: 'solar:test-tube-bold-duotone',
+      url: '/community-care/membership/services',
+    },
+    {
+      key: 'membership-benefits',
+      label: 'Benefits',
+      icon: 'solar:gift-bold-duotone',
+      url: '/community-care/membership/benefits',
     },
     {
       key: 'membership-documents',
@@ -251,7 +187,7 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
     },
     {
       key: 'community-care-dashboard',
-      label: 'Care Fund Dashboard',
+      label: 'Fund Dashboard',
       icon: 'solar:hand-money-bold-duotone',
       url: '/community-care/dashboard',
     },
@@ -287,7 +223,7 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
     },
     {
       key: 'card-verification-logs',
-      label: 'Verif. Logs',
+      label: 'Verification Logs',
       icon: 'solar:shield-check-bold-duotone',
       url: '/community-care/verification-logs',
     },
@@ -316,6 +252,12 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       url: '/community-care/transparency',
     },
     {
+      key: 'transparency-allocation',
+      label: 'Fund Allocation',
+      icon: 'solar:pie-chart-bold-duotone',
+      url: '/community-care/transparency-allocation',
+    },
+    {
       key: 'pet-smart-solution',
       label: 'Pet Smart Solution',
       icon: 'solar:settings-bold-duotone',
@@ -328,76 +270,9 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       url: '/community-care/sync-logs',
     },
 
-    // ─── DONATIONS ────────────────────────────────────────────────
+    // ─── ENTERPRISE CONTENT ───────────────────────────────────────
     {
-      key: 'donations-title',
-      label: 'DONATIONS',
-      isTitle: true,
-    },
-    {
-      key: 'donations-dashboard',
-      label: 'Donation Dashboard',
-      icon: 'solar:hand-money-bold-duotone',
-      url: '/donations',
-    },
-    {
-      key: 'donations-list',
-      label: 'All Donations',
-      icon: 'solar:dollar-minimalistic-bold-duotone',
-      url: '/donations/list',
-    },
-    {
-      key: 'donation-campaigns',
-      label: 'Campaigns',
-      icon: 'solar:target-bold-duotone',
-      url: '/donations/campaigns',
-    },
-    {
-      key: 'donation-purposes',
-      label: 'Purposes',
-      icon: 'solar:heart-bold-duotone',
-      url: '/donations/purposes',
-    },
-    {
-      key: 'donation-qr-codes',
-      label: 'QR Codes',
-      icon: 'solar:qr-code-bold-duotone',
-      url: '/donations/qr-codes',
-    },
-    {
-      key: 'donation-impact-stories',
-      label: 'Impact Stories',
-      icon: 'solar:star-bold-duotone',
-      url: '/donations/impact-stories',
-    },
-    {
-      key: 'donation-donor-wall',
-      label: 'Donor Wall',
-      icon: 'solar:users-group-two-rounded-bold-duotone',
-      url: '/donations/list?tab=donor-wall',
-    },
-    {
-      key: 'donation-transparency',
-      label: 'Transparency Reports',
-      icon: 'solar:eye-bold-duotone',
-      url: '/donations/transparency-reports',
-    },
-    {
-      key: 'donation-page-cms',
-      label: 'Donation Page CMS',
-      icon: 'solar:pen-bold-duotone',
-      url: '/donations/page-cms',
-    },
-    {
-      key: 'donation-settings',
-      label: 'Settings',
-      icon: 'solar:settings-bold-duotone',
-      url: '/donations/page-cms#settings',
-    },
-
-    // ─── COMMUNITY CARE — ENTERPRISE CONTENT ─────────────────────
-    {
-      key: 'community-care-enterprise',
+      key: 'enterprise-content',
       label: 'ENTERPRISE CONTENT',
       isTitle: true,
     },
@@ -425,17 +300,177 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       icon: 'solar:map-arrow-right-bold-duotone',
       url: '/community-care/roadmap',
     },
+
+    // ─── DONATIONS ────────────────────────────────────────────────
     {
-      key: 'transparency-allocation',
-      label: 'Fund Allocation',
-      icon: 'solar:pie-chart-bold-duotone',
-      url: '/community-care/transparency-allocation',
+      key: 'donations-title',
+      label: 'DONATIONS',
+      isTitle: true,
+    },
+    {
+      key: 'donations-dashboard',
+      label: 'Donation Dashboard',
+      icon: 'solar:hand-money-bold-duotone',
+      url: '/donations',
+    },
+    {
+      key: 'donations-list',
+      label: 'All Donations',
+      icon: 'solar:dollar-minimalistic-bold-duotone',
+      url: '/donations/list',
+    },
+    {
+      key: 'donation-campaigns',
+      label: 'Donation Campaigns',
+      icon: 'solar:target-bold-duotone',
+      url: '/donations/campaigns',
+    },
+    {
+      key: 'donation-purposes',
+      label: 'Purposes',
+      icon: 'solar:heart-bold-duotone',
+      url: '/donations/purposes',
+    },
+    {
+      key: 'donation-qr-codes',
+      label: 'QR Codes',
+      icon: 'solar:qr-code-bold-duotone',
+      url: '/donations/qr-codes',
+    },
+    {
+      key: 'donation-impact-stories',
+      label: 'Impact Stories',
+      icon: 'solar:star-bold-duotone',
+      url: '/donations/impact-stories',
+    },
+    {
+      key: 'donation-transparency',
+      label: 'Transparency Reports',
+      icon: 'solar:eye-bold-duotone',
+      url: '/donations/transparency-reports',
+    },
+    {
+      key: 'donation-page-cms',
+      label: 'Page CMS',
+      icon: 'solar:pen-bold-duotone',
+      url: '/donations/page-cms',
     },
 
-    // ─── SETTINGS ─────────────────────────────────────────────────
+    // ─── CONTENT ──────────────────────────────────────────────────
     {
-      key: 'settings-title',
-      label: 'SETTINGS',
+      key: 'content',
+      label: 'CONTENT',
+      isTitle: true,
+    },
+    {
+      key: 'cms-homepage',
+      label: 'Homepage',
+      icon: 'solar:home-angle-bold-duotone',
+      url: '/cms/homepage',
+    },
+    {
+      key: 'cms-news',
+      label: 'News',
+      icon: 'solar:document-text-bold-duotone',
+      url: '/cms/news',
+    },
+    {
+      key: 'cms-events',
+      label: 'Events',
+      icon: 'solar:calendar-bold-duotone',
+      url: '/cms/events',
+    },
+    {
+      key: 'cms-committee',
+      label: 'Committee',
+      icon: 'solar:users-group-two-rounded-bold-duotone',
+      url: '/cms/committee',
+    },
+    {
+      key: 'cms-hero-slider',
+      label: 'Hero Slider',
+      icon: 'solar:slider-horizontal-bold-duotone',
+      url: '/cms/hero-slider',
+    },
+
+    // ─── CONTENT HUB ──────────────────────────────────────────────
+    {
+      key: 'content-hub-title',
+      label: 'CONTENT HUB',
+      isTitle: true,
+    },
+    {
+      key: 'content-hub-videos',
+      label: 'Videos',
+      icon: 'solar:videocamera-record-bold-duotone',
+      url: '/content-hub/videos',
+    },
+    {
+      key: 'content-hub-community',
+      label: 'Community Posts',
+      icon: 'solar:document-text-bold-duotone',
+      url: '/content-hub/community',
+    },
+    {
+      key: 'content-hub-comments',
+      label: 'Comments',
+      icon: 'solar:chat-round-line-bold-duotone',
+      url: '/content-hub/comments',
+    },
+    {
+      key: 'content-hub-reports',
+      label: 'Content Reports',
+      icon: 'solar:danger-bold-duotone',
+      url: '/content-hub/reports',
+    },
+    {
+      key: 'content-hub-categories',
+      label: 'Categories',
+      icon: 'solar:folder-bold-duotone',
+      url: '/content-hub/categories',
+    },
+    {
+      key: 'content-hub-settings',
+      label: 'Settings',
+      icon: 'solar:settings-bold-duotone',
+      url: '/content-hub/settings',
+    },
+
+    // ─── USERS & ACCESS ───────────────────────────────────────────
+    {
+      key: 'users-access',
+      label: 'USERS & ACCESS',
+      isTitle: true,
+    },
+    {
+      key: 'users',
+      label: 'Users',
+      icon: 'solar:user-bold-duotone',
+      url: '/users',
+    },
+    {
+      key: 'roles',
+      label: 'Roles & Permissions',
+      icon: 'solar:shield-bold-duotone',
+      url: '/roles',
+    },
+    {
+      key: 'permissions',
+      label: 'Permission Details',
+      icon: 'solar:key-bold-duotone',
+      url: '/permissions',
+    },
+    {
+      key: 'contacts-legacy',
+      label: 'Contacts (Legacy)',
+      icon: 'solar:users-group-rounded-bold-duotone',
+      url: '/contacts',
+    },
+
+    // ─── WEBSITE & SETTINGS ───────────────────────────────────────
+    {
+      key: 'website-settings',
+      label: 'WEBSITE & SETTINGS',
       isTitle: true,
     },
     {
@@ -445,10 +480,34 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       url: '/site-settings',
     },
     {
+      key: 'media',
+      label: 'Media Library',
+      icon: 'solar:gallery-bold-duotone',
+      url: '/media',
+    },
+    {
+      key: 'seo',
+      label: 'SEO Management',
+      icon: 'solar:chart-bold-duotone',
+      url: '/seo',
+    },
+    {
       key: 'email-layouts',
       label: 'Email Layouts',
       icon: 'solar:letter-bold-duotone',
       url: '/email-layouts',
+    },
+    {
+      key: 'mail-accounts',
+      label: 'Mail Accounts',
+      icon: 'solar:user-bold-duotone',
+      url: '/mail/accounts',
+    },
+    {
+      key: 'settings',
+      label: 'System Settings',
+      icon: 'solar:settings-minimalistic-bold-duotone',
+      url: '/settings',
     },
 
     // ─── PAYMENTS & LOGS ──────────────────────────────────────────
@@ -464,25 +523,14 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       url: '/payments',
     },
     {
-      key: 'logs-sms',
-      label: 'SMS Logs',
+      key: 'logs-sms-alt',
+      label: 'SMS Outbox',
       icon: 'solar:phone-bold-duotone',
       url: '/logs/sms',
-    },
-    {
-      key: 'logs-sms-failed',
-      label: 'Failed SMS',
-      icon: 'solar:danger-bold-duotone',
-      url: '/logs/sms?status=failed&isOtp=false',
-    },
-    {
-      key: 'logs-email',
-      label: 'Email Logs',
-      icon: 'solar:letter-opened-bold-duotone',
-      url: '/logs/email',
     },
   ]
 }
 
-// Static export for backward compatibility with template components that import MENU_ITEMS directly
+// Static export — only used by legacy code that imports MENU_ITEMS directly.
+// Dynamic badge counts require calling getMenuItems(badges) explicitly.
 export const MENU_ITEMS: MenuItemType[] = getMenuItems()

@@ -20,57 +20,65 @@ function buildKpis(s: DonationDashboardStats): KpiItem[] {
       icon: 'solar:dollar-minimalistic-bold-duotone',
       label: 'Total Raised',
       value: `৳${s.totalRaised.toLocaleString()}`,
+      sub: `Avg: ৳${Math.round(s.averageDonationAmount).toLocaleString()}`,
       variant: 'success',
       href: '/donations/list?status=success',
     },
     {
       icon: 'solar:sun-bold-duotone',
       label: 'Today Raised',
-      value: s.todayRaised != null ? `৳${s.todayRaised.toLocaleString()}` : '—',
+      value: `৳${s.todayRaised.toLocaleString()}`,
+      sub: `Week: ৳${(s.thisWeekAmount ?? 0).toLocaleString()}`,
       variant: 'primary',
-      href: '/donations/list',
+      href: '/donations/list?status=success',
     },
     {
       icon: 'solar:calendar-bold-duotone',
-      label: 'This Month',
-      value: s.monthRaised != null ? `৳${s.monthRaised.toLocaleString()}` : '—',
+      label: 'This Month Raised',
+      value: `৳${s.monthRaised.toLocaleString()}`,
+      sub: 'Audited monthly target',
       variant: 'info',
-      href: '/donations/list',
+      href: '/donations/list?status=success',
     },
     {
       icon: 'solar:users-group-two-rounded-bold-duotone',
-      label: 'Total Donors',
-      value: s.successfulDonations.toLocaleString(),
+      label: 'Unique Donors',
+      value: s.donorCount.toLocaleString(),
+      sub: `${s.recurringDonorCount} recurring supporters`,
       variant: 'warning',
       href: '/donations/list?status=success',
     },
     {
       icon: 'solar:check-circle-bold-duotone',
-      label: 'Paid Donations',
+      label: 'Completed Donations',
       value: s.successfulDonations.toLocaleString(),
+      sub: `Out of ${s.totalDonations} initiated`,
       variant: 'success',
       href: '/donations/list?status=success',
     },
     {
       icon: 'solar:clock-circle-bold-duotone',
-      label: 'Pending',
-      value: (s.pendingDonations ?? 0).toLocaleString(),
+      label: 'Pending Verification',
+      value: s.pendingDonations.toLocaleString(),
+      sub: `৳${s.pendingAmount.toLocaleString()} in review`,
       variant: 'warning',
-      href: '/donations/list?status=pending',
+      href: '/donations/list?status=pending_review',
     },
     {
       icon: 'solar:close-circle-bold-duotone',
-      label: 'Failed',
-      value: (s.failedDonations ?? 0).toLocaleString(),
+      label: 'Failed / Cancelled',
+      value: s.failedDonations.toLocaleString(),
+      sub: `৳${s.failedAmount.toLocaleString()} lost/abandoned`,
       variant: 'danger',
       href: '/donations/list?status=failed',
     },
     {
       icon: 'solar:qr-code-bold-duotone',
-      label: 'QR Donations',
-      value: (s.qrDonations ?? 0).toLocaleString(),
+      label: 'QR & Sources',
+      value: s.qrDonations.toLocaleString(),
+      sub: 'Mobile wallet & QR scans',
       variant: 'secondary',
-      href: '/donations/list?source=qr',
+      href: '/donations/list',
     },
   ]
 }
@@ -86,11 +94,11 @@ export default function DonationKpiCards({ stats, loading }: Props) {
       <Row className="g-3 mb-4">
         {Array.from({ length: 8 }).map((_, i) => (
           <Col key={i} xs={12} sm={6} xl={3}>
-            <Card className="h-100">
+            <Card className="h-100 border-0 shadow-sm">
               <Card.Body>
                 <Placeholder as="div" animation="glow">
-                  <Placeholder xs={8} size="lg" />
-                  <Placeholder xs={4} size="sm" className="mt-2" />
+                  <Placeholder xs={8} size="lg" className="mb-2" />
+                  <Placeholder xs={5} size="xs" />
                 </Placeholder>
               </Card.Body>
             </Card>
@@ -106,15 +114,16 @@ export default function DonationKpiCards({ stats, loading }: Props) {
     <Row className="g-3 mb-4">
       {kpis.map((k) => (
         <Col key={k.label} xs={12} sm={6} xl={3}>
-          <Card className="h-100 card-hover">
+          <Card className="h-100 border-0 shadow-sm card-hover">
             <Card.Body>
               <div className="d-flex align-items-center gap-3">
-                <div className={`avatar-md bg-soft-${k.variant} rounded flex-centered flex-shrink-0`}>
-                  <Icon icon={k.icon} className={`fs-24 text-${k.variant}`} />
+                <div className={`avatar-md bg-soft-${k.variant} rounded flex-centered flex-shrink-0`} style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon icon={k.icon} className={`fs-24 text-${k.variant}`} style={{ fontSize: '24px' }} />
                 </div>
                 <div className="overflow-hidden">
-                  <p className="text-muted mb-0 small text-truncate">{k.label}</p>
-                  <h3 className="mb-0 text-dark">{k.value}</h3>
+                  <p className="text-muted mb-0 small text-truncate fw-semibold">{k.label}</p>
+                  <h4 className="mb-0 text-dark fw-bold">{k.value}</h4>
+                  {k.sub && <span className="text-muted fs-11 text-truncate d-block">{k.sub}</span>}
                 </div>
               </div>
               <Link href={k.href} className="stretched-link" aria-label={k.label} />

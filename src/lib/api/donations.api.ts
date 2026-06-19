@@ -163,15 +163,32 @@ export interface DonationDashboardStats {
   successfulDonations: number;
   totalRaised: number;
   activeCampaigns: number;
-  todayRaised?: number;
-  monthRaised?: number;
-  pendingDonations?: number;
-  failedDonations?: number;
-  qrDonations?: number;
-  purposeBreakdown?: { titleEn: string; total: number; count: number }[];
-  campaignBreakdown?: { titleEn: string; total: number; count: number }[];
-  monthlyTrend?: { month: string; total: number; count: number }[];
-  countryBreakdown?: { country: string; count: number }[];
+  todayRaised: number;
+  monthRaised: number;
+  thisWeekAmount?: number;
+  pendingDonations: number;
+  failedDonations: number;
+  qrDonations: number;
+  pendingAmount: number;
+  completedAmount: number;
+  failedAmount: number;
+  refundedAmount: number;
+  donorCount: number;
+  recurringDonorCount: number;
+  averageDonationAmount: number;
+  purposeBreakdown: { titleEn: string; total: number; count: number }[];
+  campaignBreakdown: { titleEn: string; total: number; count: number }[];
+  countryBreakdown: { country: string; count: number }[];
+  donationStatusBreakdown?: { status: string; count: number; amount: number }[];
+  paymentMethodBreakdown?: { method: string; count: number; amount: number }[];
+  monthlyTrend: { month: string; total: number; count: number }[];
+  recentDonations?: Donation[];
+  transparencySummary?: {
+    impactStoriesCount: number;
+    transparencyReportsCount: number;
+    totalReceived: number;
+    totalUsed: number;
+  };
 }
 
 export interface PaginationMeta {
@@ -186,8 +203,7 @@ export interface PaginationMeta {
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
 export async function getDashboardStats() {
-  const res = await apiClient<{ data: DonationDashboardStats }>('/admin/donations/dashboard-stats');
-  return (res as any).data as DonationDashboardStats;
+  return apiClient<DonationDashboardStats>('/admin/donations/dashboard-stats');
 }
 
 // ─── Donations ────────────────────────────────────────────────────────────────

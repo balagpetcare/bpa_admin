@@ -71,5 +71,9 @@ export function useApiMutation<TData, TArgs = void>() {
     }
   }, [])
 
-  return { mutate, loading, error, clearError: () => setError(null) }
+  const clearError = useCallback(() => {
+    setError(null)
+  }, [])
+
+  return { mutate, loading, error, clearError }
 }

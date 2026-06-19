@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Card, Button, Table, Modal, Form, InputGroup, Row, Col } from 'react-bootstrap'
+import { Card, Button, Table, Modal, Form, InputGroup, Row, Col, Alert } from 'react-bootstrap'
 import { Icon } from '@iconify/react'
 import PageHeader from '@/components/ui/PageHeader'
 import ApiErrorAlert from '@/components/ui/ApiErrorAlert'
@@ -18,40 +18,106 @@ export default function DoctorsContent() {
   const { can } = usePermission()
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
+  const [isActiveFilter, setIsActiveFilter] = useState<'true' | 'false' | 'all'>('true')
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState<Doctor | null>(null)
   const [form, setForm] = useState(EMPTY_FORM)
-  const { mutate, loading: saving } = useApiMutation<unknown, unknown>()
+  const [successMsg, setSuccessMsg] = useState<string | null>(null)
+  const { mutate, loading: saving, error: mutationError, clearError } = useApiMutation<unknown, unknown>()
 
-  const fetchFn = useCallback(() => doctorsApi.list({ page, limit: 20, search: search || undefined }), [page, search])
-  const { data, loading, error, refetch } = useApi(fetchFn, [page, search])
-  const doctors = data?.data ?? []
-  const meta = data?.meta ?? null
+  const fetchFn = useCallback(() => doctorsApi.list({
+    page,
+    limit: 20,
+    search: search || undefined,
+    isActive: isActiveFilter
+  }), [page, search, isActiveFilter])
+  
+  const { data, loading, error, refetch } = useApi(fetchFn, [page, search, isActiveFilter])
+  
+  // Defensive normalize function to get Doctor[] from any response shape
+  const doctors: Doctor[] = (() => {
+    let items: any[] = []
+    if (!data) items = []
+    else if (Array.isArray(data)) items = data
+    else if (data.data) {
+      if (Array.isArray(data.data)) items = data.data
+      else if (Array.isArray((data.data as any).items)) items = (data.data as any).items
+    }
+    else if (Array.isArray((data as any).items)) items = (data as any).items
+
+    return items.map((d: any) => {
+      // Map licenseNo alias to licenseNumber if needed
+      const licenseNumber = d.licenseNumber || d.licenseNo
+      return {
+        ...d,
+        licenseNumber
+      } as Doctor
+    })
+  })()
+
+  const meta = (() => {
+    if (!data) return null
+    if ((data as any).meta) return (data as any).meta
+    if (data.data && (data.data as any).meta) return (data.data as any).meta
+    return null
+  })()
 
   function openCreate() {
-    setEditing(null); setForm(EMPTY_FORM); setShowModal(true)
+    setEditing(null); setForm(EMPTY_FORM); setSuccessMsg(null); clearError(); setShowModal(true)
   }
   function openEdit(d: Doctor) {
     setEditing(d)
     setForm({ name: d.name, email: d.email ?? '', phone: d.phone ?? '', licenseNumber: d.licenseNumber ?? '', specialization: d.specialization ?? '', bio: d.bio ?? '' })
-    setShowModal(true)
+    setSuccessMsg(null); clearError(); setShowModal(true)
   }
 
   async function handleSave() {
+    setSuccessMsg(null)
+    clearError()
+
+    // Client-side validation
     if (!form.name.trim()) return
-    const dto = { name: form.name, email: form.email || undefined, phone: form.phone || undefined, licenseNumber: form.licenseNumber || undefined, specialization: form.specialization || undefined, bio: form.bio || undefined }
-    if (editing) {
-      await mutate(() => doctorsApi.update(editing.id, dto), undefined)
-    } else {
-      await mutate(() => doctorsApi.create(dto), undefined)
+    if (!form.licenseNumber.trim()) {
+      setForm(f => ({ ...f, licenseNumber: '' })) // ensure field is empty for the UI
+      return
     }
-    setShowModal(false); refetch()
+
+    // Always send licenseNumber. Do NOT coerce empty string → undefined.
+    const dto: {
+      name: string; email?: string; phone?: string; licenseNumber: string;
+      specialization?: string; bio?: string;
+    } = {
+      name: form.name,
+      licenseNumber: form.licenseNumber,
+      ...(form.email ? { email: form.email } : {}),
+      ...(form.phone ? { phone: form.phone } : {}),
+      ...(form.specialization ? { specialization: form.specialization } : {}),
+      ...(form.bio ? { bio: form.bio } : {}),
+    }
+
+    let result: unknown
+    if (editing) {
+      result = await mutate(() => doctorsApi.update(editing.id, dto), undefined)
+    } else {
+      result = await mutate(() => doctorsApi.create(dto), undefined)
+    }
+
+    // Only close + refetch on success (mutate returns null on error)
+    if (result) {
+      setShowModal(false)
+      setSuccessMsg(editing ? 'Doctor updated successfully.' : 'Doctor created successfully.')
+      refetch()
+    }
   }
 
   async function handleDelete(id: string) {
     if (!confirm('Deactivate this doctor?')) return
-    await mutate(() => doctorsApi.remove(id), undefined)
-    refetch()
+    clearError()
+    const result = await mutate(() => doctorsApi.remove(id), undefined)
+    if (result) {
+      setSuccessMsg('Doctor deactivated.')
+      refetch()
+    }
   }
 
   return (
@@ -67,10 +133,23 @@ export default function DoctorsContent() {
           ) : undefined
         }
       />
+      {successMsg && (
+        <Alert variant="success" dismissible onClose={() => setSuccessMsg(null)}>
+          {successMsg}
+        </Alert>
+      )}
       <ApiErrorAlert error={error as ApiError | null} />
+      
+      {/* Duplicate license conflict helper when list is empty */}
+      {mutationError && (mutationError.status === 409 || mutationError.code === 'CONFLICT') && doctors.length === 0 && (
+        <Alert variant="warning" dismissible>
+          A doctor with this license already exists. Try clearing filters or showing inactive doctors.
+        </Alert>
+      )}
+
       <Card>
         <Card.Body>
-          <Row className="g-2 mb-3">
+          <Row className="g-2 mb-3 align-items-center">
             <Col md={5}>
               <InputGroup>
                 <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
@@ -80,6 +159,21 @@ export default function DoctorsContent() {
                   onChange={(e) => { setSearch(e.target.value); setPage(1) }}
                 />
               </InputGroup>
+            </Col>
+            <Col md={3}>
+              <Form.Select
+                value={isActiveFilter}
+                onChange={(e) => { setIsActiveFilter(e.target.value as 'true' | 'false' | 'all'); setPage(1) }}
+              >
+                <option value="true">Active Doctors</option>
+                <option value="false">Inactive Doctors</option>
+                <option value="all">All Doctors</option>
+              </Form.Select>
+            </Col>
+            <Col md={2}>
+              <Button variant="outline-secondary" className="w-100 d-flex align-items-center justify-content-center gap-1" onClick={() => refetch()}>
+                <Icon icon="solar:restart-bold" /> Refresh
+              </Button>
             </Col>
           </Row>
           <LoadingOverlay loading={loading}>
@@ -94,8 +188,18 @@ export default function DoctorsContent() {
                 </tr>
               </thead>
               <tbody>
-                {doctors.length === 0 ? (
-                  <tr><td colSpan={5} className="text-center py-4 text-muted">No doctors found</td></tr>
+                {error ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-4 text-danger">
+                      Failed to load doctors: {error.message || 'Unknown error'}
+                    </td>
+                  </tr>
+                ) : doctors.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-4 text-muted">
+                      No doctors found
+                    </td>
+                  </tr>
                 ) : (
                   doctors.map((d: Doctor) => (
                     <tr key={d.id}>
@@ -140,20 +244,32 @@ export default function DoctorsContent() {
         </Card.Body>
       </Card>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
+      <Modal show={showModal} onHide={() => { clearError(); setShowModal(false) }}>
         <Modal.Header closeButton>
           <Modal.Title>{editing ? 'Edit' : 'Add'} Doctor</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {/* Show mutation errors (validation failures) inside the modal */}
+          <ApiErrorAlert error={mutationError as ApiError | null} onDismiss={clearError} />
+
           <Form>
             {(['name', 'email', 'phone', 'licenseNumber', 'specialization'] as const).map((field) => (
               <Form.Group className="mb-3" key={field}>
-                <Form.Label className="text-capitalize">{field.replace(/([A-Z])/g, ' $1')}</Form.Label>
+                <Form.Label className="text-capitalize">
+                  {field.replace(/([A-Z])/g, ' $1')}
+                  {field === 'name' || field === 'licenseNumber' ? <span className="text-danger ms-1">*</span> : null}
+                </Form.Label>
                 <Form.Control
                   value={form[field]}
                   onChange={(e) => setForm(f => ({ ...f, [field]: e.target.value }))}
-                  required={field === 'name'}
+                  required={field === 'name' || field === 'licenseNumber'}
+                  isInvalid={field === 'licenseNumber' && !form.licenseNumber.trim()}
                 />
+                {field === 'licenseNumber' && !form.licenseNumber.trim() && (
+                  <Form.Control.Feedback type="invalid">
+                    License number is required
+                  </Form.Control.Feedback>
+                )}
               </Form.Group>
             ))}
             <Form.Group className="mb-3">
@@ -163,8 +279,10 @@ export default function DoctorsContent() {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving…' : editing ? 'Update' : 'Create'}</Button>
+          <Button variant="secondary" onClick={() => { clearError(); setShowModal(false) }}>Cancel</Button>
+          <Button variant="primary" onClick={handleSave} disabled={saving || !form.name.trim() || !form.licenseNumber.trim()}>
+            {saving ? 'Saving…' : editing ? 'Update' : 'Create'}
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

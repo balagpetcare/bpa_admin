@@ -4,11 +4,11 @@ export const currency: CurrencyType = '$'
 
 export const currentYear = new Date().getFullYear()
 
-export const developedByLink = 'https://techzaa.getappui.com/'
+export const developedByLink = 'https://bangladeshpetassociation.org'
 
-export const developedBy = 'Techzaa'
+export const developedBy = 'Bangladesh Pet Association'
 
-export const contactUs = 'techzaastudio@gmail.com'
+export const contactUs = 'info@bangladeshpetassociation.org'
 
 export const buyLink = ''
 

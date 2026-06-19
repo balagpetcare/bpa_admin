@@ -1,10 +1,10 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Table, Button, Badge, Form, InputGroup, Pagination } from 'react-bootstrap'
-import { useReactTable, getCoreRowModel, getPaginationRowModel, getFilteredRowModel, flexRender, type ColumnDef } from '@tanstack/react-table'
+import { Table, Button, Badge, Form, Pagination } from 'react-bootstrap'
+import { useReactTable, getCoreRowModel, getPaginationRowModel, flexRender, type ColumnDef } from '@tanstack/react-table'
 import { Icon } from '@iconify/react'
-import StatusBadge from '@/components/ui/StatusBadge'
+import { useSession } from 'next-auth/react'
 import EmptyState from '@/components/ui/EmptyState'
 import LoadingOverlay from '@/components/ui/LoadingOverlay'
 import { confirmDelete } from '@/components/ui/ConfirmDialog'
@@ -16,44 +16,66 @@ interface UsersTableProps {
   data: AdminUser[]
   loading: boolean
   onEdit: (user: AdminUser) => void
+  onToggleActive: (user: AdminUser) => Promise<void>
+  onResetPassword: (user: AdminUser) => void
+  onViewAudit: (user: AdminUser) => void
   onDeleted: () => void
 }
 
-export default function UsersTable({ data, loading, onEdit, onDeleted }: UsersTableProps) {
+export default function UsersTable({
+  data,
+  loading,
+  onEdit,
+  onToggleActive,
+  onResetPassword,
+  onViewAudit,
+  onDeleted
+}: UsersTableProps) {
   const { can } = usePermission()
-  const [globalFilter, setGlobalFilter] = useState('')
+  const { data: session } = useSession()
+
+  // Calculate active Super Admins to protect the last one
+  const activeSuperAdmins = useMemo(() => {
+    return data.filter(
+      (u) => u.isActive && u.roles.some((r) => r.name === 'super_admin')
+    )
+  }, [data])
+
+  const superAdminCount = activeSuperAdmins.length
 
   const columns = useMemo<ColumnDef<AdminUser>[]>(
     () => [
       {
-        header: 'User',
+        header: 'User details',
         accessorKey: 'name',
         cell: ({ row }) => (
           <div>
-            <div className="fw-semibold">{row.original.name}</div>
+            <div className="fw-semibold text-dark">{row.original.name}</div>
             <div className="text-muted small">{row.original.email}</div>
           </div>
         ),
       },
       {
-        header: 'Phone',
+        header: 'Phone number',
         accessorKey: 'phone',
         cell: ({ getValue }) => getValue<string | null>() ?? <span className="text-muted">—</span>,
       },
       {
-        header: 'Roles',
+        header: 'Access Roles',
         accessorKey: 'roles',
-        enableSorting: false,
         cell: ({ row }) => (
           <div className="d-flex flex-wrap gap-1">
             {row.original.roles.length === 0 ? (
-              <span className="text-muted small">No roles</span>
+              <span className="text-muted small">No roles assigned</span>
             ) : (
-              row.original.roles.map((r) => (
-                <Badge key={r.id} bg="primary" className="fw-normal">
-                  {r.name}
-                </Badge>
-              ))
+              row.original.roles.map((r) => {
+                const color = r.name === 'super_admin' ? 'danger' : r.name === 'admin' ? 'primary' : 'secondary'
+                return (
+                  <Badge key={r.id} bg={`${color}-subtle`} className={`text-${color} border border-${color}-subtle fw-normal`}>
+                    {r.name.replace(/_/g, ' ').toUpperCase()}
+                  </Badge>
+                )
+              })
             )}
           </div>
         ),
@@ -61,56 +83,99 @@ export default function UsersTable({ data, loading, onEdit, onDeleted }: UsersTa
       {
         header: 'Status',
         accessorKey: 'isActive',
-        cell: ({ getValue }) => <StatusBadge status={getValue<boolean>() ? 'active' : 'inactive'} />,
+        cell: ({ row }) => {
+          const active = row.original.isActive
+          return (
+            <Badge bg={active ? 'success-subtle' : 'danger-subtle'} className={`text-${active ? 'success' : 'danger'} border border-${active ? 'success-subtle' : 'danger-subtle'} fw-semibold`}>
+              {active ? 'Active' : 'Suspended'}
+            </Badge>
+          )
+        },
       },
       {
-        header: 'Created',
+        header: 'Registered Date',
         accessorKey: 'createdAt',
-        cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString(),
+        cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString('en-US', { dateStyle: 'medium' }),
       },
       {
         header: 'Actions',
         id: 'actions',
-        enableSorting: false,
-        cell: ({ row }) => (
-          <div className="d-flex gap-1">
-            {can('users:update') && (
-              <Button variant="soft-primary" size="sm" onClick={() => onEdit(row.original)} title="Edit">
-                <Icon icon="solar:pen-bold" />
-              </Button>
-            )}
-            {can('users:delete') && (
+        cell: ({ row }) => {
+          const u = row.original
+          const isCurrentUser = u.id === (session?.user as any)?.id || u.email === session?.user?.email
+          const isSuperAdmin = u.roles.some((r) => r.name === 'super_admin')
+          const isLastSuperAdmin = isSuperAdmin && u.isActive && superAdminCount <= 1
+
+          return (
+            <div className="d-flex gap-1">
+              {can('users:update') && (
+                <>
+                  <Button
+                    variant="soft-primary"
+                    size="sm"
+                    onClick={() => onEdit(u)}
+                    title="Edit profile"
+                  >
+                    <Icon icon="solar:pen-bold" />
+                  </Button>
+                  <Button
+                    variant={u.isActive ? 'soft-warning' : 'soft-success'}
+                    size="sm"
+                    disabled={isCurrentUser || isLastSuperAdmin}
+                    onClick={() => onToggleActive(u)}
+                    title={isCurrentUser ? 'You cannot suspend yourself' : isLastSuperAdmin ? 'Cannot suspend the last Super Admin' : u.isActive ? 'Suspend User' : 'Activate User'}
+                  >
+                    <Icon icon={u.isActive ? 'solar:lock-bold' : 'solar:lock-keyhole-minimalistic-bold'} />
+                  </Button>
+                  <Button
+                    variant="soft-info"
+                    size="sm"
+                    onClick={() => onResetPassword(u)}
+                    title="Reset Password"
+                  >
+                    <Icon icon="solar:key-bold" />
+                  </Button>
+                </>
+              )}
               <Button
-                variant="soft-danger"
+                variant="soft-secondary"
                 size="sm"
-                title="Delete"
-                onClick={async () => {
-                  const ok = await confirmDelete(row.original.name)
-                  if (ok) {
-                    await usersApi.remove(row.original.id)
-                    onDeleted()
-                  }
-                }}
+                onClick={() => onViewAudit(u)}
+                title="View Audit details"
               >
-                <Icon icon="solar:trash-bin-trash-bold" />
+                <Icon icon="solar:history-bold" />
               </Button>
-            )}
-          </div>
-        ),
+              {can('users:delete') && (
+                <Button
+                  variant="soft-danger"
+                  size="sm"
+                  disabled={isCurrentUser || isLastSuperAdmin}
+                  title={isCurrentUser ? 'You cannot delete yourself' : isLastSuperAdmin ? 'Cannot delete the last Super Admin' : 'Delete User'}
+                  onClick={async () => {
+                    const ok = await confirmDelete(u.name)
+                    if (ok) {
+                      await usersApi.remove(u.id)
+                      onDeleted()
+                    }
+                  }}
+                >
+                  <Icon icon="solar:trash-bin-trash-bold" />
+                </Button>
+              )}
+            </div>
+          )
+        },
       },
     ],
-    [can, onEdit, onDeleted],
+    [can, session, superAdminCount, onEdit, onToggleActive, onResetPassword, onViewAudit, onDeleted],
   )
 
   const table = useReactTable({
     data,
     columns,
-    state: { globalFilter },
-    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize: 15 } },
+    initialState: { pagination: { pageSize: 10 } },
   })
 
   const { pageIndex, pageSize } = table.getState().pagination
@@ -118,63 +183,47 @@ export default function UsersTable({ data, loading, onEdit, onDeleted }: UsersTa
 
   return (
     <div>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <InputGroup style={{ maxWidth: 280 }}>
-          <InputGroup.Text>
-            <Icon icon="solar:magnifer-bold" />
-          </InputGroup.Text>
-          <Form.Control
-            placeholder="Search users..."
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-          />
-        </InputGroup>
-        <small className="text-muted">
-          {table.getFilteredRowModel().rows.length} user{table.getFilteredRowModel().rows.length !== 1 ? 's' : ''}
-        </small>
-      </div>
-
       <LoadingOverlay loading={loading}>
-      <div className="table-responsive">
-        <Table hover className="table-centered align-middle mb-0">
-          <thead className="table-light">
-            {table.getHeaderGroups().map((hg) => (
-              <tr key={hg.id}>
-                {hg.headers.map((h) => (
-                  <th key={h.id}>{flexRender(h.column.columnDef.header, h.getContext())}</th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length}>
-                  <EmptyState
-                    icon="solar:users-group-two-rounded-bold-duotone"
-                    title="No users found"
-                    description={globalFilter ? 'Try a different search term.' : 'Create the first user to get started.'}
-                  />
-                </td>
-              </tr>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+        <div className="table-responsive">
+          <Table hover className="table-centered align-middle mb-0 border-0">
+            <thead className="table-light text-muted small">
+              {table.getHeaderGroups().map((hg) => (
+                <tr key={hg.id}>
+                  {hg.headers.map((h) => (
+                    <th key={h.id} className="py-3">{flexRender(h.column.columnDef.header, h.getContext())}</th>
                   ))}
                 </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
-      </div>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length}>
+                    <EmptyState
+                      icon="solar:users-group-two-rounded-bold-duotone"
+                      title="No users match the criteria"
+                      description="Try adjusting your filters or search query."
+                    />
+                  </td>
+                </tr>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <tr key={row.id} className="border-bottom border-light">
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="py-3">{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </Table>
+        </div>
       </LoadingOverlay>
 
       {pageCount > 1 && (
-        <div className="d-flex justify-content-between align-items-center mt-3">
+        <div className="d-flex justify-content-between align-items-center mt-3 p-3">
           <small className="text-muted">
-            Page {pageIndex + 1} of {pageCount} · {pageSize} per page
+            Page {pageIndex + 1} of {pageCount} · {pageSize} rows per page
           </small>
           <Pagination size="sm" className="mb-0">
             <Pagination.Prev disabled={!table.getCanPreviousPage()} onClick={() => table.previousPage()} />

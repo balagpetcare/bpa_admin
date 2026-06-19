@@ -2,12 +2,12 @@ import { api } from '../api'
 import type { Doctor, PaginatedResult } from '@/types/bpa.types'
 
 export interface DoctorListParams {
-  page?: number; limit?: number; search?: string; isActive?: boolean
+  page?: number; limit?: number; search?: string; isActive?: 'true' | 'false' | 'all' | boolean
 }
 
 export const doctorsApi = {
   list: (params?: DoctorListParams) =>
-    api.get<PaginatedResult<Doctor>>(
+    api.getPaginated<Doctor>(
       '/admin/doctors',
       params as Record<string, string | number | boolean | undefined>,
     ),

@@ -2,7 +2,11 @@ import { api } from '../api'
 import type {
   CampaignListItem, CampaignDetail, CampaignSession, CampaignService,
   CampaignDoctor, CampaignVolunteer, CampaignType, CampaignStatus,
-  CampaignMedia, CampaignMediaRole,
+  CampaignMedia, CampaignMediaRole, Doctor,
+  StaffDutyRole, DoctorDutyRole,
+  CampaignStaffAssignment,
+  QRVerifyResult, FieldOpsStats, QRScanLogEntry,
+  VaccinationCompleteResult, CertificateIssueResult,
 } from '@/types/bpa.types'
 
 export interface CampaignListParams {
@@ -66,12 +70,42 @@ export const campaignsApi = {
   deleteService: (campaignId: string, serviceId: string) =>
     api.delete<void>(`/admin/campaigns/${campaignId}/services/${serviceId}`),
 
-  // Doctor Assignment
-  listDoctors: (campaignId: string) => api.get<CampaignDoctor[]>(`/admin/campaigns/${campaignId}/doctors`),
-  assignDoctor: (campaignId: string, dto: { doctorId: string; sessionId?: string }) =>
-    api.post<CampaignDoctor>(`/admin/campaigns/${campaignId}/doctors`, dto),
-  removeDoctor: (campaignId: string, doctorId: string) =>
-    api.delete<void>(`/admin/campaigns/${campaignId}/doctors/${doctorId}`),
+  // Doctor Assignment (updated with duty roles)
+  listDoctors: (campaignId: string, sessionId?: string) =>
+    api.get<CampaignDoctor[]>(`/admin/campaigns/${campaignId}/doctors${sessionId ? `?sessionId=${sessionId}` : ''}`),
+  assignDoctor: (campaignId: string, dto: {
+    doctorId: string; sessionId?: string; role?: string;
+    doctorDuty?: DoctorDutyRole; isSigningDoctor?: boolean; isPrimarySupervisor?: boolean;
+    assignedDate?: string; notes?: string | null
+  }) => api.post<CampaignDoctor>(`/admin/campaigns/${campaignId}/doctors`, dto),
+  updateDoctorAssignment: (campaignId: string, assignmentId: string, dto: {
+    role?: string; doctorDuty?: DoctorDutyRole; isSigningDoctor?: boolean;
+    isPrimarySupervisor?: boolean; isActive?: boolean; notes?: string | null
+  }) => api.patch<CampaignDoctor>(`/admin/campaigns/${campaignId}/doctors/${assignmentId}`, dto),
+  removeDoctorAssignment: (campaignId: string, assignmentId: string) =>
+    api.delete<void>(`/admin/campaigns/${campaignId}/doctors/${assignmentId}`),
+  bulkAssignDoctors: (campaignId: string, dto: {
+    assignments: Array<{ doctorId: string; sessionId?: string; doctorDuty: DoctorDutyRole; isSigningDoctor?: boolean; isPrimarySupervisor?: boolean; notes?: string | null }>
+  }) => api.post<{ results: unknown[]; total: number; succeeded: number }>(`/admin/campaigns/${campaignId}/doctors/bulk`, dto),
+  getAvailableDoctors: (campaignId: string, params?: { page?: number; limit?: number; search?: string; includeAssigned?: boolean }) =>
+    api.getPaginated<Doctor>(
+      `/admin/campaigns/${campaignId}/available-doctors`,
+      params as Record<string, string | number | boolean | undefined>,
+    ),
+  removeDoctor: (campaignId: string, assignmentId: string) =>
+    api.delete<void>(`/admin/campaigns/${campaignId}/doctors/${assignmentId}`),
+
+  // Staff Assignments
+  listStaffAssignments: (campaignId: string, params?: { sessionId?: string; dutyRole?: StaffDutyRole; isActive?: boolean }) =>
+    api.get<{ data: CampaignStaffAssignment[] }>(`/admin/campaigns/${campaignId}/staff-assignments`, params as Record<string, string | boolean | undefined>),
+  assignStaff: (campaignId: string, dto: { userId: string; sessionId?: string; dutyRole: StaffDutyRole; notes?: string | null }) =>
+    api.post<{ data: CampaignStaffAssignment }>(`/admin/campaigns/${campaignId}/staff-assignments`, dto),
+  updateStaffAssignment: (campaignId: string, assignmentId: string, dto: { sessionId?: string | null; dutyRole?: StaffDutyRole; isActive?: boolean; notes?: string | null }) =>
+    api.patch<{ data: CampaignStaffAssignment }>(`/admin/campaigns/${campaignId}/staff-assignments/${assignmentId}`, dto),
+  deactivateStaffAssignment: (campaignId: string, assignmentId: string) =>
+    api.delete<{ success: boolean }>(`/admin/campaigns/${campaignId}/staff-assignments/${assignmentId}`),
+  bulkAssignStaff: (campaignId: string, dto: { assignments: Array<{ userId: string; sessionId?: string; dutyRole: StaffDutyRole; notes?: string | null }> }) =>
+    api.post<{ data: { results: unknown[]; total: number; succeeded: number } }>(`/admin/campaigns/${campaignId}/staff-assignments/bulk`, dto),
 
   // Volunteer Assignment
   listVolunteers: (campaignId: string) => api.get<CampaignVolunteer[]>(`/admin/campaigns/${campaignId}/volunteers`),
@@ -97,4 +131,24 @@ export const campaignsApi = {
     api.delete<void>(`/admin/campaigns/${campaignId}/media/${mediaId}`),
   reorderMedia: (campaignId: string, ids: string[]) =>
     api.patch<CampaignMedia[]>(`/admin/campaigns/${campaignId}/media/reorder`, { ids }),
+
+  // Field Ops
+  qrVerify: (campaignId: string, dto: { qrToken?: string; bookingReference?: string; sessionId?: string }) =>
+    api.post<{ data: QRVerifyResult }>(`/admin/campaigns/${campaignId}/qr/verify`, dto),
+  checkIn: (campaignId: string, dto: { registrationId?: string; petBookingId?: string; token?: string; sessionId?: string; adminOverride?: boolean }) =>
+    api.post<{ data: { success: boolean; checkedInPetBookings: string[]; checkedInAt: string } }>(`/admin/campaigns/${campaignId}/check-in`, dto),
+  vaccinationComplete: (campaignId: string, dto: { petBookingId: string; sessionId?: string; serviceId?: string; vaccineName?: string; batchNumber?: string; dose?: string; vaccinatedAt?: string; signingDoctorId?: string; remarks?: string; adminOverride?: boolean }) =>
+    api.post<{ data: VaccinationCompleteResult }>(`/admin/campaigns/${campaignId}/vaccinations/complete`, dto),
+  issueCertificate: (campaignId: string, dto: { petBookingId: string; signingDoctorId?: string }) =>
+    api.post<{ data: CertificateIssueResult }>(`/admin/campaigns/${campaignId}/certificates/issue`, dto),
+  resendCertificate: (campaignId: string, petBookingId: string) =>
+    api.post<{ data: CertificateIssueResult }>(`/admin/campaigns/${campaignId}/certificates/resend`, { petBookingId }),
+  getOperationalStats: (campaignId: string, sessionId?: string) =>
+    api.get<{ data: FieldOpsStats }>(`/admin/campaigns/${campaignId}/operational-stats${sessionId ? `?sessionId=${sessionId}` : ''}`),
+  getScanLogs: (campaignId: string, params?: { page?: number; limit?: number; sessionId?: string; scanResult?: string; dateFrom?: string; dateTo?: string }) =>
+    api.get<{ data: QRScanLogEntry[]; meta: { total: number; page: number; limit: number; totalPages: number } }>(`/admin/campaigns/${campaignId}/scan-logs`, params as Record<string, string | number | undefined>),
+
+  // My assigned campaigns (staff view)
+  getMyAssignedCampaigns: () =>
+    api.get<{ data: (CampaignListItem & { myAssignments: Array<{ id: string; dutyRole: StaffDutyRole; sessionId: string | null; session: CampaignSession | null; isActive: boolean }> })[] }>('/admin/my-assigned-campaigns'),
 }

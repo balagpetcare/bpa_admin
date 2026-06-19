@@ -450,7 +450,14 @@ export interface CampaignService {
 
 export interface CampaignDoctor {
   id: string; campaignId: string; doctorId: string; sessionId: string | null
-  doctor: { id: string; name: string; licenseNumber: string | null; specialization: string | null }
+  role: string
+  doctorDuty: DoctorDutyRole
+  isSigningDoctor: boolean
+  isPrimarySupervisor: boolean
+  notes?: string | null
+  assignedDate?: string
+  doctor: { id: string; name: string; licenseNumber: string | null; specialization: string | null; mobile?: string | null; phone?: string | null; email?: string | null; photoUrl?: string | null }
+  session?: { id: string; sessionDate: string; startTime: string; venue: { name: string } } | null
 }
 
 export interface CampaignVolunteer {
@@ -465,6 +472,102 @@ export interface CampaignDetail extends CampaignListItem {
   doctors: CampaignDoctor[]
   volunteers: CampaignVolunteer[]
   media: CampaignMedia[]
+}
+
+// ─── Staff/Doctor Assignment Types ───────────────────────────────
+
+export type StaffDutyRole =
+  | 'QR_SCAN' | 'CHECK_IN' | 'VACCINATION_DESK'
+  | 'CERTIFICATE_DESK' | 'SESSION_MANAGER' | 'GENERAL_VOLUNTEER'
+
+export type DoctorDutyRole =
+  | 'SIGNING_DOCTOR' | 'MEDICAL_SUPERVISOR' | 'VACCINATOR' | 'EMERGENCY_SUPPORT'
+
+export interface CampaignStaffAssignment {
+  id: string
+  campaignId: string
+  sessionId: string | null
+  userId: string
+  dutyRole: StaffDutyRole
+  isActive: boolean
+  notes: string | null
+  assignedBy: string | null
+  createdAt: string
+  updatedAt: string
+  user: { id: string; name: string; email: string | null; phone: string | null; userRoles: { role: { name: string } }[] }
+  session: { id: string; sessionDate: string; startTime: string; endTime: string; venue: { name: string } } | null
+  assignedByUser: { id: string; name: string; email: string | null } | null
+}
+
+// ─── Field Ops Types ─────────────────────────────────────────────
+
+export interface QRVerifyPetBooking {
+  id: string
+  pet: { id: string; name: string; petType: string; breed: string | null }
+  status: CampaignRegistrationStatus
+  checkedInAt: string | null
+  vaccinatedAt: string | null
+  services: { id: string; campaignServiceId: string; name: string | undefined; isRequired: boolean | undefined; administered: boolean }[]
+  certificate: { id: string; certificateNumber: string; verifyToken: string; issuedAt: string } | null
+  latestVaccinationRecord: { vaccineName: string; batchNumber: string | null; administeredAt: string; doctor: { id: string; name: string; licenseNumber: string | null } | null } | null
+  allowedActions: { canCheckIn: boolean; canMarkVaccinated: boolean; canIssueCertificate: boolean; canResendCertificate: boolean }
+}
+
+export interface QRVerifyResult {
+  scanResult: string
+  bookingNumber: string
+  registrationId: string
+  campaign: { id: string; title: string; status: string }
+  session: { id: string; sessionDate: string; startTime: string; endTime: string; venue: { name: string; address: string | null } }
+  owner: { id: string; name: string; phoneMasked: string; emailMasked: string }
+  paymentStatus: string
+  isPaid: boolean
+  overallStatus: CampaignRegistrationStatus
+  petBookings: QRVerifyPetBooking[]
+  assignedDoctors: { id: string; name: string; licenseNumber: string | null; specialization: string | null; photoUrl?: string | null }[]
+  flags: { cancelled: boolean; expired: boolean; wrongSession: boolean; paymentPending: boolean }
+}
+
+export interface FieldOpsStats {
+  totalBookings: number
+  paidBookings: number
+  checkedIn: number
+  vaccinated: number
+  certIssued: number
+  pendingPayment: number
+  invalidScans: number
+  alreadyVaccinatedScans: number
+}
+
+export interface QRScanLogEntry {
+  id: string
+  qrToken: string
+  scanResult: string
+  ipAddress: string | null
+  userAgent: string | null
+  notes: string | null
+  createdAt: string
+  scannedBy: { id: string; name: string; email: string }
+  petBooking: { id: string; pet: { id: string; name: string } } | null
+}
+
+export interface VaccinationCompleteResult {
+  success: boolean
+  petBookingId: string
+  vaccineName: string
+  administeredAt: string
+  signingDoctor: { id: string; name: string; licenseNumber: string | null } | null
+  warningNoSigningDoctor: boolean
+}
+
+export interface CertificateIssueResult {
+  certificateId: string
+  certificateNumber: string
+  verifyToken: string
+  signingDoctor?: { id: string; name: string; licenseNumber: string | null; specialization: string | null }
+  verifyUrl: string
+  pdfUrl: string
+  alreadyExisted: boolean
 }
 
 // ─── Phase 2: Campaign Registrations ─────────────────────────────

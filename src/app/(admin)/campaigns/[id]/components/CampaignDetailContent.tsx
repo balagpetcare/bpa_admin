@@ -333,7 +333,10 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
                 <MgmtLink href={`/campaigns/${campaignId}/sessions`} icon="solar:calendar-bold-duotone" label="Sessions" count={campaign.sessions?.length} />
                 <MgmtLink href={`/campaigns/${campaignId}/services`} icon="solar:sticker-square-bold-duotone" label="Services" count={campaign.services?.length} />
                 <MgmtLink href={`/campaigns/${campaignId}/doctors`} icon="solar:stethoscope-bold-duotone" label="Doctors" count={campaign.doctors?.length} />
-                <MgmtLink href={`/campaigns/${campaignId}/volunteers`} icon="solar:hand-heart-bold-duotone" label="Volunteers" count={campaign.volunteers?.length} />
+                <MgmtLink href={`/campaigns/${campaignId}/staff`} icon="solar:users-group-two-rounded-bold-duotone" label="Staff & Volunteers" />
+                <hr className="my-2 mx-3 opacity-10" />
+                <MgmtLink href={`/campaigns/${campaignId}/field-ops`} icon="solar:play-stream-bold-duotone" label="Field Operations" variant="success" />
+                <MgmtLink href={`/campaigns/${campaignId}/volunteers`} icon="solar:hand-heart-bold-duotone" label="Volunteers (legacy)" count={campaign.volunteers?.length} />
                 <hr className="my-2 mx-3 opacity-10" />
                 <MgmtLink href={`/campaigns/${campaignId}/media`} icon="solar:gallery-bold-duotone" label="Media Gallery" variant="info" />
                 <MgmtLink href={`/campaigns/${campaignId}/vaccination`} icon="solar:syringe-bold-duotone" label="Vaccination Records" variant="secondary" />
