@@ -94,6 +94,31 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
         : undefined,
     },
 
+    // ─── MAIL SYSTEM ──────────────────────────────────────────────
+    {
+      key: 'mail-system-title',
+      label: 'MAIL SYSTEM',
+      isTitle: true,
+    },
+    {
+      key: 'mail-inbox',
+      label: 'Mailbox / Inbox',
+      icon: 'solar:letter-opened-bold-duotone',
+      url: '/mail/inbox',
+    },
+    {
+      key: 'mail-compose',
+      label: 'Compose Mail',
+      icon: 'solar:pen-bold-duotone',
+      url: '/mail/compose',
+    },
+    {
+      key: 'mail-accounts',
+      label: 'Mail Accounts',
+      icon: 'solar:user-bold-duotone',
+      url: '/mail/accounts',
+    },
+
     // ─── ADMINISTRATION ───────────────────────────────────────────
     {
       key: 'administration',
@@ -418,6 +443,12 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       label: 'Site Settings',
       icon: 'solar:settings-bold-duotone',
       url: '/site-settings',
+    },
+    {
+      key: 'email-layouts',
+      label: 'Email Layouts',
+      icon: 'solar:letter-bold-duotone',
+      url: '/email-layouts',
     },
 
     // ─── PAYMENTS & LOGS ──────────────────────────────────────────

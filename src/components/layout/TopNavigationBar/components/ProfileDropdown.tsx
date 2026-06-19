@@ -40,7 +40,7 @@ const ProfileDropdown = () => {
         <DropdownHeader as={'h6'} className="dropdown-header">
           {displayName}
         </DropdownHeader>
-        <DropdownItem as={Link} href="/auth/lock-screen">
+        <DropdownItem as={Link as any} href="/auth/lock-screen">
           <IconifyIcon icon="bx:lock" className="text-muted fs-18 align-middle me-1" />
           <span className="align-middle">Lock screen</span>
         </DropdownItem>
