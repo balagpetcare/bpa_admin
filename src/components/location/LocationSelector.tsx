@@ -8,6 +8,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { getApiBase } from '@/lib/utils/api-url';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -53,8 +54,7 @@ export interface LocationSelectorProps {
 
 // ── API ────────────────────────────────────────────────────────────────────────
 
-const BASE_URL =
-  (process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1').replace(/\/$/, '');
+const BASE_URL = getApiBase();
 
 async function fetchLocations(
   type?: LocationType,

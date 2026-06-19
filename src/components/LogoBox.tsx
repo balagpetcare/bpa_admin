@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { getApiBase } from '@/lib/utils/api-url'
 
 // Inline SVG — shown in collapsed sidebar and as fallback
 const BpaMarkSvg = () => (
@@ -35,10 +36,7 @@ const LogoBox = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    const apiBase = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1'
-    // Strip trailing /api/v1 if present to avoid double-pathing
-    const base = apiBase.replace(/\/api\/v1\/?$/, '')
-    fetch(`${base}/api/v1/public/site-settings`)
+    fetch(`${getApiBase()}/public/site-settings`)
       .then(r => r.json())
       .then((json: { data?: { secondaryLogoUrl?: string | null; primaryLogoUrl?: string | null } }) => {
         const url = json?.data?.secondaryLogoUrl ?? json?.data?.primaryLogoUrl ?? null

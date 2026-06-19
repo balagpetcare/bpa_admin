@@ -10,6 +10,9 @@ import LoadingOverlay from '@/components/ui/LoadingOverlay'
 import { useApi, useApiMutation } from '@/hooks/useApi'
 import { listDonations, exportDonationsCsv, type Donation } from '@/lib/api/donations.api'
 import type { ApiError } from '@/lib/api'
+import { getApiBase } from '@/lib/utils/api-url'
+
+const API_BASE = getApiBase()
 
 const STATUS_OPTS = [
   { value: '', label: 'All Statuses' },
@@ -176,7 +179,7 @@ export default function DonationListContent() {
                             <a
                               className="btn btn-soft-success btn-sm"
                               title="Download Receipt"
-                              href={`${process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1'}/public/donations/receipt/${d.referenceNo}/pdf`}
+                              href={`${API_BASE}/public/donations/receipt/${d.referenceNo}/pdf`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
@@ -263,7 +266,7 @@ export default function DonationListContent() {
           {detail?.status === 'success' && (
             <a
               className="btn btn-success btn-sm"
-              href={`${process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1'}/public/donations/receipt/${detail.referenceNo}/pdf`}
+              href={`${API_BASE}/public/donations/receipt/${detail.referenceNo}/pdf`}
               target="_blank"
               rel="noopener noreferrer"
             >

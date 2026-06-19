@@ -1,6 +1,7 @@
 import { getSession } from 'next-auth/react'
 import { api, ApiError } from '../api'
 import { isUuid } from '../uuid'
+import { getApiBase } from '@/lib/utils/api-url'
 import type {
   PetCensusSubmission,
   PetCensusAnalyticsSummary,
@@ -11,7 +12,7 @@ import type {
   PaginationQuery,
 } from '@/types/bpa.types'
 
-const BASE_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1'
+const BASE_URL = getApiBase()
 
 function requireValidId(id: string, entity: string) {
   const normalizedId = id?.trim() ?? ''

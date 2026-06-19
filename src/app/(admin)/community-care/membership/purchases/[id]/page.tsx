@@ -6,6 +6,7 @@ import { Card, Row, Col, Badge, Spinner, Button, ListGroup, Modal, Form, Alert }
 import { communityMembershipApi } from '@/lib/api/community-membership.api';
 import { smsLogsApi } from '@/lib/api/sms-logs.api';
 import PageHeader from '@/components/ui/PageHeader';
+import { getApiOrigin, getApiBase } from '@/lib/utils/api-url';
 
 export default function PurchaseDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -78,12 +79,12 @@ export default function PurchaseDetailPage() {
   const manualTxn = purchase.payment?.payload?.manualTransaction;
   const paymentPayload = purchase.payment?.payload || {};
 
-  const apiOrigin = (process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1').replace('/api/v1', '');
-  const receiptPdfUrl = `${apiOrigin}/api/v1/public/memberships/${purchase.id}/receipt.pdf`;
-  const cardPdfUrl = `${apiOrigin}/api/v1/public/memberships/${purchase.id}/card.pdf`;
-  const guidePdfUrl = `${apiOrigin}/api/v1/public/memberships/${purchase.id}/guide.pdf`;
-  const welcomePackPdfUrl = `${apiOrigin}/api/v1/public/memberships/${purchase.id}/welcome-pack.pdf`;
-  const verificationUrl = card?.qrToken ? `${apiOrigin.replace(':4000', ':3000')}/verify/membership-card/${card.qrToken}` : null;
+  const apiBase = getApiBase();
+  const receiptPdfUrl = `${apiBase}/public/memberships/${purchase.id}/receipt.pdf`;
+  const cardPdfUrl = `${apiBase}/public/memberships/${purchase.id}/card.pdf`;
+  const guidePdfUrl = `${apiBase}/public/memberships/${purchase.id}/guide.pdf`;
+  const welcomePackPdfUrl = `${apiBase}/public/memberships/${purchase.id}/welcome-pack.pdf`;
+  const verificationUrl = card?.qrToken ? `${getApiOrigin().replace(':4000', ':3000')}/verify/membership-card/${card.qrToken}` : null;
 
   return (
     <>

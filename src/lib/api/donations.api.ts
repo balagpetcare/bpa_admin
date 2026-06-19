@@ -342,8 +342,8 @@ export async function exportDonationsCsv(params?: {
   dateFrom?: string;
   dateTo?: string;
 }) {
-  const baseUrl = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1';
-  const url = new URL(`${baseUrl}/admin/donations/export/csv`);
+  const { getApiBase } = await import('@/lib/utils/api-url');
+  const url = new URL(`${getApiBase()}/admin/donations/export/csv`);
   if (params?.status) url.searchParams.set('status', params.status);
   if (params?.dateFrom) url.searchParams.set('dateFrom', params.dateFrom);
   if (params?.dateTo) url.searchParams.set('dateTo', params.dateTo);

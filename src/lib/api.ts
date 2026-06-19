@@ -1,5 +1,6 @@
 import { getSession, signOut } from 'next-auth/react'
 import type { ApiResponse, ApiErrorResponse } from '@/types/bpa.types'
+import { getApiBase } from '@/lib/utils/api-url'
 
 export class ApiError extends Error {
   constructor(
@@ -13,7 +14,7 @@ export class ApiError extends Error {
   }
 }
 
-const BASE_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1'
+const BASE_URL = getApiBase()
 
 async function getAccessToken(): Promise<string | null> {
   if (typeof window === 'undefined') {

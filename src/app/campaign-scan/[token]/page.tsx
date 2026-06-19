@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { api } from '@/lib/api'
+import { getApiOrigin } from '@/lib/utils/api-url'
 
 // ─── Types ────────────────────────────────────────────────────────
 
@@ -136,8 +137,7 @@ export default function CampaignScanPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
 
-  const API_URL = process.env['NEXT_PUBLIC_API_URL'] ?? 'http://localhost:4000/api/v1'
-  const CERT_BASE = API_URL.includes('/api/v1') ? API_URL.replace('/api/v1', '') : API_URL
+  const CERT_BASE = getApiOrigin()
 
   const fetchScan = useCallback(async () => {
     setLoading(true)
