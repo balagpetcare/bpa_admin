@@ -71,7 +71,7 @@ export default function MailSettingsPage() {
                 </p>
                 <ol className="small ps-3 text-secondary mb-3">
                   <li className="mb-2">
-                    <strong>Phase 1 (Manual Sync):</strong> Admin triggers immediate fetching of the latest 50 emails by clicking the "Sync Mailbox" button on the Inbox dashboard.
+                    <strong>Phase 1 (Manual Sync):</strong> Admin triggers immediate fetching of the latest 50 emails by clicking the &ldquo;Sync Mailbox&rdquo; button on the Inbox dashboard.
                   </li>
                   <li className="mb-2">
                     <strong>Phase 2 (Background Job):</strong> Server runs an automated task scheduler every 5 minutes executing a cron job to synchronize new emails incrementally using <code>UID / messageId</code> duplication checks.

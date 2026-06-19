@@ -27,6 +27,8 @@ yarn-error.log*
 
 # local env files
 .env*.local
+# Real env file — contains live NEXTAUTH_SECRET, never commit
+.env
 
 # vercel
 .vercel

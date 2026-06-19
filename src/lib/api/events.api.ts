@@ -22,6 +22,7 @@ export interface CreateEventDto {
   fee?: number | null
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateEventDto extends Partial<CreateEventDto> {}
 
 export interface RegistrationListParams {

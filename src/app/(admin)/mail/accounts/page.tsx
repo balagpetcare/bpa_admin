@@ -220,7 +220,7 @@ export default function MailAccountsPage() {
             <div className="text-center py-5 text-muted">
               <Icon icon="solar:mailbox-linear" width="48" className="mb-2 text-muted" />
               <p className="mb-0">No mail accounts configured yet.</p>
-              <p className="small">Click "Add Account" to configure your first cPanel mailbox.</p>
+              <p className="small">Click &ldquo;Add Account&rdquo; to configure your first cPanel mailbox.</p>
             </div>
           ) : (
             <div className="table-responsive">
@@ -244,7 +244,7 @@ export default function MailAccountsPage() {
                           {acc.isDefault && <Badge bg="success" className="ms-1">Default</Badge>}
                         </div>
                         <div className="small text-muted">{acc.emailAddress}</div>
-                        <div className="small text-muted" style={{ fontSize: '11px' }}>Sender name: "{acc.fromName}"</div>
+                        <div className="small text-muted" style={{ fontSize: '11px' }}>Sender name: &ldquo;{acc.fromName}&rdquo;</div>
                       </td>
                       <td>
                         {!acc.smtpHost ? (

@@ -204,7 +204,7 @@ export default function DonationCmsContent() {
             </Card.Header>
             <Card.Body className="d-flex flex-column gap-4">
               {faqs.length === 0 && (
-                <p className="text-muted text-center small py-3">No FAQ items yet. Click "Add Question" to add one.</p>
+                <p className="text-muted text-center small py-3">No FAQ items yet. Click &ldquo;Add Question&rdquo; to add one.</p>
               )}
               {faqs.map((faq, i) => (
                 <div key={i} className="border rounded p-3">

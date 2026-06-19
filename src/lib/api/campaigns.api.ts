@@ -16,6 +16,7 @@ export interface CreateCampaignDto {
   certificateTemplateId?: string; coverImageId?: string; allowedPetTypes?: string[]
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateCampaignDto extends Partial<CreateCampaignDto> {}
 
 export interface CreateSessionDto {

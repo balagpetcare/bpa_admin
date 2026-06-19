@@ -12,6 +12,7 @@ export interface CreateCommitteeMemberDto {
   isActive?: boolean
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateCommitteeMemberDto extends Partial<CreateCommitteeMemberDto> {}
 
 export interface ReorderDto {

@@ -36,7 +36,7 @@ const SelectFormInput = <
             ) : (
               <>{label}</>
             ))}
-          {/* @ts-ignore */}
+          {/* @ts-expect-error - ReactSelect generic types are complex */}
           <ReactSelect<Option>
             {...other}
             {...field}

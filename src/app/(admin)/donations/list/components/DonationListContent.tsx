@@ -251,7 +251,7 @@ export default function DonationListContent() {
               {detail.message && (
                 <Col xs={12}>
                   <p className="text-muted small mb-1 fw-bold text-uppercase">Message</p>
-                  <p className="mb-0 fst-italic">"{detail.message}"</p>
+                  <p className="mb-0 fst-italic">&ldquo;{detail.message}&rdquo;</p>
                 </Col>
               )}
               <Col xs={12}>

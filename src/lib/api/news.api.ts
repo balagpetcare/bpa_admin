@@ -20,6 +20,7 @@ export interface CreateNewsDto {
   isFeatured?: boolean
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateNewsDto extends Partial<CreateNewsDto> {}
 
 export interface PublishNewsDto {
