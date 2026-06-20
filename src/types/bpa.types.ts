@@ -465,6 +465,45 @@ export interface CampaignVolunteer {
   user: { id: string; name: string; email: string }
 }
 
+export interface CampaignSessionStat {
+  sessionId: string
+  sessionDate: string
+  startTime: string
+  endTime: string
+  venueName: string
+  capacity: number
+  totalBookings: number
+  totalPets: number
+  paidCount: number
+  pendingCount: number
+  failedCount: number
+  cancelledCount: number
+  remaining: number
+}
+
+export interface CampaignLiveStats {
+  totalRegistrations: number
+  paidCount: number
+  paidAmount: number
+  pendingCount: number
+  pendingAmount: number
+  failedCount: number
+  cancelledCount: number
+  totalPets: number
+  checkedInCount: number
+  vaccinatedCount: number
+  certificateIssuedCount: number
+  waitlistCount: number
+  totalCollectedAmount: number
+  registrationsByStatus: Record<string, number>
+  paymentByStatus: Record<string, { count: number; total: number }>
+  sessionStats: CampaignSessionStat[]
+  totalCapacity: number
+  usedCapacity: number
+  remainingCapacity: number
+  fillPercent: number
+}
+
 export interface CampaignDetail extends CampaignListItem {
   certificateTemplate: { id: string; name: string } | null
   sessions: CampaignSession[]
@@ -472,6 +511,103 @@ export interface CampaignDetail extends CampaignListItem {
   doctors: CampaignDoctor[]
   volunteers: CampaignVolunteer[]
   media: CampaignMedia[]
+  analytics: {
+    totalRegistrations: number
+    totalPaid: number
+    totalPets: number
+    totalVaccinated: number
+    totalCertificates: number
+    totalRevenueBdt: string
+  } | null
+  _count: {
+    registrations: number
+    sessions: number
+    services: number
+    doctors: number
+    volunteers: number
+  }
+  stats: CampaignLiveStats | null
+}
+
+// ─── Participant types ────────────────────────────────────────────
+
+export interface ParticipantPetBooking {
+  id: string
+  status: CampaignRegistrationStatus
+  checkedInAt: string | null
+  vaccinatedAt: string | null
+  pet: { id: string; name: string; petType: string; breed: string | null }
+  vaccinationRecords: { id: string; vaccineName: string; administeredAt: string }[]
+  certificates: { id: string; certificateNumber: string; issuedAt: string }[]
+}
+
+export interface Participant {
+  id: string
+  bookingNumber: string
+  status: CampaignRegistrationStatus
+  totalAmountBdt: string
+  isGuest: boolean
+  notes: string | null
+  createdAt: string
+  updatedAt: string
+  campaign: { id: string; title: string; slug: string }
+  session: {
+    id: string
+    sessionDate: string
+    startTime: string
+    endTime: string
+    venue: { id: string; name: string }
+  }
+  owner: { id: string; ownerName: string; mobile: string; email: string | null; address: string | null }
+  payment: {
+    id: string
+    gateway: string
+    status: string
+    amount: string
+    merchantTxnId: string | null
+    epsTxnId: string | null
+    gatewayRef: string | null
+    createdAt: string
+    updatedAt: string
+  } | null
+  petBookings: ParticipantPetBooking[]
+}
+
+export interface BulkSmsPreviewResult {
+  recipientCount: number
+  sampleRecipients: Array<{
+    bookingNumber: string
+    ownerName: string
+    mobile: string
+    renderedMessage: string
+  }>
+  templateHash: string
+}
+
+export interface BulkSmsFilters {
+  paymentStatus?: string
+  registrationStatus?: string
+  sessionId?: string
+  venueId?: string
+  dateFrom?: string
+  dateTo?: string
+  search?: string
+  selectedIds?: string[]
+  onlyFailedPayment?: boolean
+  onlyPendingPayment?: boolean
+}
+
+export interface BulkSmsBatch {
+  id: string
+  campaignId: string
+  template: string
+  recipientCount: number
+  queuedCount: number
+  failedCount: number
+  status: string
+  filters: BulkSmsFilters
+  createdAt: string
+  createdBy: { id: string; name: string; email: string }
 }
 
 // ─── Staff/Doctor Assignment Types ───────────────────────────────

@@ -8,6 +8,7 @@ import type {
   QRVerifyResult, FieldOpsStats, QRScanLogEntry,
   VaccinationCompleteResult, CertificateIssueResult,
   CampaignFaq,
+  Participant, BulkSmsPreviewResult, BulkSmsBatch, BulkSmsFilters,
 } from '@/types/bpa.types'
 
 export interface CampaignListParams {
@@ -163,4 +164,58 @@ export const campaignsApi = {
   deleteCampaignFaq: (campaignId: string, faqId: string) => api.delete<void>(`/admin/campaigns/${campaignId}/faqs/${faqId}`),
   reorderCampaignFaqs: (campaignId: string, faqIds: string[]) =>
     api.patch<{ reordered: boolean }>(`/admin/campaigns/${campaignId}/faqs/reorder`, { faqIds }),
+
+  // ─── Participants & Payments ────────────────────────────────────
+
+  listParticipants: (
+    campaignId: string,
+    params?: {
+      page?: number; limit?: number; search?: string
+      paymentStatus?: string; registrationStatus?: string
+      sessionId?: string; venueId?: string
+      dateFrom?: string; dateTo?: string
+    },
+  ) =>
+    api.get<{ items: Participant[]; total: number; page: number; limit: number; totalPages: number }>(
+      `/admin/campaigns/${campaignId}/participants`,
+      params as Record<string, string | number | undefined>,
+    ),
+
+  getPaymentSummary: (campaignId: string) =>
+    api.get<Record<string, { count: number; total: number }>>(
+      `/admin/campaigns/${campaignId}/participants/payment-summary`,
+    ),
+
+  bulkSmsPreview: (
+    campaignId: string,
+    dto: { template: string; filters: BulkSmsFilters },
+  ) =>
+    api.post<BulkSmsPreviewResult>(
+      `/admin/campaigns/${campaignId}/participants/bulk-sms/preview`,
+      dto,
+    ),
+
+  bulkSmsSend: (
+    campaignId: string,
+    dto: { template: string; filters: BulkSmsFilters; previewCount: number; confirmation: true },
+  ) =>
+    api.post<{ batchId: string; recipientCount: number; queued: number }>(
+      `/admin/campaigns/${campaignId}/participants/bulk-sms/send`,
+      dto,
+    ),
+
+  bulkSmsHistory: (campaignId: string) =>
+    api.get<BulkSmsBatch[]>(`/admin/campaigns/${campaignId}/participants/bulk-sms/history`),
+
+  exportCsvUrl: (campaignId: string, params?: Record<string, string | undefined>) => {
+    const base = process.env.NEXT_PUBLIC_API_URL ?? ''
+    const qs = params ? '?' + new URLSearchParams(Object.entries(params).filter(([, v]) => v != null) as [string, string][]).toString() : ''
+    return `${base}/admin/campaigns/${campaignId}/participants/export.csv${qs}`
+  },
+
+  exportXlsxUrl: (campaignId: string, params?: Record<string, string | undefined>) => {
+    const base = process.env.NEXT_PUBLIC_API_URL ?? ''
+    const qs = params ? '?' + new URLSearchParams(Object.entries(params).filter(([, v]) => v != null) as [string, string][]).toString() : ''
+    return `${base}/admin/campaigns/${campaignId}/participants/export.xlsx${qs}`
+  },
 }
