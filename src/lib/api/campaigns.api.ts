@@ -99,15 +99,15 @@ export const campaignsApi = {
 
   // Staff Assignments
   listStaffAssignments: (campaignId: string, params?: { sessionId?: string; dutyRole?: StaffDutyRole; isActive?: boolean }) =>
-    api.get<{ data: CampaignStaffAssignment[] }>(`/admin/campaigns/${campaignId}/staff-assignments`, params as Record<string, string | boolean | undefined>),
+    api.get<CampaignStaffAssignment[]>(`/admin/campaigns/${campaignId}/staff-assignments`, params as Record<string, string | boolean | undefined>),
   assignStaff: (campaignId: string, dto: { userId: string; sessionId?: string; dutyRole: StaffDutyRole; notes?: string | null }) =>
-    api.post<{ data: CampaignStaffAssignment }>(`/admin/campaigns/${campaignId}/staff-assignments`, dto),
+    api.post<CampaignStaffAssignment>(`/admin/campaigns/${campaignId}/staff-assignments`, dto),
   updateStaffAssignment: (campaignId: string, assignmentId: string, dto: { sessionId?: string | null; dutyRole?: StaffDutyRole; isActive?: boolean; notes?: string | null }) =>
-    api.patch<{ data: CampaignStaffAssignment }>(`/admin/campaigns/${campaignId}/staff-assignments/${assignmentId}`, dto),
+    api.patch<CampaignStaffAssignment>(`/admin/campaigns/${campaignId}/staff-assignments/${assignmentId}`, dto),
   deactivateStaffAssignment: (campaignId: string, assignmentId: string) =>
-    api.delete<{ success: boolean }>(`/admin/campaigns/${campaignId}/staff-assignments/${assignmentId}`),
+    api.delete<{ message: string }>(`/admin/campaigns/${campaignId}/staff-assignments/${assignmentId}`),
   bulkAssignStaff: (campaignId: string, dto: { assignments: Array<{ userId: string; sessionId?: string; dutyRole: StaffDutyRole; notes?: string | null }> }) =>
-    api.post<{ data: { results: unknown[]; total: number; succeeded: number } }>(`/admin/campaigns/${campaignId}/staff-assignments/bulk`, dto),
+    api.post<{ results: unknown[]; total: number; succeeded: number }>(`/admin/campaigns/${campaignId}/staff-assignments/bulk`, dto),
 
   // Volunteer Assignment
   listVolunteers: (campaignId: string) => api.get<CampaignVolunteer[]>(`/admin/campaigns/${campaignId}/volunteers`),
