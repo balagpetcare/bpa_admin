@@ -1493,3 +1493,23 @@ export interface DiagnosticCenterService {
   createdAt: string
   updatedAt: string
 }
+
+// ─── Campaign FAQ ────────────────────────────────────────────────
+
+export interface CampaignFaq {
+  id: string
+  campaignId: string
+  questionEn: string
+  questionBn: string | null
+  answerEn: string
+  answerBn: string | null
+  category: string | null
+  sortOrder: number
+  isActive: boolean
+  createdById: string | null
+  updatedById: string | null
+  createdAt: string
+  updatedAt: string
+  createdBy: { id: string; name: string; email: string } | null
+  updatedBy: { id: string; name: string; email: string } | null
+}

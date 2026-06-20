@@ -83,7 +83,9 @@ export async function apiClient<T = unknown>(
 
   if (!json.success) {
     const err = (json as ApiErrorResponse).error
-    throw new ApiError(err.code, err.message, err.details as unknown[] | undefined, res.status)
+    const code = err?.code ?? 'UNKNOWN'
+    const message = err?.message ?? 'An unexpected error occurred'
+    throw new ApiError(code, message, err?.details as unknown[] | undefined, res.status)
   }
 
   return json.data as T
@@ -142,7 +144,9 @@ export async function apiClientPaginated<T = unknown>(
 
   if (!json.success) {
     const err = (json as ApiErrorResponse).error
-    throw new ApiError(err.code, err.message, err.details as unknown[] | undefined, res.status)
+    const code = err?.code ?? 'UNKNOWN'
+    const message = err?.message ?? 'An unexpected error occurred'
+    throw new ApiError(code, message, err?.details as unknown[] | undefined, res.status)
   }
 
   const rawMeta = json.meta ?? {}

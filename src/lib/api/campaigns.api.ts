@@ -7,6 +7,7 @@ import type {
   CampaignStaffAssignment,
   QRVerifyResult, FieldOpsStats, QRScanLogEntry,
   VaccinationCompleteResult, CertificateIssueResult,
+  CampaignFaq,
 } from '@/types/bpa.types'
 
 export interface CampaignListParams {
@@ -151,4 +152,15 @@ export const campaignsApi = {
   // My assigned campaigns (staff view)
   getMyAssignedCampaigns: () =>
     api.get<{ data: (CampaignListItem & { myAssignments: Array<{ id: string; dutyRole: StaffDutyRole; sessionId: string | null; session: CampaignSession | null; isActive: boolean }> })[] }>('/admin/my-assigned-campaigns'),
+
+  // ─── Campaign FAQs ─────────────────────────────────────────────
+
+  listCampaignFaqs: (campaignId: string) => api.get<CampaignFaq[]>(`/admin/campaigns/${campaignId}/faqs`),
+  createCampaignFaq: (campaignId: string, dto: { questionEn: string; questionBn?: string | null; answerEn: string; answerBn?: string | null; category?: string | null; sortOrder?: number; isActive?: boolean }) =>
+    api.post<CampaignFaq>(`/admin/campaigns/${campaignId}/faqs`, dto),
+  updateCampaignFaq: (campaignId: string, faqId: string, dto: { questionEn?: string; questionBn?: string | null; answerEn?: string; answerBn?: string | null; category?: string | null; sortOrder?: number; isActive?: boolean }) =>
+    api.patch<CampaignFaq>(`/admin/campaigns/${campaignId}/faqs/${faqId}`, dto),
+  deleteCampaignFaq: (campaignId: string, faqId: string) => api.delete<void>(`/admin/campaigns/${campaignId}/faqs/${faqId}`),
+  reorderCampaignFaqs: (campaignId: string, faqIds: string[]) =>
+    api.patch<{ reordered: boolean }>(`/admin/campaigns/${campaignId}/faqs/reorder`, { faqIds }),
 }

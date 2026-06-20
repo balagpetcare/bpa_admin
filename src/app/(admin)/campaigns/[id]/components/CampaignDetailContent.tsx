@@ -339,6 +339,7 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
                 <MgmtLink href={`/campaigns/${campaignId}/volunteers`} icon="solar:hand-heart-bold-duotone" label="Volunteers (legacy)" count={campaign.volunteers?.length} />
                 <hr className="my-2 mx-3 opacity-10" />
                 <MgmtLink href={`/campaigns/${campaignId}/media`} icon="solar:gallery-bold-duotone" label="Media Gallery" variant="info" />
+                <MgmtLink href={`/campaigns/${campaignId}/faqs`} icon="solar:question-circle-bold-duotone" label="FAQs" variant="primary" />
                 <MgmtLink href={`/campaigns/${campaignId}/vaccination`} icon="solar:syringe-bold-duotone" label="Vaccination Records" variant="secondary" />
                 <MgmtLink href={`/campaigns/${campaignId}/certificates`} icon="solar:document-text-bold-duotone" label="Certificates" variant="dark" />
                 <MgmtLink href={`/campaigns/${campaignId}/analytics`} icon="solar:chart-bold-duotone" label="Analytics" variant="primary" />
