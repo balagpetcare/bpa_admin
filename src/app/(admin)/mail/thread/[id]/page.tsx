@@ -395,7 +395,7 @@ export default function MailThreadDetailsPage() {
                     <Card.Body className="pt-1 pb-3">
                       {/* Render Sanitized bodyHtml inside our isolated frame */}
                       <div className="border rounded bg-white p-2 mb-3">
-                        <SafeHtmlIframe html={msg.bodyHtml} />
+                        <SafeHtmlIframe html={msg.bodyHtml || ''} />
                       </div>
 
                       {/* Message attachments */}

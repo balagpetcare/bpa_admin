@@ -6,36 +6,53 @@ import TextFormInput from '@/components/form/TextFormInput'
 import { yupResolver } from '@hookform/resolvers/yup'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { Alert, Button, Card, Col, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { apiClient } from '@/lib/api'
 
-const resetPasswordSchema = yup.object({
-  email: yup.string().email('Please enter a valid email').required('Please enter your email'),
+const schema = yup.object({
+  password: yup
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .required('Please enter a new password'),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('password')], 'Passwords do not match')
+    .required('Please confirm your password'),
 })
 
-const ResetPassword = () => {
+const NewPassword = () => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const token = searchParams.get('token') ?? ''
+
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
 
   const { control, handleSubmit } = useForm({
-    resolver: yupResolver(resetPasswordSchema),
+    resolver: yupResolver(schema),
   })
 
-  const onSubmit = async (data: { email: string }) => {
+  const onSubmit = async (data: { password: string; confirmPassword: string }) => {
+    if (!token) {
+      setErrorMsg('Reset token is missing. Please use the link from the email.')
+      return
+    }
     setLoading(true)
     setErrorMsg('')
     try {
-      await apiClient('/auth/password/forgot', {
+      await apiClient('/auth/password/reset', {
         method: 'POST',
-        body: { email: data.email },
+        body: { token, password: data.password },
       })
       setSuccess(true)
+      setTimeout(() => router.push('/auth/sign-in'), 3000)
     } catch (err: any) {
-      setErrorMsg(err?.message || 'Something went wrong. Please try again.')
+      setErrorMsg(err?.message || 'Invalid or expired reset link. Please request a new one.')
     } finally {
       setLoading(false)
     }
@@ -57,16 +74,22 @@ const ResetPassword = () => {
                       <Image src={logoLight} height={24} alt="logo light" />
                     </Link>
                   </div>
-                  <h2 className="fw-bold fs-24">Forgot Password</h2>
+                  <h2 className="fw-bold fs-24">Set New Password</h2>
                   <p className="text-muted mt-1 mb-4">
-                    Enter your email address and we&apos;ll send you instructions to reset your password.
+                    Enter and confirm your new password below.
                   </p>
+
+                  {!token && (
+                    <Alert variant="danger">
+                      Invalid reset link. Please go back and request a new password reset email.
+                    </Alert>
+                  )}
 
                   {success ? (
                     <Alert variant="success">
-                      <strong>Email sent!</strong> If an account exists for that email, you will receive a reset link shortly. Please check your inbox.
+                      <strong>Password updated!</strong> You will be redirected to the sign-in page shortly.
                     </Alert>
-                  ) : (
+                  ) : token ? (
                     <div>
                       {errorMsg && (
                         <Alert variant="danger" dismissible onClose={() => setErrorMsg('')}>
@@ -76,20 +99,30 @@ const ResetPassword = () => {
                       <form className="authentication-form" onSubmit={handleSubmit(onSubmit)}>
                         <TextFormInput
                           control={control}
-                          name="email"
+                          name="password"
                           containerClassName="mb-3"
-                          label="Email Address"
-                          id="email-id"
-                          placeholder="Enter your registered email"
+                          label="New Password"
+                          id="password-id"
+                          placeholder="At least 8 characters"
+                          type="password"
+                        />
+                        <TextFormInput
+                          control={control}
+                          name="confirmPassword"
+                          containerClassName="mb-3"
+                          label="Confirm New Password"
+                          id="confirm-password-id"
+                          placeholder="Re-enter your new password"
+                          type="password"
                         />
                         <div className="mb-1 text-center d-grid">
                           <Button variant="primary" type="submit" disabled={loading}>
-                            {loading ? 'Sending...' : 'Send Reset Link'}
+                            {loading ? 'Updating...' : 'Set New Password'}
                           </Button>
                         </div>
                       </form>
                     </div>
-                  )}
+                  ) : null}
 
                   <p className="mt-5 text-center">
                     Back to{' '}
@@ -114,4 +147,4 @@ const ResetPassword = () => {
   )
 }
 
-export default ResetPassword
+export default NewPassword

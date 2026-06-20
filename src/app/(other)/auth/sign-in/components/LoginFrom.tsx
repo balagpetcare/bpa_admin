@@ -20,7 +20,7 @@ const LoginFrom = () => {
         label={
           <>
             <Link href="/auth/reset-pass" className="float-end text-muted text-unline-dashed ms-1">
-              Reset password
+              Forgot password?
             </Link>
             <label className="form-label" htmlFor="example-password">
               Password
