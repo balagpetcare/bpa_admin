@@ -50,6 +50,10 @@ export interface LocationSelectorProps {
   locale?: 'en' | 'bn';
   requiredLevels?: LocationType[];
   disabled?: boolean;
+  /** Bootstrap column span per field on desktop (md breakpoint). Defaults to
+   * 6 (2 per row) — pass 4 for a denser 3-per-row filter panel. Layout-only,
+   * cascading behavior is unaffected. */
+  columnsMd?: 4 | 6;
 }
 
 // ── API ────────────────────────────────────────────────────────────────────────
@@ -154,8 +158,10 @@ export default function LocationSelector({
   locale = 'en',
   requiredLevels = [],
   disabled = false,
+  columnsMd = 6,
 }: LocationSelectorProps) {
   const isRequired = (t: LocationType) => requiredLevels.includes(t);
+  const colClass = columnsMd === 4 ? 'col-12 col-md-4' : 'col-12 col-md-6';
 
   const [divisions, setDivisions]       = useState<LocationOption[]>([]);
   const [districts, setDistricts]       = useState<LocationOption[]>([]);
@@ -228,7 +234,7 @@ export default function LocationSelector({
   return (
     <div className="row g-2">
       {showDivision && (
-        <div className="col-12 col-md-6">
+        <div className={colClass}>
           <LSelect
             id="admin-loc-division"
             labelText={lbl('division', locale)}
@@ -251,7 +257,7 @@ export default function LocationSelector({
       )}
 
       {showDistrict && (
-        <div className="col-12 col-md-6">
+        <div className={colClass}>
           <LSelect
             id="admin-loc-district"
             labelText={lbl('district', locale)}
@@ -273,7 +279,7 @@ export default function LocationSelector({
       )}
 
       {showUpazila && (
-        <div className="col-12 col-md-6">
+        <div className={colClass}>
           <LSelect
             id="admin-loc-upazila"
             labelText={lbl('upazila', locale)}
@@ -291,7 +297,7 @@ export default function LocationSelector({
       )}
 
       {showCityCorporation && corps.length > 0 && (
-        <div className="col-12 col-md-6">
+        <div className={colClass}>
           <LSelect
             id="admin-loc-corp"
             labelText={lbl('cityCorporation', locale)}
@@ -310,7 +316,7 @@ export default function LocationSelector({
       )}
 
       {showZone && zones.length > 0 && (
-        <div className="col-12 col-md-6">
+        <div className={colClass}>
           <LSelect
             id="admin-loc-zone"
             labelText={lbl('zone', locale)}
@@ -328,7 +334,7 @@ export default function LocationSelector({
       )}
 
       {showWard && wards.length > 0 && (
-        <div className="col-12 col-md-6">
+        <div className={colClass}>
           <LSelect
             id="admin-loc-ward"
             labelText={lbl('ward', locale)}
@@ -343,7 +349,7 @@ export default function LocationSelector({
       )}
 
       {showUnion && unions.length > 0 && (
-        <div className="col-12 col-md-6">
+        <div className={colClass}>
           <LSelect
             id="admin-loc-union"
             labelText={lbl('union', locale)}

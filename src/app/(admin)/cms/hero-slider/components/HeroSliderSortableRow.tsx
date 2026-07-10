@@ -6,6 +6,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Button, Badge, Form } from 'react-bootstrap'
 import { Icon } from '@iconify/react'
 import type { HeroSlideListItem } from '@/types/bpa.types'
+import { resolveMediaUrl } from '@/lib/utils/media-url'
 import HeroSlideStatusBadge from './HeroSlideStatusBadge'
 
 interface HeroSliderSortableRowProps {
@@ -23,6 +24,7 @@ function formatSchedule(startAt: string | null, endAt: string | null) {
 
 export default function HeroSliderSortableRow({ slide, onDelete, onToggleActive }: HeroSliderSortableRowProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: slide.id })
+  const previewUrl = resolveMediaUrl(slide.mobileImage?.url)
 
   return (
     <tr
@@ -46,11 +48,11 @@ export default function HeroSliderSortableRow({ slide, onDelete, onToggleActive 
       </td>
       <td>
         <div className="d-flex align-items-center gap-3">
-          {slide.mobileImage?.url ? (
+          {previewUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={slide.mobileImage.url}
-              alt={slide.mobileImage.altText ?? slide.title}
+              src={previewUrl}
+              alt={slide.mobileImage?.altText ?? slide.title}
               className="rounded border"
               style={{ width: 72, height: 48, objectFit: 'cover' }}
             />

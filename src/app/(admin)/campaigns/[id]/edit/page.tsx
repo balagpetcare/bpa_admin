@@ -12,7 +12,12 @@ export default function CampaignEditPage({ params }: { params: Promise<{ id: str
   const fetchFn = useCallback(() => campaignsApi.getById(id), [id])
   const { data: campaign, loading } = useApi(fetchFn, [id])
 
-  if (loading) return <LoadingOverlay loading><div style={{ minHeight: 200 }} /></LoadingOverlay>
+  if (loading)
+    return (
+      <LoadingOverlay loading>
+        <div style={{ minHeight: 200 }} />
+      </LoadingOverlay>
+    )
   if (!campaign) return null
 
   const initialValues = {
@@ -27,6 +32,7 @@ export default function CampaignEditPage({ params }: { params: Promise<{ id: str
     basePriceBdt: campaign.basePriceBdt,
     maxPetsPerBooking: String(campaign.maxPetsPerBooking),
     allowedPetTypes: campaign.allowedPetTypes ?? [],
+    metadata: campaign.metadata ?? null,
   }
 
   return (

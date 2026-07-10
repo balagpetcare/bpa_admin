@@ -470,6 +470,7 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
                 <MgmtLink href={`/campaigns/${campaignId}/sessions`} icon="solar:calendar-bold-duotone" label="Sessions" count={campaign._count.sessions ?? campaign.sessions?.length} />
                 <MgmtLink href={`/campaigns/${campaignId}/services`} icon="solar:sticker-square-bold-duotone" label="Services" count={campaign._count.services ?? campaign.services?.length} />
                 <MgmtLink href={`/campaigns/${campaignId}/doctors`} icon="solar:stethoscope-bold-duotone" label="Doctors" count={campaign._count.doctors ?? campaign.doctors?.length} />
+                <MgmtLink href={`/campaigns/${campaignId}/coverage-areas`} icon="solar:map-point-wave-bold-duotone" label="Coverage Areas" variant="success" />
                 <MgmtLink href={`/campaigns/${campaignId}/staff`} icon="solar:users-group-two-rounded-bold-duotone" label="Staff & Volunteers" />
 
                 <hr className="my-2 mx-3 opacity-10" />

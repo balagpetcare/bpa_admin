@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import { Card, Button, Row, Col, Badge, Spinner, Alert, Form, Modal } from 'react-bootstrap'
+import { Card, Button, Row, Col, Badge, Spinner, Form, Modal } from 'react-bootstrap'
 import { Icon } from '@iconify/react'
 import Image from 'next/image'
 import { useApi, useApiMutation } from '@/hooks/useApi'
@@ -10,10 +10,11 @@ import { campaignsApi } from '@/lib/api/campaigns.api'
 import { mediaApi } from '@/lib/api/media.api'
 import { usePermission } from '@/hooks/usePermission'
 import { getMediaImageUrl } from '@/utils/media'
+import MediaPreview from '@/components/ui/MediaPreview'
 import MediaPickerInput from '@/components/ui/MediaPickerInput'
 import MediaCropModal from '@/components/ui/MediaCropModal'
 import type { CampaignMedia, CampaignMediaRole } from '@/types/bpa.types'
-import type { ApiError } from '@/lib/api'
+import { ApiError } from '@/lib/api'
 
 const ROLE_CONFIG: Record<CampaignMediaRole, { 
   label: string; 
@@ -73,6 +74,8 @@ export default function CampaignMediaManager({ campaignId }: Props) {
   const [cropTarget, setCropTarget] = useState<{ item: CampaignMedia; role: CampaignMediaRole } | null>(null)
   const [editingAlt, setEditingAlt] = useState<string | null>(null)
   const [altTextValue, setAltTextValue] = useState('')
+  const [deleteError, setDeleteError] = useState<ApiError | null>(null)
+  const [deletingMediaId, setDeletingMediaId] = useState<string | null>(null)
 
   const fetchFn = useCallback(() => campaignsApi.listMedia(campaignId), [campaignId])
   const { data: items, loading, error, refetch } = useApi<CampaignMedia[]>(fetchFn, [campaignId])
@@ -97,9 +100,18 @@ export default function CampaignMediaManager({ campaignId }: Props) {
   }
 
   async function handleDelete(item: CampaignMedia) {
+    if (deletingMediaId) return
     if (!confirm(`Delete this ${ROLE_CONFIG[item.role].label}?`)) return
-    await mutate(() => campaignsApi.deleteMedia(campaignId, item.id), undefined)
-    await refetch()
+    setDeleteError(null)
+    setDeletingMediaId(item.id)
+    try {
+      const result = await mutate(() => campaignsApi.deleteMedia(campaignId, item.id), undefined)
+      if (result !== null) {
+        await refetch()
+      }
+    } finally {
+      setDeletingMediaId(null)
+    }
   }
 
   async function handleUpdateAltText(item: CampaignMedia) {
@@ -194,13 +206,11 @@ export default function CampaignMediaManager({ campaignId }: Props) {
                   height: role === 'hero' ? '240px' : role === 'thumbnail' ? '220px' : '300px',
                   backgroundColor: '#f3f4f6' 
                 }}>
-                <img
-                  src={getMediaImageUrl(item)}
+                <MediaPreview
+                  media={item}
                   alt={item.altText ?? cfg.label}
-                  className="w-100 h-100 object-fit-contain"
-                  onError={(e) => {
-                    e.currentTarget.src = `https://placehold.co/800x400?text=Load+Error`;
-                  }}
+                  fit="contain"
+                  filename={item.mediaFile.originalName}
                 />
                 {canEdit && (
                   <div className="position-absolute bottom-0 start-0 w-100 p-2 d-flex justify-content-center gap-1 bg-dark bg-opacity-25 backdrop-blur-sm">
@@ -221,9 +231,9 @@ export default function CampaignMediaManager({ campaignId }: Props) {
                       <Icon icon="solar:crop-bold-duotone" />
                     </Button>
                     <Button size="sm" variant="danger" className="btn-icon-xs shadow-sm" title="Remove"
-                      disabled={mutating}
+                      disabled={mutating || deletingMediaId === item.id}
                       onClick={() => handleDelete(item)}>
-                      <Icon icon="solar:trash-bin-trash-bold" />
+                      <Icon icon={deletingMediaId === item.id ? 'svg-spinners:3-dots-fade' : 'solar:trash-bin-trash-bold'} />
                     </Button>
                   </div>
                 )}
@@ -252,7 +262,7 @@ export default function CampaignMediaManager({ campaignId }: Props) {
 
   return (
     <div className="pb-5 pt-3 container-fluid">
-      {mutateError && <Alert variant="danger" className="mb-4">{(mutateError as ApiError).message}</Alert>}
+      <ApiErrorAlert error={(deleteError ?? (mutateError as ApiError | null))} onDismiss={() => setDeleteError(null)} />
 
       <Row className="g-4 mb-4">
         {/* Main Column: Hero and Mobile Banner */}
@@ -342,13 +352,11 @@ export default function CampaignMediaManager({ campaignId }: Props) {
                 <Col key={item.id} xs={6} md={4} lg={3} xl={2}>
                   <div className="card h-100 border shadow-none overflow-hidden group-hover-actions">
                     <div className="position-relative bg-light" style={{ aspectRatio: '4/3' }}>
-                      <img
-                        src={getMediaImageUrl(item)}
+                      <MediaPreview
+                        media={item}
                         alt={item.altText ?? 'Gallery'}
-                        className="w-100 h-100 object-fit-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = `https://placehold.co/400x300?text=Error`;
-                        }}
+                        fit="cover"
+                        filename={item.mediaFile.originalName}
                       />
                       {canEdit && (
                         <div className="position-absolute top-0 end-0 m-1 d-flex flex-column gap-1 opacity-0 group-hover-visible z-3">
@@ -357,9 +365,9 @@ export default function CampaignMediaManager({ campaignId }: Props) {
                             <Icon icon="solar:crop-bold-duotone" />
                           </Button>
                           <Button size="sm" variant="danger" className="btn-icon-xs shadow-sm" title="Remove"
-                            disabled={mutating}
+                            disabled={mutating || deletingMediaId === item.id}
                             onClick={() => handleDelete(item)}>
-                            <Icon icon="solar:trash-bin-trash-bold" />
+                            <Icon icon={deletingMediaId === item.id ? 'svg-spinners:3-dots-fade' : 'solar:trash-bin-trash-bold'} />
                           </Button>
                         </div>
                       )}
@@ -452,4 +460,3 @@ export default function CampaignMediaManager({ campaignId }: Props) {
     </div>
   )
 }
-

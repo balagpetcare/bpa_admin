@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { A11y, Autoplay, Keyboard, Navigation, Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import type { HeroSlideListItem } from '@/types/bpa.types'
+import { resolveMediaUrl } from '@/lib/utils/media-url'
 import HeroCountdown from './HeroCountdown'
 
 import 'swiper/css'
@@ -42,14 +43,18 @@ function SlideAction({
 }
 
 function SlideMedia({ slide, priority }: { slide: HeroSlideListItem; priority: boolean }) {
+  const mobileImageUrl = resolveMediaUrl(slide.mobileImage?.url)
+  const desktopImageUrl = resolveMediaUrl(slide.desktopImage?.url)
+  const videoUrl = resolveMediaUrl(slide.video?.url)
+
   return (
     <div className="hero-slide__media-layer" aria-hidden="true">
       <picture>
-        <source media="(max-width: 767px)" srcSet={slide.mobileImage?.url ?? slide.desktopImage?.url ?? undefined} />
+        <source media="(max-width: 767px)" srcSet={mobileImageUrl ?? desktopImageUrl ?? undefined} />
         {slide.mediaType === 'image' ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={slide.desktopImage?.url ?? slide.mobileImage?.url ?? ''}
+            src={desktopImageUrl ?? mobileImageUrl ?? ''}
             alt={slide.desktopImage?.altText ?? slide.mobileImage?.altText ?? slide.headline}
             className="hero-slide__image"
             loading={priority ? 'eager' : 'lazy'}
@@ -60,14 +65,14 @@ function SlideMedia({ slide, priority }: { slide: HeroSlideListItem; priority: b
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={slide.desktopImage?.url ?? slide.mobileImage?.url ?? ''}
+              src={desktopImageUrl ?? mobileImageUrl ?? ''}
               alt={slide.desktopImage?.altText ?? slide.mobileImage?.altText ?? slide.headline}
               className="hero-slide__image hero-slide__image--fallback"
               loading={priority ? 'eager' : 'lazy'}
               fetchPriority={priority ? 'high' : 'auto'}
               decoding="async"
             />
-            {slide.video?.url && (
+            {videoUrl && (
               <video
                 className="hero-slide__video"
                 autoPlay
@@ -75,9 +80,9 @@ function SlideMedia({ slide, priority }: { slide: HeroSlideListItem; priority: b
                 loop
                 playsInline
                 preload={priority ? 'metadata' : 'none'}
-                poster={slide.desktopImage?.url ?? slide.mobileImage?.url ?? undefined}
+                poster={desktopImageUrl ?? mobileImageUrl ?? undefined}
               >
-                <source src={slide.video.url} type={slide.video.mimeType} />
+                <source src={videoUrl} type={slide.video?.mimeType} />
               </video>
             )}
           </>

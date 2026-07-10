@@ -159,19 +159,45 @@
 
                     .sub-nav-item {
                          cursor: pointer;
-                         padding: calc($main-nav-item-padding-y * 0.5) $main-nav-item-padding-x;
+                         padding: 0;
 
-                         .sub-nav-link {
+                         .sub-nav-link,
+                         >.nav-link {
                               display: flex;
                               position: relative;
+                              align-items: center;
+                              gap: 11px;
+                              min-height: 38px;
                               white-space: nowrap;
-                              transition: all 0.3s ease-in-out;
+                              overflow: hidden;
+                              transition: all 0.2s ease-in-out;
                               color: $main-nav-item-color;
-                              font-size: calc($main-nav-item-font-size * 0.95);
-                              padding: calc($main-nav-item-padding-y * 0.25) $main-nav-item-padding-x;
+                              font-size: 13.75px;
+                              padding: calc($main-nav-item-padding-y * 0.25) $main-nav-item-padding-x calc($main-nav-item-padding-y * 0.25) 40px;
+
+                              .nav-text {
+                                   overflow: hidden;
+                                   text-overflow: ellipsis;
+                              }
+
+                              .nav-dot {
+                                   flex: 0 0 auto;
+                                   width: 6px;
+                                   height: 6px;
+                                   border-radius: 50%;
+                                   background-color: currentColor;
+                                   opacity: 0.35;
+                                   transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+                              }
 
                               &.active {
                                    font-weight: $font-weight-medium;
+                                   color: $main-nav-item-hover-color;
+
+                                   .nav-dot {
+                                        opacity: 1;
+                                        transform: scale(1.15);
+                                   }
                               }
 
                               &.active,
@@ -180,14 +206,13 @@
                               &:focus {
                                    color: $main-nav-item-hover-color;
 
-                                   &::before {
-                                        background-color: $main-nav-item-hover-color;
-                                        opacity: 1;
+                                   .nav-dot {
+                                        opacity: 0.85;
                                    }
                               }
 
                               &:hover {
-                                   transform: translateX(5px);
+                                   transform: translateX(3px);
                               }
                          }
 

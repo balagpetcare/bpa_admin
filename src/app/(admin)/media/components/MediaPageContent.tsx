@@ -11,9 +11,9 @@ import MediaDetailModal from './MediaDetailModal'
 import MediaTypeFilter, { type MediaFilterType } from './MediaTypeFilter'
 import { useApi } from '@/hooks/useApi'
 import { usePermission } from '@/hooks/usePermission'
+import { ApiError } from '@/lib/api'
 import { mediaApi } from '@/lib/api/media.api'
 import type { MediaFile } from '@/types/bpa.types'
-import type { ApiError } from '@/lib/api'
 
 const MIME_FILTER: Record<MediaFilterType, string | undefined> = {
   all: undefined,
@@ -29,6 +29,7 @@ export default function MediaPageContent() {
   const [filterType, setFilterType] = useState<MediaFilterType>('all')
   const [selectedFile, setSelectedFile] = useState<MediaFile | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
+  const [deleteError, setDeleteError] = useState<ApiError | null>(null)
 
   const mimeFilter = MIME_FILTER[filterType]
 
@@ -58,6 +59,7 @@ export default function MediaPageContent() {
       <PageHeader title="Media Library" breadcrumbs={[{ label: 'Assets & Config' }, { label: 'Media Library' }]} />
 
       <ApiErrorAlert error={error as ApiError | null} />
+      <ApiErrorAlert error={deleteError} onDismiss={() => setDeleteError(null)} />
 
       {can('media:create') && (
         <Card className="mb-3">
@@ -97,6 +99,7 @@ export default function MediaPageContent() {
             onView={handleView}
             onDeleted={refetch}
             onPageChange={(p) => setPage(p)}
+            onDeleteError={setDeleteError}
           />
         </Card.Body>
       </Card>

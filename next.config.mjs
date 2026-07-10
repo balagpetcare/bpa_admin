@@ -1,15 +1,12 @@
+import { getContentSecurityPolicy, getRemotePatterns } from './media-config.mjs';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
   images: {
-    remotePatterns: [
-      { protocol: 'http', hostname: 'localhost', port: '4000', pathname: '/**' },
-      { protocol: 'http', hostname: '127.0.0.1', port: '4000', pathname: '/**' },
-      { protocol: 'http', hostname: 'localhost', port: '9000', pathname: '/**' },
-      { protocol: 'http', hostname: '127.0.0.1', port: '9000', pathname: '/**' },
-      { protocol: 'https', hostname: 'placehold.co', pathname: '/**' },
-    ],
+    remotePatterns: getRemotePatterns(),
   },
+  // CSP headers are now managed dynamically by middleware.ts to support nonces.
   // NOTE: output: 'standalone' is intentionally NOT set for admin-panel.
   // Next.js 16.0.8 has a bug where standalone output fails with ENOENT on
   // middleware.js.nft.json when Edge Runtime middleware (middleware.ts) is

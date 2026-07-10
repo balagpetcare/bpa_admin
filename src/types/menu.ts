@@ -23,6 +23,8 @@ export type SubMenus = {
   activeMenuItems?: Array<string>
   toggleMenu?: (item: MenuItemType, status: boolean) => void
   className?: string
+  /** True for any item rendered inside a dropdown/accordion (depth >= 1). Such items show a dot indicator instead of an icon. */
+  isChild?: boolean
 }
 
 export type TabMenuItem = {

@@ -5,6 +5,7 @@ import EmptyState from '@/components/ui/EmptyState'
 import LoadingOverlay from '@/components/ui/LoadingOverlay'
 import MediaCard from './MediaCard'
 import type { MediaFile, PaginationMeta } from '@/types/bpa.types'
+import type { ApiError } from '@/lib/api'
 
 interface MediaGridProps {
   files: MediaFile[]
@@ -13,9 +14,10 @@ interface MediaGridProps {
   onView: (file: MediaFile) => void
   onDeleted: () => void
   onPageChange: (page: number) => void
+  onDeleteError: (error: ApiError) => void
 }
 
-export default function MediaGrid({ files, meta, loading, onView, onDeleted, onPageChange }: MediaGridProps) {
+export default function MediaGrid({ files, meta, loading, onView, onDeleted, onPageChange, onDeleteError }: MediaGridProps) {
   return (
     <div>
       <LoadingOverlay loading={loading}>
@@ -30,7 +32,12 @@ export default function MediaGrid({ files, meta, loading, onView, onDeleted, onP
           <Row xs={2} sm={3} md={4} lg={5} xl={6} className="g-3">
             {files.map((file) => (
               <Col key={file.id}>
-                <MediaCard file={file} onView={onView} onDeleted={onDeleted} />
+                <MediaCard
+                  file={file}
+                  onView={onView}
+                  onDeleted={onDeleted}
+                  onDeleteError={onDeleteError}
+                />
               </Col>
             ))}
           </Row>

@@ -7,7 +7,6 @@ export interface PaginationQuery {
   search?: string
 }
 
-
 export interface BpaUser {
   id: string
   name: string
@@ -31,6 +30,30 @@ export interface ApiErrorResponse {
     message: string
     details?: unknown[]
   }
+}
+
+export interface MediaReferenceItem {
+  id: string
+  label?: string | null
+  extra?: Record<string, unknown>
+}
+
+export interface MediaReferenceType {
+  type: string
+  label: string
+  count: number
+  items: MediaReferenceItem[]
+}
+
+export interface MediaFileInUseDetail {
+  mediaFileId: string
+  referenceCount: number
+  referenceTypes: MediaReferenceType[]
+  campaigns: Array<{
+    campaignId: string
+    campaignTitle: string | null
+    role?: string | null
+  }>
 }
 
 export type ApiResponse<T = unknown> = ApiSuccessResponse<T> | ApiErrorResponse
@@ -140,11 +163,17 @@ export interface CommitteeMember {
 
 // ─── Media ────────────────────────────────────────────────────────
 
+export type FileCategory = 'image' | 'video' | 'document' | 'archive' | 'other'
+
 export interface MediaFile {
   id: string
   filename: string
   originalName: string
   mimeType: string
+  /** Lowercase extension without the dot, e.g. "webp". May be absent on older records fetched before this field existed. */
+  extension?: string
+  /** Derived bucket used to pick a preview widget. May be absent on older records — use getMediaPreviewType() as a fallback. */
+  fileCategory?: FileCategory
   sizeBytes: string
   url: string
   altText: string | null
@@ -332,14 +361,104 @@ export interface EmailLog {
 
 // ─── Locations ────────────────────────────────────────────────────
 
-export interface Country { id: string; name: string; code: string; isActive: boolean; createdAt: string }
-export interface Division { id: string; name: string; countryId: string; isActive: boolean; createdAt: string }
-export interface District { id: string; name: string; divisionId: string; isActive: boolean; createdAt: string }
-export interface CityCorporation { id: string; name: string; districtId: string; isActive: boolean; createdAt: string }
-export interface Zone { id: string; name: string; cityCorporationId: string; isActive: boolean; createdAt: string }
+export interface Country {
+  id: string
+  name: string
+  code: string
+  isActive: boolean
+  createdAt: string
+}
+export interface Division {
+  id: string
+  name: string
+  countryId: string
+  isActive: boolean
+  createdAt: string
+}
+export interface District {
+  id: string
+  name: string
+  divisionId: string
+  isActive: boolean
+  createdAt: string
+}
+export interface CityCorporation {
+  id: string
+  name: string
+  districtId: string
+  isActive: boolean
+  createdAt: string
+}
+export interface Zone {
+  id: string
+  name: string
+  cityCorporationId: string
+  isActive: boolean
+  createdAt: string
+}
+
+// ─── Bangladesh Location Tree (location_nodes) ─────────────────────
+// The seeded hierarchy: Division -> District -> Upazila/CityCorporation ->
+// Union/CityZone -> Ward. Self-referential; browse via parentId + type.
+
+export type LocationNodeType =
+  | 'DIVISION'
+  | 'DISTRICT'
+  | 'UPAZILA'
+  | 'THANA'
+  | 'UNION'
+  | 'POURASHAVA'
+  | 'CITY_CORPORATION'
+  | 'CITY_ZONE'
+  | 'WARD'
+  | 'AREA'
+
+export interface LocationNode {
+  id: string
+  parentId: string | null
+  type: LocationNodeType
+  nameEn: string
+  nameBn: string | null
+  slug: string
+  code: string | null
+  lat: number | null
+  lon: number | null
+  isActive: boolean
+  isVerified: boolean
+  sortOrder: number
+  children?: LocationNode[]
+}
+
+export interface VenueLocationRef {
+  id: string
+  type: LocationNodeType
+  nameEn: string
+  nameBn: string | null
+  parentId: string | null
+}
+
 export interface Venue {
-  id: string; name: string; address: string | null; zoneId: string; capacity: number | null
-  latitude: number | null; longitude: number | null; isActive: boolean; createdAt: string
+  id: string
+  name: string
+  address: string
+  googleMapsUrl: string | null
+  latitude: number | null
+  longitude: number | null
+  contactPerson: string | null
+  contactPhone: string | null
+  capacity: number | null
+  isActive: boolean
+  createdAt: string
+  locationId: string | null
+  divisionId: string | null
+  districtId: string | null
+  upazilaId: string | null
+  unionId: string | null
+  cityCorporationId: string | null
+  cityZoneId: string | null
+  wardId: string | null
+  location: VenueLocationRef | null
+  locationPath?: VenueLocationRef[]
 }
 
 export interface PublicLocationZone {
@@ -372,12 +491,22 @@ export interface PublicLocationCountry extends Country {
 // ─── Vaccine Catalog ──────────────────────────────────────────────
 
 export interface VaccineCatalog {
-  id: string; name: string; species: string | null; standardIntervalDays: number | null
-  manufacturer: string | null; description: string | null; isActive: boolean; createdAt: string
+  id: string
+  name: string
+  species: string | null
+  standardIntervalDays: number | null
+  manufacturer: string | null
+  description: string | null
+  isActive: boolean
+  createdAt: string
 }
 
 export interface CertificateTemplate {
-  id: string; name: string; htmlTemplate: string; isActive: boolean; createdAt: string
+  id: string
+  name: string
+  htmlTemplate: string
+  isActive: boolean
+  createdAt: string
 }
 
 // ─── Pets ─────────────────────────────────────────────────────────
@@ -386,27 +515,55 @@ export type PetType = 'dog' | 'cat' | 'bird' | 'rabbit' | 'other'
 export type PetGender = 'male' | 'female' | 'unknown'
 
 export interface PetOwner {
-  id: string; userId: string | null; name: string; email: string | null; phone: string | null
-  address: string | null; createdAt: string; _count?: { pets: number }
+  id: string
+  userId: string | null
+  name: string
+  email: string | null
+  phone: string | null
+  address: string | null
+  createdAt: string
+  _count?: { pets: number }
   // Location tree FK fields (optional — populated when set)
-  divisionId?: string | null; districtId?: string | null; upazilaId?: string | null
-  unionId?: string | null; cityCorporationId?: string | null
-  cityZoneId?: string | null; wardId?: string | null; addressLine?: string | null
+  divisionId?: string | null
+  districtId?: string | null
+  upazilaId?: string | null
+  unionId?: string | null
+  cityCorporationId?: string | null
+  cityZoneId?: string | null
+  wardId?: string | null
+  addressLine?: string | null
 }
 
 export interface Pet {
-  id: string; petOwnerId: string; name: string; species: PetType; breed: string | null
-  gender: PetGender; dateOfBirth: string | null; weightKg: string | null
-  microchipNumber: string | null; notes: string | null; isActive: boolean; createdAt: string
-  owner?: PetOwner; photoUrl?: string | null
+  id: string
+  petOwnerId: string
+  name: string
+  species: PetType
+  breed: string | null
+  gender: PetGender
+  dateOfBirth: string | null
+  weightKg: string | null
+  microchipNumber: string | null
+  notes: string | null
+  isActive: boolean
+  createdAt: string
+  owner?: PetOwner
+  photoUrl?: string | null
 }
 
 // ─── Doctors ──────────────────────────────────────────────────────
 
 export interface Doctor {
-  id: string; userId: string | null; name: string; email: string | null; phone: string | null
-  licenseNumber: string | null; specialization: string | null; bio: string | null
-  isActive: boolean; createdAt: string
+  id: string
+  userId: string | null
+  name: string
+  email: string | null
+  phone: string | null
+  licenseNumber: string | null
+  specialization: string | null
+  bio: string | null
+  isActive: boolean
+  createdAt: string
 }
 
 // ─── Campaigns ────────────────────────────────────────────────────
@@ -414,6 +571,27 @@ export interface Doctor {
 export type CampaignType = 'vaccination' | 'deworming' | 'microchip' | 'health_camp' | 'spay_neuter'
 export type CampaignStatus = 'draft' | 'published' | 'registration_open' | 'registration_closed' | 'completed' | 'cancelled'
 export type CampaignMediaRole = 'hero' | 'thumbnail' | 'mobile_banner' | 'gallery'
+
+export interface CampaignContentFaqItem {
+  question: string
+  answer: string
+}
+
+export interface CampaignContentMetadata {
+  shortSubtitle?: string | null
+  trustPoints?: string[] | null
+  organizerName?: string | null
+  partnerNames?: string[] | null
+  medicalSupervisionText?: string | null
+  policyItems?: string[] | null
+  eligibilityItems?: string[] | null
+  whatToBringItems?: string[] | null
+  supportPhone?: string | null
+  supportEmail?: string | null
+  supportWhatsApp?: string | null
+  certificateInfo?: string | null
+  faqItems?: CampaignContentFaqItem[] | null
+}
 
 export interface CampaignMedia {
   id: string
@@ -427,41 +605,88 @@ export interface CampaignMedia {
 }
 
 export interface CampaignListItem {
-  id: string; slug: string; title: string; description: string | null
-  campaignType: CampaignType; status: CampaignStatus; startDate: string; endDate: string
-  registrationOpenAt: string | null; registrationCloseAt: string | null
-  basePriceBdt: string; maxPetsPerBooking: number; isFeatured: boolean; allowedPetTypes: string[]; createdAt: string; updatedAt: string
+  id: string
+  slug: string
+  title: string
+  description: string | null
+  campaignType: CampaignType
+  status: CampaignStatus
+  startDate: string
+  endDate: string
+  registrationOpenAt: string | null
+  registrationCloseAt: string | null
+  basePriceBdt: string
+  maxPetsPerBooking: number
+  isFeatured: boolean
+  allowedPetTypes: string[]
+  createdAt: string
+  updatedAt: string
   createdBy: { id: string; name: string; email: string }
   coverImage: { id: string; url: string; altText: string | null } | null
   _count: { sessions: number; services: number; doctors: number; volunteers: number; registrations: number }
 }
 
 export interface CampaignSession {
-  id: string; campaignId: string; sessionDate: string; startTime: string; endTime: string
-  capacity: number; bookedCount: number; notes: string | null; createdAt: string
-  venue: { id: string; name: string; address: string | null; zone: { id: string; name: string; cityCorporation: { id: string; name: string } } } | null
+  id: string
+  campaignId: string
+  sessionDate: string
+  startTime: string
+  endTime: string
+  capacity: number
+  bookedCount: number
+  notes: string | null
+  createdAt: string
+  venue: {
+    id: string
+    name: string
+    address: string | null
+    zone: { id: string; name: string; cityCorporation: { id: string; name: string } } | null
+    location: VenueLocationRef | null
+    locationPath?: VenueLocationRef[]
+  } | null
 }
 
 export interface CampaignService {
-  id: string; campaignId: string; name: string; description: string | null
-  sortOrder: number; priceBdt: number | null; vaccineCatalogId: string | null
-  vaccineCatalog: { id: string; name: string } | null; createdAt: string
+  id: string
+  campaignId: string
+  name: string
+  description: string | null
+  sortOrder: number
+  priceBdt: number | null
+  vaccineCatalogId: string | null
+  vaccineCatalog: { id: string; name: string } | null
+  createdAt: string
 }
 
 export interface CampaignDoctor {
-  id: string; campaignId: string; doctorId: string; sessionId: string | null
+  id: string
+  campaignId: string
+  doctorId: string
+  sessionId: string | null
   role: string
   doctorDuty: DoctorDutyRole
   isSigningDoctor: boolean
   isPrimarySupervisor: boolean
   notes?: string | null
   assignedDate?: string
-  doctor: { id: string; name: string; licenseNumber: string | null; specialization: string | null; mobile?: string | null; phone?: string | null; email?: string | null; photoUrl?: string | null }
+  doctor: {
+    id: string
+    name: string
+    licenseNumber: string | null
+    specialization: string | null
+    mobile?: string | null
+    phone?: string | null
+    email?: string | null
+    photoUrl?: string | null
+  }
   session?: { id: string; sessionDate: string; startTime: string; venue: { name: string } } | null
 }
 
 export interface CampaignVolunteer {
-  id: string; campaignId: string; userId: string; sessionId: string | null
+  id: string
+  campaignId: string
+  userId: string
+  sessionId: string | null
   user: { id: string; name: string; email: string }
 }
 
@@ -506,11 +731,22 @@ export interface CampaignLiveStats {
 
 export interface CampaignDetail extends CampaignListItem {
   certificateTemplate: { id: string; name: string } | null
+  metadata?: CampaignContentMetadata | null
+  termsAndConditions?: string | null
   sessions: CampaignSession[]
   services: CampaignService[]
   doctors: CampaignDoctor[]
   volunteers: CampaignVolunteer[]
   media: CampaignMedia[]
+  videos?: Array<{
+    id: string
+    youtubeUrl: string
+    thumbnailUrl: string | null
+    title: string
+    caption: string | null
+    sortOrder: number
+    isActive: boolean
+  }>
   analytics: {
     totalRegistrations: number
     totalPaid: number
@@ -612,12 +848,9 @@ export interface BulkSmsBatch {
 
 // ─── Staff/Doctor Assignment Types ───────────────────────────────
 
-export type StaffDutyRole =
-  | 'QR_SCAN' | 'CHECK_IN' | 'VACCINATION_DESK'
-  | 'CERTIFICATE_DESK' | 'SESSION_MANAGER' | 'GENERAL_VOLUNTEER'
+export type StaffDutyRole = 'QR_SCAN' | 'CHECK_IN' | 'VACCINATION_DESK' | 'CERTIFICATE_DESK' | 'SESSION_MANAGER' | 'GENERAL_VOLUNTEER'
 
-export type DoctorDutyRole =
-  | 'SIGNING_DOCTOR' | 'MEDICAL_SUPERVISOR' | 'VACCINATOR' | 'EMERGENCY_SUPPORT'
+export type DoctorDutyRole = 'SIGNING_DOCTOR' | 'MEDICAL_SUPERVISOR' | 'VACCINATOR' | 'EMERGENCY_SUPPORT'
 
 export interface CampaignStaffAssignment {
   id: string
@@ -645,7 +878,12 @@ export interface QRVerifyPetBooking {
   vaccinatedAt: string | null
   services: { id: string; campaignServiceId: string; name: string | undefined; isRequired: boolean | undefined; administered: boolean }[]
   certificate: { id: string; certificateNumber: string; verifyToken: string; issuedAt: string } | null
-  latestVaccinationRecord: { vaccineName: string; batchNumber: string | null; administeredAt: string; doctor: { id: string; name: string; licenseNumber: string | null } | null } | null
+  latestVaccinationRecord: {
+    vaccineName: string
+    batchNumber: string | null
+    administeredAt: string
+    doctor: { id: string; name: string; licenseNumber: string | null } | null
+  } | null
   allowedActions: { canCheckIn: boolean; canMarkVaccinated: boolean; canIssueCertificate: boolean; canResendCertificate: boolean }
 }
 
@@ -709,8 +947,14 @@ export interface CertificateIssueResult {
 // ─── Phase 2: Campaign Registrations ─────────────────────────────
 
 export type CampaignRegistrationStatus =
-  | 'pending_payment' | 'paid' | 'checked_in' | 'vaccinated'
-  | 'certificate_issued' | 'completed' | 'no_show' | 'cancelled'
+  | 'pending_payment'
+  | 'paid'
+  | 'checked_in'
+  | 'vaccinated'
+  | 'certificate_issued'
+  | 'completed'
+  | 'no_show'
+  | 'cancelled'
 
 export type WaitlistStatus = 'waiting' | 'promoted' | 'expired' | 'cancelled'
 
@@ -1546,14 +1790,7 @@ export interface CareFundDashboard {
 
 // ─── Community Pet Care — Enterprise Content (Phase 4) ───────────
 
-export type CarePartnerBenefitCategory =
-  | 'SERVICE'
-  | 'DISCOUNT'
-  | 'MEMBERSHIP'
-  | 'WELFARE'
-  | 'DIAGNOSTIC'
-  | 'DIGITAL'
-  | 'FUTURE'
+export type CarePartnerBenefitCategory = 'SERVICE' | 'DISCOUNT' | 'MEMBERSHIP' | 'WELFARE' | 'DIAGNOSTIC' | 'DIGITAL' | 'FUTURE'
 
 export interface CarePartnerBenefit {
   id: string
@@ -1569,14 +1806,7 @@ export interface CarePartnerBenefit {
   updatedAt: string
 }
 
-export type SocialImpactProgramType =
-  | 'STRAY_TREATMENT'
-  | 'FEEDING'
-  | 'VACCINATION'
-  | 'RESCUE'
-  | 'SHELTER'
-  | 'LOW_INCOME_SUPPORT'
-  | 'EDUCATION'
+export type SocialImpactProgramType = 'STRAY_TREATMENT' | 'FEEDING' | 'VACCINATION' | 'RESCUE' | 'SHELTER' | 'LOW_INCOME_SUPPORT' | 'EDUCATION'
 
 export interface SocialImpactProgram {
   id: string
@@ -1609,12 +1839,7 @@ export interface RoadmapItem {
   updatedAt: string
 }
 
-export type DiagnosticServiceCategory =
-  | 'LAB'
-  | 'IMAGING'
-  | 'SPECIALIST'
-  | 'EMERGENCY'
-  | 'FUTURE_TECH'
+export type DiagnosticServiceCategory = 'LAB' | 'IMAGING' | 'SPECIALIST' | 'EMERGENCY' | 'FUTURE_TECH'
 
 export interface DiagnosticCenterService {
   id: string

@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation'
 import { Fragment, MouseEvent, useCallback, useEffect, useState } from 'react'
 import { Collapse } from 'react-bootstrap'
 
-const MenuItemWithChildren = ({ item, className, linkClassName, subMenuClassName, activeMenuItems, toggleMenu }: SubMenus) => {
+const MenuItemWithChildren = ({ item, className, linkClassName, subMenuClassName, activeMenuItems, toggleMenu, isChild }: SubMenus) => {
   const [open, setOpen] = useState<boolean>(activeMenuItems!.includes(item.key))
 
   useEffect(() => {
@@ -33,12 +33,7 @@ const MenuItemWithChildren = ({ item, className, linkClassName, subMenuClassName
   return (
     <li className={className}>
       <div onClick={toggleMenuItem} aria-expanded={open} role="button" className={clsx(linkClassName)}>
-        {item.icon && (
-          <span className="nav-icon">
-            {' '}
-            <IconifyIcon icon={item.icon} />{' '}
-          </span>
-        )}
+        {isChild ? <span className="nav-dot" aria-hidden="true" /> : item.icon && <span className="nav-icon"> <IconifyIcon icon={item.icon} /> </span>}
         <span className="nav-text">{item.label}</span>
         {!item.badge ? (
           <IconifyIcon icon="bx:chevron-down" className="menu-arrow ms-auto" />
@@ -60,9 +55,10 @@ const MenuItemWithChildren = ({ item, className, linkClassName, subMenuClassName
                       className="sub-nav-item"
                       subMenuClassName="nav sub-navbar-nav"
                       toggleMenu={toggleMenu}
+                      isChild
                     />
                   ) : (
-                    <MenuItem item={child} className="sub-nav-item" linkClassName={clsx('sub-nav-link', getActiveClass(child))} />
+                    <MenuItem item={child} className="sub-nav-item" linkClassName={clsx('sub-nav-link', getActiveClass(child))} isChild />
                   )}
                 </Fragment>
               )
@@ -74,21 +70,25 @@ const MenuItemWithChildren = ({ item, className, linkClassName, subMenuClassName
   )
 }
 
-const MenuItem = ({ item, className, linkClassName }: SubMenus) => {
+const MenuItem = ({ item, className, linkClassName, isChild }: SubMenus) => {
   return (
     <li className={className}>
-      <MenuItemLink item={item} className={linkClassName} />
+      <MenuItemLink item={item} className={linkClassName} isChild={isChild} />
     </li>
   )
 }
 
-const MenuItemLink = ({ item, className }: SubMenus) => {
+const MenuItemLink = ({ item, className, isChild }: SubMenus) => {
   return (
     <Link href={item.url ?? ''} target={item.target} className={clsx(className, { disabled: item.isDisabled })}>
-      {item.icon && (
-        <span className="nav-icon">
-          <IconifyIcon icon={item.icon} />
-        </span>
+      {isChild ? (
+        <span className="nav-dot" aria-hidden="true" />
+      ) : (
+        item.icon && (
+          <span className="nav-icon">
+            <IconifyIcon icon={item.icon} />
+          </span>
+        )
       )}
       <span className="nav-text">{item.label}</span>
       {item.badge && <span className={`badge badge-pill text-end bg-${item.badge.variant}`}>{item.badge.text}</span>}
@@ -118,9 +118,16 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
   const activeMenu = useCallback(() => {
     const trimmedURL = pathname?.replaceAll('', '')
     const matchingMenuItem = getMenuItemFromURL(menuItems, trimmedURL)
+    const matchingPrefixItem = !matchingMenuItem
+      ? menuItems
+          .filter((item) => !item.isTitle && !!item.url && trimmedURL?.startsWith(item.url))
+          .sort((a, b) => (b.url?.length ?? 0) - (a.url?.length ?? 0))[0]
+      : undefined
 
-    if (matchingMenuItem) {
-      const activeMt = findMenuItem(menuItems, matchingMenuItem.key)
+    const activeSourceItem = matchingMenuItem ?? matchingPrefixItem
+
+    if (activeSourceItem) {
+      const activeMt = findMenuItem(menuItems, activeSourceItem.key)
       if (activeMt) {
         setActiveMenuItems([activeMt.key, ...findAllParent(menuItems, activeMt)])
       }

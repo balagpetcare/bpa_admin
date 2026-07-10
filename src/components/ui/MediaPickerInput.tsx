@@ -6,6 +6,7 @@ import { Icon } from '@iconify/react'
 import { useApi } from '@/hooks/useApi'
 import { mediaApi } from '@/lib/api/media.api'
 import { getMediaImageUrl } from '@/utils/media'
+import MediaPreview from './MediaPreview'
 import type { MediaFile } from '@/types/bpa.types'
 import ApiErrorAlert from './ApiErrorAlert'
 import { ApiError } from '@/lib/api'
@@ -101,7 +102,6 @@ export default function MediaPickerInput({
   const displayUrl = previewFile?.url ?? previewUrl
   const resolvedDisplayUrl = displayUrl ? getMediaImageUrl(displayUrl) : null
   const displayMimeType = previewFile?.mimeType ?? previewMimeType ?? null
-  const isVideo = !!displayMimeType && displayMimeType.startsWith('video/')
 
   if (customTrigger) {
     return (
@@ -161,20 +161,14 @@ export default function MediaPickerInput({
                       onClick={() => handleSelect(file)}
                       title={file.originalName}
                     >
-                      {file.mimeType.startsWith('video/') ? (
-                        <video
-                          src={getMediaImageUrl(file)}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          muted
-                        />
-                      ) : (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={getMediaImageUrl(file)}
-                          alt={file.altText ?? file.originalName}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
-                      )}
+                      <MediaPreview
+                        media={file}
+                        alt={file.altText ?? file.originalName}
+                        fit="cover"
+                        filename={file.originalName}
+                        showActions={false}
+                        style={{ width: '100%', height: '100%' }}
+                      />
                       {value === file.id && (
                         <Badge bg="primary" className="position-absolute top-0 end-0 m-1">
                           <Icon icon="solar:check-circle-bold" />
@@ -220,23 +214,13 @@ export default function MediaPickerInput({
 
       {resolvedDisplayUrl ? (
         <div className="position-relative d-inline-block">
-          {isVideo ? (
-            <video
-              src={resolvedDisplayUrl}
-              className="rounded border"
-              style={{ maxHeight: 160, maxWidth: '100%', display: 'block', objectFit: 'cover' }}
-              controls
-              muted
-            />
-          ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={resolvedDisplayUrl}
-              alt="Selected media"
-              className="rounded border"
-              style={{ maxHeight: 160, maxWidth: '100%', display: 'block', objectFit: 'cover' }}
-            />
-          )}
+          <MediaPreview
+            media={previewFile ?? { url: resolvedDisplayUrl, mimeType: displayMimeType ?? '' }}
+            alt="Selected media"
+            fit="cover"
+            className="rounded border"
+            style={{ maxHeight: 160, maxWidth: '100%', display: 'block' }}
+          />
           <div className="mt-2 d-flex gap-2">
             <Button variant="outline-secondary" size="sm" onClick={() => setOpen(true)}>
               <Icon icon="solar:pen-bold" className="me-1" />
@@ -316,20 +300,14 @@ export default function MediaPickerInput({
                     onClick={() => handleSelect(file)}
                     title={file.originalName}
                   >
-                    {file.mimeType.startsWith('video/') ? (
-                      <video
-                        src={getMediaImageUrl(file)}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        muted
-                      />
-                    ) : (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={getMediaImageUrl(file)}
-                        alt={file.altText ?? file.originalName}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    )}
+                    <MediaPreview
+                      media={file}
+                      alt={file.altText ?? file.originalName}
+                      fit="cover"
+                      filename={file.originalName}
+                      showActions={false}
+                      style={{ width: '100%', height: '100%' }}
+                    />
                     {value === file.id && (
                       <Badge bg="primary" className="position-absolute top-0 end-0 m-1">
                         <Icon icon="solar:check-circle-bold" />

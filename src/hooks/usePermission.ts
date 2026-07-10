@@ -1,13 +1,47 @@
 'use client'
 
+import { useEffect, useMemo, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { api } from '@/lib/api'
 
 // Returns helpers for checking the current user's permissions and roles.
 export function usePermission() {
   const { data: session } = useSession()
-
-  const permissions: string[] = (session?.user as any)?.permissions ?? []
   const roles: string[] = session?.user?.roles ?? []
+  const [fetchedPermissions, setFetchedPermissions] = useState<string[] | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadPermissions() {
+      if (!session?.accessToken || roles.includes('super_admin')) {
+        setFetchedPermissions([])
+        return
+      }
+
+      try {
+        const me = await api.get<{ permissions?: string[] }>('/auth/me')
+        if (!cancelled) {
+          setFetchedPermissions(me.permissions ?? [])
+        }
+      } catch {
+        if (!cancelled) {
+          setFetchedPermissions([])
+        }
+      }
+    }
+
+    loadPermissions()
+
+    return () => {
+      cancelled = true
+    }
+  }, [roles, session?.accessToken])
+
+  const permissions = useMemo(
+    () => (session?.user as any)?.permissions ?? fetchedPermissions ?? [],
+    [fetchedPermissions, session?.user],
+  )
 
   // Check a single permission string like "news:publish"
   const can = (permission: string): boolean => {

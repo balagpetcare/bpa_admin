@@ -28,9 +28,7 @@ export const getMenuItemFromURL = (items: MenuItemType | MenuItemType[], url: st
   } else {
     if (items.url == url) return items
     if (items.children != null) {
-      for (const item of items.children) {
-        if (item.url == url) return item
-      }
+      return getMenuItemFromURL(items.children, url)
     }
   }
 }

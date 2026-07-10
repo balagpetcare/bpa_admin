@@ -11,6 +11,7 @@ import { useApi, useApiMutation } from '@/hooks/useApi'
 import { usePermission } from '@/hooks/usePermission'
 import { campaignsApi } from '@/lib/api/campaigns.api'
 import { locationsApi } from '@/lib/api/locations.api'
+import LocationSelector, { type LocationValue } from '@/components/location/LocationSelector'
 import type { ApiError } from '@/lib/api'
 import type { CampaignSession, Venue } from '@/types/bpa.types'
 
@@ -21,17 +22,30 @@ export default function SessionsManager({ campaignId }: { campaignId: string }) 
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState<CampaignSession | null>(null)
   const [form, setForm] = useState(EMPTY)
+  // Narrows the venue dropdown to an area — venues themselves are always
+  // selected from the reusable Venue list, never typed as free text.
+  const [venueLocationFilter, setVenueLocationFilter] = useState<LocationValue>({})
   const { mutate, loading: saving } = useApiMutation<unknown, unknown>()
 
   const sessionsFn = useCallback(() => campaignsApi.listSessions(campaignId), [campaignId])
-  const venuesFn = useCallback(() => locationsApi.listVenues(undefined, { isActive: true }), [])
+  const venuesFn = useCallback(() => locationsApi.listVenues({
+    isActive: true,
+    divisionId: venueLocationFilter.divisionId,
+    districtId: venueLocationFilter.districtId,
+    upazilaId: venueLocationFilter.upazilaId,
+    unionId: venueLocationFilter.unionId,
+    cityCorporationId: venueLocationFilter.cityCorporationId,
+    cityZoneId: venueLocationFilter.cityZoneId,
+    wardId: venueLocationFilter.wardId,
+  }), [venueLocationFilter])
   const { data: sessions, loading, error, refetch } = useApi(sessionsFn, [campaignId])
-  const { data: venues } = useApi(venuesFn, [])
+  const { data: venues } = useApi(venuesFn, [venueLocationFilter])
 
-  function openCreate() { setEditing(null); setForm(EMPTY); setShowModal(true) }
+  function openCreate() { setEditing(null); setForm(EMPTY); setVenueLocationFilter({}); setShowModal(true) }
   function openEdit(s: CampaignSession) {
     setEditing(s)
     setForm({ venueId: s.venue?.id ?? '', sessionDate: s.sessionDate.slice(0, 10), startTime: s.startTime, endTime: s.endTime, capacity: String(s.capacity), notes: s.notes ?? '' })
+    setVenueLocationFilter({})
     setShowModal(true)
   }
 
@@ -77,7 +91,10 @@ export default function SessionsManager({ campaignId }: { campaignId: string }) 
                   <tr key={s.id}>
                     <td>{new Date(s.sessionDate).toLocaleDateString()}</td>
                     <td>{s.startTime} – {s.endTime}</td>
-                    <td>{s.venue?.name ?? <span className="text-muted">—</span>}<div className="text-muted small">{s.venue?.zone?.cityCorporation?.name}</div></td>
+                    <td>
+                      {s.venue?.name ?? <span className="text-muted">—</span>}
+                      <div className="text-muted small">{s.venue?.location?.nameEn ?? s.venue?.zone?.cityCorporation?.name}</div>
+                    </td>
                     <td>{s.bookedCount} / {s.capacity}</td>
                     <td>{s.notes ?? <span className="text-muted">—</span>}</td>
                     <td className="text-end">
@@ -97,11 +114,24 @@ export default function SessionsManager({ campaignId }: { campaignId: string }) 
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3">
+              <Form.Label className="small text-muted">Filter venues by area (optional)</Form.Label>
+              <LocationSelector value={venueLocationFilter} onChange={setVenueLocationFilter} showAddressLine={false} />
+            </Form.Group>
+            <Form.Group className="mb-3">
               <Form.Label>Venue</Form.Label>
               <Form.Select value={form.venueId} onChange={(e) => setForm(f => ({ ...f, venueId: e.target.value }))}>
                 <option value="">Select venue</option>
-                {(venues ?? []).map((v: Venue) => <option key={v.id} value={v.id}>{v.name}</option>)}
+                {(venues ?? []).map((v: Venue) => (
+                  <option key={v.id} value={v.id}>
+                    {v.name}{v.location ? ` — ${v.location.nameEn}` : ''}
+                  </option>
+                ))}
               </Form.Select>
+              {venues && venues.length === 0 && (
+                <Form.Text className="text-muted">
+                  No venues in this area yet — create one on the <Link href="/venues">Venues</Link> page.
+                </Form.Text>
+              )}
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Date</Form.Label>

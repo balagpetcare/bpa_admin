@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap'
-import { Icon } from '@iconify/react'
 import CopyButton from '@/components/ui/CopyButton'
 import ApiErrorAlert from '@/components/ui/ApiErrorAlert'
+import MediaPreview from '@/components/ui/MediaPreview'
 import { useApiMutation } from '@/hooks/useApi'
 import { usePermission } from '@/hooks/usePermission'
 import { mediaApi } from '@/lib/api/media.api'
@@ -43,8 +43,6 @@ export default function MediaDetailModal({ file, isOpen, onClose, onUpdated }: M
 
   if (!file) return null
 
-  const isImage = file.mimeType.startsWith('image/')
-
   return (
     <Modal show={isOpen} onHide={onClose} size="lg">
       <Modal.Header closeButton>
@@ -57,12 +55,12 @@ export default function MediaDetailModal({ file, isOpen, onClose, onUpdated }: M
         <Row>
           <Col md={7} className="mb-3 mb-md-0">
             <div className="bg-light rounded d-flex align-items-center justify-content-center" style={{ height: 260 }}>
-              {isImage ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={file.url} alt={file.altText ?? file.originalName} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-              ) : (
-                <Icon icon="solar:file-bold-duotone" style={{ fontSize: 80 }} className="text-muted" />
-              )}
+              <MediaPreview
+                media={file}
+                alt={file.altText ?? file.originalName}
+                fit="contain"
+                filename={file.originalName}
+              />
             </div>
           </Col>
           <Col md={5}>

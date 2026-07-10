@@ -1,286 +1,240 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { Card, Button, Table, Modal, Form, Row, Col, Badge } from 'react-bootstrap'
+import { useCallback, useMemo, useState } from 'react'
+import { Card, Button, Badge, Form, Row, Col, Spinner, InputGroup } from 'react-bootstrap'
 import { Icon } from '@iconify/react'
+import Link from 'next/link'
 import PageHeader from '@/components/ui/PageHeader'
 import ApiErrorAlert from '@/components/ui/ApiErrorAlert'
 import LoadingOverlay from '@/components/ui/LoadingOverlay'
-import { useApi, useApiMutation } from '@/hooks/useApi'
-import { usePermission } from '@/hooks/usePermission'
-import { locationsApi } from '@/lib/api/locations.api'
+import { useApi } from '@/hooks/useApi'
+import { locationTreeApi } from '@/lib/api/locations.api'
 import type { ApiError } from '@/lib/api'
-import type { Country, Division, District, CityCorporation, Zone, Venue } from '@/types/bpa.types'
+import type { LocationNode, LocationNodeType } from '@/types/bpa.types'
 
-interface LocationRow { id: string; name: string; subtitle?: string; isActive?: boolean }
-
-type ActiveLevel = 'countries' | 'divisions' | 'districts' | 'city-corporations' | 'zones' | 'venues'
-
-const LEVELS: { key: ActiveLevel; label: string; icon: string }[] = [
-  { key: 'countries', label: 'Countries', icon: 'solar:earth-bold-duotone' },
-  { key: 'divisions', label: 'Divisions', icon: 'solar:map-bold-duotone' },
-  { key: 'districts', label: 'Districts', icon: 'solar:map-point-bold-duotone' },
-  { key: 'city-corporations', label: 'City Corps', icon: 'solar:buildings-bold-duotone' },
-  { key: 'zones', label: 'Zones', icon: 'solar:layers-minimalistic-bold-duotone' },
-  { key: 'venues', label: 'Venues', icon: 'solar:home-2-bold-duotone' },
+// Types specific enough to host a venue. Division/District are too coarse —
+// venues always live under a more specific area. Used only to decide when
+// to show the "Manage venues here" link into the separate Venues page.
+const VENUE_ELIGIBLE_TYPES: LocationNodeType[] = [
+  'UPAZILA', 'THANA', 'UNION', 'POURASHAVA', 'CITY_CORPORATION', 'CITY_ZONE', 'WARD', 'AREA',
 ]
 
+const TYPE_LABEL: Record<LocationNodeType, string> = {
+  DIVISION: 'Division',
+  DISTRICT: 'District',
+  UPAZILA: 'Upazila',
+  THANA: 'Thana',
+  UNION: 'Union',
+  POURASHAVA: 'Pourashava',
+  CITY_CORPORATION: 'City Corporation',
+  CITY_ZONE: 'City Zone',
+  WARD: 'Ward',
+  AREA: 'Area',
+}
+
+const TYPE_ICON: Record<LocationNodeType, string> = {
+  DIVISION: 'solar:map-bold-duotone',
+  DISTRICT: 'solar:map-point-bold-duotone',
+  UPAZILA: 'solar:signpost-bold-duotone',
+  THANA: 'solar:signpost-bold-duotone',
+  UNION: 'solar:flag-bold-duotone',
+  POURASHAVA: 'solar:flag-bold-duotone',
+  CITY_CORPORATION: 'solar:buildings-2-bold-duotone',
+  CITY_ZONE: 'solar:layers-minimalistic-bold-duotone',
+  WARD: 'solar:point-on-map-bold-duotone',
+  AREA: 'solar:point-on-map-bold-duotone',
+}
+
+// Location Management browses the Bangladesh administrative hierarchy only.
+// Creating/editing physical venues is a separate concern — see the Venues
+// page (/venues), which is the single reusable source of venue records for
+// campaign sessions.
 export default function LocationsContent() {
-  const { can } = usePermission()
-  const [activeLevel, setActiveLevel] = useState<ActiveLevel>('countries')
-  const [showModal, setShowModal] = useState(false)
-  const [editing, setEditing] = useState<{ id: string; name: string } | null>(null)
-  const [formName, setFormName] = useState('')
-  const [formCode, setFormCode] = useState('')
-  const [formAddress, setFormAddress] = useState('')
-  const [formParentId, setFormParentId] = useState('')
-  const { mutate, loading: saving, error: mutateError } = useApiMutation<unknown, unknown>()
+  // Breadcrumb path from Bangladesh (root) down to the currently selected node.
+  const [path, setPath] = useState<LocationNode[]>([])
+  const currentNode = path.length > 0 ? path[path.length - 1] : null
 
-  // Fetch data for each level
-  const countriesFn = useCallback(() => locationsApi.listCountries(), [])
-  const divisionsFn = useCallback(() => locationsApi.listDivisions(), [])
-  const districtsFn = useCallback(() => locationsApi.listDistricts(), [])
-  const citycorpsFn = useCallback(() => locationsApi.listCityCorporations(), [])
-  const zonesFn = useCallback(() => locationsApi.listZones(), [])
-  const venuesFn = useCallback(() => locationsApi.listVenues(), [])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<LocationNode[] | null>(null)
+  const [searching, setSearching] = useState(false)
 
-  const { data: countries, loading: lCountries, error: eCountries, refetch: rCountries } = useApi(countriesFn, [])
-  const { data: divisions, loading: lDivisions, refetch: rDivisions } = useApi(divisionsFn, [])
-  const { data: districts, loading: lDistricts, refetch: rDistricts } = useApi(districtsFn, [])
-  const { data: citycorps, loading: lCitycorps, refetch: rCitycorps } = useApi(citycorpsFn, [])
-  const { data: zones, loading: lZones, refetch: rZones } = useApi(zonesFn, [])
-  const { data: venues, loading: lVenues, refetch: rVenues } = useApi(venuesFn, [])
+  const childrenFn = useCallback(
+    () => locationTreeApi.listChildren({ parentId: currentNode?.id ?? null }),
+    [currentNode?.id],
+  )
+  const { data: children, loading: loadingChildren, error: childrenError } = useApi(childrenFn, [currentNode?.id])
 
-  const refetchMap: Record<ActiveLevel, () => void> = {
-    countries: rCountries, divisions: rDivisions, districts: rDistricts,
-    'city-corporations': rCitycorps, zones: rZones, venues: rVenues,
-  }
-  const loadingMap: Record<ActiveLevel, boolean> = {
-    countries: lCountries, divisions: lDivisions, districts: lDistricts,
-    'city-corporations': lCitycorps, zones: lZones, venues: lVenues,
+  const isVenueEligible = currentNode ? VENUE_ELIGIBLE_TYPES.includes(currentNode.type) : false
+
+  function goToRoot() {
+    setPath([])
+    setSearchResults(null)
+    setSearchQuery('')
   }
 
-  const getRows = (): LocationRow[] => {
-    switch (activeLevel) {
-      case 'countries': return (countries ?? []).map((c: Country) => ({ id: c.id, name: c.name, subtitle: c.code }))
-      case 'divisions': return (divisions ?? []).map((d: Division) => ({ id: d.id, name: d.name }))
-      case 'districts': return (districts ?? []).map((d: District) => ({ id: d.id, name: d.name }))
-      case 'city-corporations': return (citycorps ?? []).map((c: CityCorporation) => ({ id: c.id, name: c.name }))
-      case 'zones': return (zones ?? []).map((z: Zone) => ({ id: z.id, name: z.name }))
-      case 'venues': return (venues ?? []).map((v: Venue) => ({ id: v.id, name: v.name, subtitle: v.address ?? undefined, isActive: v.isActive }))
+  function goToDepth(depth: number) {
+    setPath((p) => p.slice(0, depth + 1))
+    setSearchResults(null)
+  }
+
+  function drillInto(node: LocationNode) {
+    setPath((p) => [...p, node])
+    setSearchResults(null)
+    setSearchQuery('')
+  }
+
+  async function runSearch() {
+    const q = searchQuery.trim()
+    if (!q) { setSearchResults(null); return }
+    setSearching(true)
+    try {
+      const results = await locationTreeApi.search(q)
+      setSearchResults(results)
+    } finally {
+      setSearching(false)
     }
   }
 
-  const getParentOptions = (): { id: string; name: string }[] => {
-    switch (activeLevel) {
-      case 'divisions': return countries ?? []
-      case 'districts': return divisions ?? []
-      case 'city-corporations': return districts ?? []
-      case 'zones': return citycorps ?? []
-      case 'venues': return zones ?? []
-      default: return []
-    }
+  async function jumpToSearchResult(node: LocationNode) {
+    const fullPath = await locationTreeApi.getPath(node.id)
+    setPath(fullPath)
+    setSearchResults(null)
+    setSearchQuery('')
   }
 
-  const parentLabel: Record<ActiveLevel, string> = {
-    countries: '', divisions: 'Country', districts: 'Division',
-    'city-corporations': 'District', zones: 'City Corp', venues: 'Zone',
-  }
-
-  function openCreate() {
-    setEditing(null); setFormName(''); setFormCode(''); setFormAddress(''); setFormParentId(''); setShowModal(true)
-  }
-  function openEdit(row: LocationRow) {
-    setEditing({ id: row.id, name: row.name })
-    setFormName(row.name)
-    setFormCode(activeLevel === 'countries' ? (row.subtitle ?? '') : '')
-    setFormAddress(activeLevel === 'venues' ? (row.subtitle ?? '') : '')
-    setShowModal(true)
-  }
-
-  async function handleSave() {
-    if (!formName.trim()) return
-    if (activeLevel === 'venues' && !editing && !formAddress.trim()) return
-    let result: unknown = null
-    if (editing) {
-      result = await mutate(() => {
-        switch (activeLevel) {
-          case 'countries': return locationsApi.updateCountry(editing.id, { name: formName, code: formCode || undefined })
-          case 'divisions': return locationsApi.updateDivision(editing.id, { name: formName })
-          case 'districts': return locationsApi.updateDistrict(editing.id, { name: formName })
-          case 'city-corporations': return locationsApi.updateCityCorporation(editing.id, { name: formName })
-          case 'zones': return locationsApi.updateZone(editing.id, { name: formName })
-          case 'venues': return locationsApi.updateVenue(editing.id, { name: formName, address: formAddress || undefined })
-        }
-      }, undefined)
-    } else {
-      result = await mutate(() => {
-        switch (activeLevel) {
-          case 'countries': return locationsApi.createCountry({ name: formName, code: formCode })
-          case 'divisions': return locationsApi.createDivision({ name: formName, countryId: formParentId })
-          case 'districts': return locationsApi.createDistrict({ name: formName, divisionId: formParentId })
-          case 'city-corporations': return locationsApi.createCityCorporation({ name: formName, districtId: formParentId })
-          case 'zones': return locationsApi.createZone({ name: formName, cityCorporationId: formParentId })
-          case 'venues': return locationsApi.createVenue({ name: formName, zoneId: formParentId, address: formAddress })
-        }
-      }, undefined)
-    }
-    if (result !== null) {
-      setShowModal(false)
-      refetchMap[activeLevel]()
-    }
-  }
-
-  async function handleDelete(id: string) {
-    if (!confirm('Delete this location? This will fail if child records exist.')) return
-    const result = await mutate(() => {
-      switch (activeLevel) {
-        case 'countries': return locationsApi.deleteCountry(id)
-        case 'divisions': return locationsApi.deleteDivision(id)
-        case 'districts': return locationsApi.deleteDistrict(id)
-        case 'city-corporations': return locationsApi.deleteCityCorporation(id)
-        case 'zones': return locationsApi.deleteZone(id)
-        case 'venues': return locationsApi.deleteVenue(id)
-      }
-    }, undefined)
-    // mutate returns null on error (error is shown via mutateError), so only refetch on success
-    if (result !== null) refetchMap[activeLevel]()
-  }
-
-  const rows = getRows()
-  const parentOptions = getParentOptions()
-  const needsParent = activeLevel !== 'countries'
-  const isLoading = loadingMap[activeLevel]
+  const breadcrumbTrail = useMemo(() => path.map((n) => ({ id: n.id, label: n.nameEn, type: n.type })), [path])
 
   return (
     <div className="container-fluid">
       <PageHeader
-        title="Locations"
+        title="Location Management"
         breadcrumbs={[{ label: 'Campaign Mgmt' }, { label: 'Locations' }]}
-        action={
-          can('locations:create') ? (
-            <Button variant="primary" onClick={openCreate}>
-              <Icon icon="solar:add-circle-bold" className="me-1" />
-              Add {LEVELS.find(l => l.key === activeLevel)?.label.slice(0, -1)}
-            </Button>
-          ) : undefined
-        }
       />
 
-      <ApiErrorAlert error={mutateError ?? (eCountries as ApiError | null)} />
+      <ApiErrorAlert error={(childrenError as ApiError | null) ?? null} />
 
-      {/* Level tabs */}
-      <div className="d-flex gap-2 mb-3 flex-wrap">
-        {LEVELS.map((l) => (
-          <Button
-            key={l.key}
-            variant={activeLevel === l.key ? 'primary' : 'outline-secondary'}
-            size="sm"
-            onClick={() => setActiveLevel(l.key)}
-          >
-            <Icon icon={l.icon} className="me-1" />
-            {l.label}
-          </Button>
-        ))}
-      </div>
+      {/* Search across the full Bangladesh location tree */}
+      <Card className="mb-3">
+        <Card.Body>
+          <InputGroup>
+            <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
+            <Form.Control
+              placeholder="Search division, district, upazila, union, city corporation, zone, or ward…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') runSearch() }}
+            />
+            <Button variant="outline-secondary" onClick={runSearch} disabled={searching}>
+              {searching ? <Spinner size="sm" /> : 'Search'}
+            </Button>
+            {searchResults !== null && (
+              <Button variant="outline-secondary" onClick={() => { setSearchResults(null); setSearchQuery('') }}>
+                <Icon icon="solar:close-circle-bold" />
+              </Button>
+            )}
+          </InputGroup>
 
-      <Card>
+          {searchResults !== null && (
+            <div className="mt-3">
+              {searchResults.length === 0 ? (
+                <p className="text-muted small mb-0">No locations matched &quot;{searchQuery}&quot;.</p>
+              ) : (
+                <div className="d-flex flex-column gap-1">
+                  {searchResults.map((r) => (
+                    <button
+                      key={r.id}
+                      type="button"
+                      className="btn btn-sm btn-outline-light text-start d-flex align-items-center gap-2 border"
+                      onClick={() => jumpToSearchResult(r)}
+                    >
+                      <Icon icon={TYPE_ICON[r.type]} />
+                      <span className="fw-medium">{r.nameEn}</span>
+                      <Badge bg="secondary" className="ms-auto">{TYPE_LABEL[r.type]}</Badge>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </Card.Body>
+      </Card>
+
+      {/* Breadcrumb: Bangladesh > Division > District > Upazila/City Corp > Union/Zone > Ward */}
+      <nav aria-label="location breadcrumb" className="mb-3">
+        <ol className="breadcrumb mb-0 flex-wrap">
+          <li className="breadcrumb-item">
+            <button type="button" className="btn btn-link p-0 text-decoration-none" onClick={goToRoot}>
+              <Icon icon="solar:global-bold-duotone" className="me-1" />Bangladesh
+            </button>
+          </li>
+          {breadcrumbTrail.map((crumb, i) => (
+            <li key={crumb.id} className={`breadcrumb-item ${i === breadcrumbTrail.length - 1 ? 'active' : ''}`}>
+              {i === breadcrumbTrail.length - 1 ? (
+                crumb.label
+              ) : (
+                <button type="button" className="btn btn-link p-0 text-decoration-none" onClick={() => goToDepth(i)}>
+                  {crumb.label}
+                </button>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+
+      {/* Children of the current node */}
+      <Card className={isVenueEligible && currentNode ? 'mb-3' : ''}>
+        <Card.Header className="d-flex align-items-center justify-content-between">
+          <span className="fw-semibold">
+            {currentNode ? `${TYPE_LABEL[currentNode.type]}: ${currentNode.nameEn}` : 'Divisions'}
+          </span>
+          {currentNode && (
+            <Badge bg="light" text="dark" className="border">{TYPE_LABEL[currentNode.type]}</Badge>
+          )}
+        </Card.Header>
         <Card.Body className="p-0">
-          <LoadingOverlay loading={isLoading}>
-            <Table hover className="table-centered align-middle mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th>Name</th>
-                  {(activeLevel === 'countries' || activeLevel === 'venues') && <th>Details</th>}
-                  {activeLevel === 'venues' && <th>Status</th>}
-                  <th className="text-end">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.length === 0 ? (
-                  <tr><td colSpan={4} className="text-center py-4 text-muted">No records found</td></tr>
-                ) : (
-                  rows.map((row) => (
-                    <tr key={row.id}>
-                      <td className="fw-semibold">{row.name}</td>
-                      {(activeLevel === 'countries' || activeLevel === 'venues') && (
-                        <td><span className="text-muted small">{row.subtitle ?? '—'}</span></td>
-                      )}
-                      {activeLevel === 'venues' && (
-                        <td>
-                          <Badge bg={row.isActive !== false ? 'success' : 'secondary'}>
-                            {row.isActive !== false ? 'Active' : 'Inactive'}
-                          </Badge>
-                        </td>
-                      )}
-                      <td className="text-end">
-                        {can('locations:update') && (
-                          <Button variant="soft-primary" size="sm" className="me-1" onClick={() => openEdit(row)}>
-                            <Icon icon="solar:pen-bold" />
-                          </Button>
-                        )}
-                        {can('locations:delete') && (
-                          <Button variant="soft-danger" size="sm" onClick={() => handleDelete(row.id)}>
-                            <Icon icon="solar:trash-bin-trash-bold" />
-                          </Button>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </Table>
+          <LoadingOverlay loading={loadingChildren}>
+            {(children ?? []).length === 0 ? (
+              <div className="text-center py-5 text-muted">
+                <Icon icon="solar:map-point-remove-bold-duotone" style={{ fontSize: 40, opacity: 0.3 }} />
+                <div className="mt-2">
+                  {isVenueEligible ? 'This is a leaf area — manage its venues on the Venues page.' : 'No child locations are seeded under this node.'}
+                </div>
+              </div>
+            ) : (
+              <Row className="g-0">
+                {(children ?? []).map((child) => (
+                  <Col xs={12} sm={6} md={4} lg={3} key={child.id} className="border-bottom border-end p-2">
+                    <button
+                      type="button"
+                      className="btn btn-light w-100 h-100 text-start d-flex align-items-center gap-2 py-2"
+                      onClick={() => drillInto(child)}
+                    >
+                      <Icon icon={TYPE_ICON[child.type]} className="text-primary flex-shrink-0" style={{ fontSize: 20 }} />
+                      <span className="flex-grow-1 text-truncate">{child.nameEn}</span>
+                      <Icon icon="solar:alt-arrow-right-linear" className="text-muted" />
+                    </button>
+                  </Col>
+                ))}
+              </Row>
+            )}
           </LoadingOverlay>
         </Card.Body>
       </Card>
 
-      {/* Create / Edit Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>{editing ? 'Edit' : 'Add'} {LEVELS.find(l => l.key === activeLevel)?.label.slice(0, -1)}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>Name</Form.Label>
-              <Form.Control value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="Enter name" />
-            </Form.Group>
-            {activeLevel === 'countries' && (
-              <Form.Group className="mb-3">
-                <Form.Label>Country Code</Form.Label>
-                <Form.Control value={formCode} onChange={(e) => setFormCode(e.target.value)} placeholder="e.g. BD" maxLength={10} />
-              </Form.Group>
-            )}
-            {activeLevel === 'venues' && (
-              <Form.Group className="mb-3">
-                <Form.Label>Address {!editing && <span className="text-danger">*</span>}</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={2}
-                  value={formAddress}
-                  onChange={(e) => setFormAddress(e.target.value)}
-                  placeholder="Enter venue address"
-                />
-              </Form.Group>
-            )}
-            {needsParent && !editing && parentOptions.length > 0 && (
-              <Form.Group className="mb-3">
-                <Form.Label>{parentLabel[activeLevel]}</Form.Label>
-                <Form.Select value={formParentId} onChange={(e) => setFormParentId(e.target.value)}>
-                  <option value="">Select {parentLabel[activeLevel]}</option>
-                  {parentOptions.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
-                </Form.Select>
-              </Form.Group>
-            )}
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleSave} disabled={saving}>
-            {saving ? 'Saving…' : editing ? 'Update' : 'Create'}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {/* Jump-off point to the dedicated Venues page, scoped to this node */}
+      {isVenueEligible && currentNode && (
+        <Card>
+          <Card.Body className="d-flex align-items-center justify-content-between">
+            <span className="fw-semibold">
+              <Icon icon="solar:buildings-2-bold-duotone" className="me-2 text-primary" />
+              Venues in {currentNode.nameEn}
+            </span>
+            <Link href={`/venues?locationId=${currentNode.id}`} className="btn btn-primary btn-sm">
+              Manage venues here <Icon icon="solar:alt-arrow-right-linear" className="ms-1" />
+            </Link>
+          </Card.Body>
+        </Card>
+      )}
     </div>
   )
 }

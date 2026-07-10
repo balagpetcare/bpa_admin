@@ -66,6 +66,7 @@ export async function apiClient<T = unknown>(
     ...fetchOpts,
     headers,
     body: isMultipart ? (body as FormData) : body !== undefined ? JSON.stringify(body) : undefined,
+    signal: fetchOpts.signal ?? AbortSignal.timeout(15000),
   })
 
   // 401: token probably expired and refresh failed — force sign-out client-side
@@ -133,6 +134,7 @@ export async function apiClientPaginated<T = unknown>(
     ...fetchOpts,
     headers,
     body: isMultipart ? (body as FormData) : body !== undefined ? JSON.stringify(body) : undefined,
+    signal: fetchOpts.signal ?? AbortSignal.timeout(15000),
   })
 
   if (res.status === 401 && typeof window !== 'undefined') {
