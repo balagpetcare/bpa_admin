@@ -6,7 +6,21 @@ import { Controller } from 'react-hook-form'
 import { useWizardContext } from '../useCampaignWizard'
 
 export default function CampaignBasicsStep() {
-  const { form: { control, formState: { errors } } } = useWizardContext()
+  const { form: { control, formState: { errors, dirtyFields }, setValue, watch } } = useWizardContext()
+
+  const titleEn = watch('titleEn')
+  const slug = watch('slug')
+
+  React.useEffect(() => {
+    // Generate slug from English title until the user manually edits the slug.
+    if (titleEn && !dirtyFields.slug && (!slug || slug === generateSlug(titleEn))) {
+      setValue('slug', generateSlug(titleEn), { shouldValidate: true, shouldDirty: false })
+    }
+  }, [titleEn, dirtyFields.slug, setValue, slug])
+
+  function generateSlug(title: string) {
+    return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+  }
 
   return (
     <Card>
@@ -56,18 +70,6 @@ export default function CampaignBasicsStep() {
                 <Form.Control {...field} isInvalid={!!errors.titleBn} />
                 <Form.Control.Feedback type="invalid">{errors.titleBn?.message}</Form.Control.Feedback>
               </>
-            )} />
-          </Col>
-          <Col md={6}>
-            <Form.Label>Short Description (EN)</Form.Label>
-            <Controller name="shortDescriptionEn" control={control} render={({ field }) => (
-              <Form.Control as="textarea" rows={2} value={field.value ?? ''} onChange={field.onChange} />
-            )} />
-          </Col>
-          <Col md={6}>
-            <Form.Label>Short Description (BN)</Form.Label>
-            <Controller name="shortDescriptionBn" control={control} render={({ field }) => (
-              <Form.Control as="textarea" rows={2} value={field.value ?? ''} onChange={field.onChange} />
             )} />
           </Col>
         </Row>

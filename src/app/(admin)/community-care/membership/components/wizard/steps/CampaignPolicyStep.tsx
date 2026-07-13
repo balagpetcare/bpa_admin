@@ -1,28 +1,41 @@
 'use client'
 
 import React from 'react'
-import { Card, Col, Row } from 'react-bootstrap'
-import { Controller } from 'react-hook-form'
+import { Card } from 'react-bootstrap'
 import { useWizardContext } from '../useCampaignWizard'
-import MembershipHtmlEditor from '../../MembershipHtmlEditor'
+import BilingualRichText from '../../BilingualRichText'
 
 export default function CampaignPolicyStep() {
-  const { form: { control } } = useWizardContext()
+  const { form: { watch, setValue } } = useWizardContext()
 
   return (
     <Card>
       <Card.Header><h5 className="mb-0">Policy & Informational Content</h5></Card.Header>
       <Card.Body>
-        <Row className="g-3">
-          <Col md={6}><Controller name="eligibilityContentEn" control={control} render={({ field }) => <MembershipHtmlEditor label="Eligibility (EN)" value={field.value ?? ''} onChange={field.onChange} />} /></Col>
-          <Col md={6}><Controller name="eligibilityContentBn" control={control} render={({ field }) => <MembershipHtmlEditor label="Eligibility (BN)" value={field.value ?? ''} onChange={field.onChange} />} /></Col>
-          <Col md={6}><Controller name="howItWorksContentEn" control={control} render={({ field }) => <MembershipHtmlEditor label="How It Works (EN)" value={field.value ?? ''} onChange={field.onChange} />} /></Col>
-          <Col md={6}><Controller name="howItWorksContentBn" control={control} render={({ field }) => <MembershipHtmlEditor label="How It Works (BN)" value={field.value ?? ''} onChange={field.onChange} />} /></Col>
-          <Col md={6}><Controller name="termsContentEn" control={control} render={({ field }) => <MembershipHtmlEditor label="Terms (EN)" value={field.value ?? ''} onChange={field.onChange} />} /></Col>
-          <Col md={6}><Controller name="termsContentBn" control={control} render={({ field }) => <MembershipHtmlEditor label="Terms (BN)" value={field.value ?? ''} onChange={field.onChange} />} /></Col>
-          <Col md={6}><Controller name="refundPolicyEn" control={control} render={({ field }) => <MembershipHtmlEditor label="Refund Policy (EN)" value={field.value ?? ''} onChange={field.onChange} />} /></Col>
-          <Col md={6}><Controller name="refundPolicyBn" control={control} render={({ field }) => <MembershipHtmlEditor label="Refund Policy (BN)" value={field.value ?? ''} onChange={field.onChange} />} /></Col>
-        </Row>
+        <BilingualRichText
+          labelEn="Eligibility (EN)" labelBn="Eligibility (BN)"
+          valueEn={watch('eligibilityContentEn') ?? ''} valueBn={watch('eligibilityContentBn') ?? ''}
+          onChangeEn={(val) => setValue('eligibilityContentEn', val, { shouldValidate: true, shouldDirty: true })}
+          onChangeBn={(val) => setValue('eligibilityContentBn', val, { shouldValidate: true, shouldDirty: true })}
+        />
+        <BilingualRichText
+          labelEn="How It Works (EN)" labelBn="How It Works (BN)"
+          valueEn={watch('howItWorksContentEn') ?? ''} valueBn={watch('howItWorksContentBn') ?? ''}
+          onChangeEn={(val) => setValue('howItWorksContentEn', val, { shouldValidate: true, shouldDirty: true })}
+          onChangeBn={(val) => setValue('howItWorksContentBn', val, { shouldValidate: true, shouldDirty: true })}
+        />
+        <BilingualRichText
+          labelEn="Terms (EN)" labelBn="Terms (BN)"
+          valueEn={watch('termsContentEn') ?? ''} valueBn={watch('termsContentBn') ?? ''}
+          onChangeEn={(val) => setValue('termsContentEn', val, { shouldValidate: true, shouldDirty: true })}
+          onChangeBn={(val) => setValue('termsContentBn', val, { shouldValidate: true, shouldDirty: true })}
+        />
+        <BilingualRichText
+          labelEn="Refund Policy (EN)" labelBn="Refund Policy (BN)"
+          valueEn={watch('refundPolicyEn') ?? ''} valueBn={watch('refundPolicyBn') ?? ''}
+          onChangeEn={(val) => setValue('refundPolicyEn', val, { shouldValidate: true, shouldDirty: true })}
+          onChangeBn={(val) => setValue('refundPolicyBn', val, { shouldValidate: true, shouldDirty: true })}
+        />
       </Card.Body>
     </Card>
   )

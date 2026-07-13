@@ -52,10 +52,20 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
   const router = useRouter()
   const { can } = usePermission()
   const wizard = useCampaignWizard(campaign)
-  const [mutationError, setMutationError] = useState<ApiError | null>(null)
   
-  const { mutate, loading: saving } = useApiMutation<MembershipCampaign, CampaignWizardFormValues>()
+  const { mutate, loading: saving, error: mutError } = useApiMutation<MembershipCampaign, CampaignWizardFormValues>()
   const isEdit = Boolean(campaignId)
+
+  // Map backend validation errors to form fields
+  React.useEffect(() => {
+    if (mutError && mutError.code === 'VALIDATION_ERROR' && Array.isArray(mutError.details)) {
+      mutError.details.forEach((err: any) => {
+        if (err.path && typeof err.path === 'string') {
+          wizard.form.setError(err.path as any, { type: 'server', message: err.message })
+        }
+      })
+    }
+  }, [mutError, wizard.form])
 
   async function submitForm(values: CampaignWizardFormValues, asDraft: boolean = false) {
     if (asDraft) {
@@ -99,7 +109,6 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
     ), values)
     
     if (!result) return
-    setMutationError(null)
 
     // Clear dirty state on save
     wizard.form.reset(values, { keepValues: true, keepDirty: false })
@@ -155,7 +164,7 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
           }
         />
 
-        <ApiErrorAlert error={mutationError} onDismiss={() => setMutationError(null)} />
+        <ApiErrorAlert error={mutError} />
 
         <LoadingOverlay loading={saving}>
           <MembershipCampaignWizardHeader />

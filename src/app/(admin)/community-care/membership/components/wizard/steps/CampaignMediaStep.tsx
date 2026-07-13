@@ -16,17 +16,17 @@ export default function CampaignMediaStep() {
         <Row className="g-4">
           <Col md={4}>
             <Controller name="heroImageUrl" control={control} render={({ field }) => (
-              <MediaPickerInput value={field.value} previewUrl={field.value} onChange={(_, file) => field.onChange(file?.url ?? '')} label="Hero Image" emptyLabel="Select hero image" />
+              <MediaPickerInput value={field.value} previewUrl={field.value} onChange={(_, file) => field.onChange(file?.url ?? '')} label="Hero Image" emptyLabel="Select hero image" helpText="Recommended: 1200x600 (2:1)" />
             )} />
           </Col>
           <Col md={4}>
             <Controller name="mobileImageUrl" control={control} render={({ field }) => (
-              <MediaPickerInput value={field.value} previewUrl={field.value} onChange={(_, file) => field.onChange(file?.url ?? '')} label="Mobile Image" emptyLabel="Select mobile image" />
+              <MediaPickerInput value={field.value} previewUrl={field.value} onChange={(_, file) => field.onChange(file?.url ?? '')} label="Mobile Image" emptyLabel="Select mobile image" helpText="Recommended: 600x600 (1:1)" />
             )} />
           </Col>
           <Col md={4}>
             <Controller name="thumbnailUrl" control={control} render={({ field }) => (
-              <MediaPickerInput value={field.value} previewUrl={field.value} onChange={(_, file) => field.onChange(file?.url ?? '')} label="Thumbnail" emptyLabel="Select thumbnail" />
+              <MediaPickerInput value={field.value} previewUrl={field.value} onChange={(_, file) => field.onChange(file?.url ?? '')} label="Thumbnail" emptyLabel="Select thumbnail" helpText="Recommended: 400x400 (1:1)" />
             )} />
           </Col>
         </Row>

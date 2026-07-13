@@ -2,11 +2,11 @@ import * as yup from 'yup'
 import { MembershipCampaign } from '@/lib/api/membership-campaign.api'
 
 export const wizardSchema = yup.object({
-  slug: yup.string().required('Slug is required'),
+  slug: yup.string().required('Slug is required').matches(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
   titleEn: yup.string().required('English title is required'),
   titleBn: yup.string().required('Bangla title is required'),
-  shortDescriptionEn: yup.string().nullable().default(''),
-  shortDescriptionBn: yup.string().nullable().default(''),
+  shortDescriptionEn: yup.string().max(300, 'Maximum 300 characters allowed').nullable().default(''),
+  shortDescriptionBn: yup.string().max(300, 'Maximum 300 characters allowed').nullable().default(''),
   descriptionEn: yup.string().nullable().default(''),
   descriptionBn: yup.string().nullable().default(''),
   heroImageUrl: yup.string().nullable().default(''),
@@ -14,9 +14,17 @@ export const wizardSchema = yup.object({
   thumbnailUrl: yup.string().nullable().default(''),
   status: yup.string().required('Status is required'),
   offerStartAt: yup.string().nullable().default(''),
-  offerEndAt: yup.string().nullable().default(''),
+  offerEndAt: yup.string().nullable().default('').test('is-after-offer-start', 'Offer end must be after offer start', function (value) {
+    const { offerStartAt } = this.parent
+    if (!value || !offerStartAt) return true
+    return new Date(value) >= new Date(offerStartAt)
+  }),
   applicationStartAt: yup.string().nullable().default(''),
-  applicationEndAt: yup.string().nullable().default(''),
+  applicationEndAt: yup.string().nullable().default('').test('is-after-application-start', 'Application end must be after application start', function (value) {
+    const { applicationStartAt } = this.parent
+    if (!value || !applicationStartAt) return true
+    return new Date(value) >= new Date(applicationStartAt)
+  }),
   publishedAt: yup.string().nullable().default(''),
   eligibilityContentEn: yup.string().nullable().default(''),
   eligibilityContentBn: yup.string().nullable().default(''),
@@ -37,8 +45,8 @@ export const wizardSchema = yup.object({
 export type CampaignWizardFormValues = yup.InferType<typeof wizardSchema>
 
 export const WIZARD_STEPS = [
-  { id: 'basics', title: 'Campaign Basics', fields: ['slug', 'titleEn', 'titleBn', 'status', 'publishedAt', 'shortDescriptionEn', 'shortDescriptionBn'] as const },
-  { id: 'content', title: 'Description & Content', fields: ['descriptionEn', 'descriptionBn'] as const },
+  { id: 'basics', title: 'Campaign Basics', fields: ['slug', 'titleEn', 'titleBn', 'status', 'publishedAt'] as const },
+  { id: 'content', title: 'Description & Content', fields: ['shortDescriptionEn', 'shortDescriptionBn', 'descriptionEn', 'descriptionBn'] as const },
   { id: 'schedule', title: 'Offer & Schedule', fields: ['offerStartAt', 'offerEndAt', 'applicationStartAt', 'applicationEndAt'] as const },
   { id: 'media', title: 'Media', fields: ['heroImageUrl', 'mobileImageUrl', 'thumbnailUrl'] as const },
   { id: 'policy', title: 'Policy & Eligibility', fields: ['eligibilityContentEn', 'eligibilityContentBn', 'howItWorksContentEn', 'howItWorksContentBn', 'termsContentEn', 'termsContentBn', 'refundPolicyEn', 'refundPolicyBn'] as const },

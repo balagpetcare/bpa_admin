@@ -28,7 +28,10 @@ export default function CampaignSupportStep() {
           <Col md={4}>
             <Form.Label>Support Phone</Form.Label>
             <Controller name="supportPhone" control={control} render={({ field }) => (
-              <Form.Control value={field.value ?? ''} onChange={field.onChange} />
+              <Form.Control 
+                value={field.value ?? ''} 
+                onChange={(e) => field.onChange(e.target.value.replace(/[^\d+]/g, ''))} 
+              />
             )} />
           </Col>
           <Col md={4}>
@@ -43,7 +46,10 @@ export default function CampaignSupportStep() {
           <Col md={4}>
             <Form.Label>Support WhatsApp</Form.Label>
             <Controller name="supportWhatsapp" control={control} render={({ field }) => (
-              <Form.Control value={field.value ?? ''} onChange={field.onChange} />
+              <Form.Control 
+                value={field.value ?? ''} 
+                onChange={(e) => field.onChange(e.target.value.replace(/[^\d+]/g, ''))} 
+              />
             )} />
           </Col>
           <Col md={12}>
