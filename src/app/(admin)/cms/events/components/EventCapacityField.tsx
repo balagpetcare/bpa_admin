@@ -4,7 +4,7 @@ import { Row, Col, Form, Card } from 'react-bootstrap'
 import type { Control } from 'react-hook-form'
 import TextFormInput from '@/components/form/TextFormInput'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 interface EventCapacityFieldProps {
   control: Control<any>
   isPaid: boolean

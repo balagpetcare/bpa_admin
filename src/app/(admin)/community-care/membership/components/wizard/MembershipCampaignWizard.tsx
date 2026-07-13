@@ -11,7 +11,7 @@ import { confirmDelete } from '@/components/ui/ConfirmDialog'
 import { useApi, useApiMutation } from '@/hooks/useApi'
 import { usePermission } from '@/hooks/usePermission'
 import { ApiError } from '@/lib/api'
-import { membershipCampaignApi, type MembershipCampaign } from '@/lib/api/membership-campaign.api'
+import { membershipCampaignApi, type MembershipCampaign, type MembershipCampaignStatus } from '@/lib/api/membership-campaign.api'
 
 // Import wizard dependencies
 import { useCampaignWizard } from './useCampaignWizard'
@@ -52,6 +52,7 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
   const router = useRouter()
   const { can } = usePermission()
   const wizard = useCampaignWizard(campaign)
+  const [deleteError, setDeleteError] = useState<ApiError | null>(null)
   
   const { mutate, loading: saving, error: mutError } = useApiMutation<MembershipCampaign, CampaignWizardFormValues>()
   const isEdit = Boolean(campaignId)
@@ -67,7 +68,7 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
     }
   }, [mutError, wizard.form])
 
-  async function submitForm(values: CampaignWizardFormValues, asDraft: boolean = false) {
+  async function submitForm(values: CampaignWizardFormValues, asDraft: boolean = false, continueToNextStep: boolean = false) {
     if (asDraft) {
       values.status = 'draft'
     }
@@ -114,30 +115,73 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
     wizard.form.reset(values, { keepValues: true, keepDirty: false })
     
     if (!campaignId) {
-      router.push(`/community-care/membership/campaigns/${result.id}/edit`)
+      const step = continueToNextStep && !wizard.isLastStep 
+        ? wizard.steps[wizard.currentStepIndex + 1].id 
+        : wizard.currentStepId
+      router.push(`/community-care/membership/campaigns/${result.id}/edit?step=${step}`)
     } else {
-      refetch()
+      if (continueToNextStep && !wizard.isLastStep) {
+        wizard.nextStep() // this just navigates internally in useWizardContext
+      } else {
+        refetch()
+        if (wizard.isLastStep && !asDraft) {
+          router.push('/community-care/membership/campaigns')
+        }
+      }
     }
   }
 
   async function handleSaveAsDraft() {
     const values = wizard.form.getValues()
-    // Validation is skipped or reduced for draft? We still trigger basic validation.
-    // Let's just submit with status draft.
-    await submitForm(values, true)
+    await submitForm(values, true, false)
   }
 
-  async function handleComplete() {
-    const isValid = await wizard.form.trigger()
-    if (!isValid) return
-    await submitForm(wizard.form.getValues(), false)
+  async function handleSaveAndContinue(newStatus?: MembershipCampaignStatus) {
+    if (wizard.isLastStep) {
+      // Final step: validate everything
+      const isValid = await wizard.form.trigger()
+      if (!isValid) return
+      const values = wizard.form.getValues()
+      if (newStatus) values.status = newStatus
+      await submitForm(values, false, false)
+    } else {
+      // Step-by-step: validate current step fields only
+      const currentStepFields = wizard.steps[wizard.currentStepIndex].fields
+      const isValid = await wizard.form.trigger(currentStepFields as any)
+      if (!isValid) {
+        // focus first error
+        const errors = wizard.form.formState.errors
+        const firstErrorField = currentStepFields.find(f => errors[f as keyof typeof errors])
+        if (firstErrorField) wizard.form.setFocus(firstErrorField as any)
+        return
+      }
+      
+      const values = wizard.form.getValues()
+      // If we are creating, default to draft so it doesn't accidentally publish early
+      if (!campaignId && values.status !== 'draft') {
+        values.status = 'draft'
+      }
+      
+      await submitForm(values, false, true)
+    }
   }
 
   async function handleDelete() {
     if (!campaignId) return
-    if (!(await confirmDelete('this campaign'))) return
-    await membershipCampaignApi.deleteCampaign(campaignId)
-    router.push('/community-care/membership/campaigns')
+    const title = campaign?.titleEn ?? 'this campaign'
+    if (!(await confirmDelete(title))) return
+    
+    // We should use a mutation or try-catch to show backend relation/conflict errors
+    try {
+      await membershipCampaignApi.deleteCampaign(campaignId)
+      router.push('/community-care/membership/campaigns')
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setDeleteError(err)
+      } else {
+        alert('Failed to delete campaign. It might be linked to other records.')
+      }
+    }
   }
 
   // To prevent the hook error, re-export useContext from the wizard.
@@ -164,14 +208,14 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
           }
         />
 
-        <ApiErrorAlert error={mutError} />
+        <ApiErrorAlert error={mutError || deleteError} />
 
         <LoadingOverlay loading={saving}>
           <MembershipCampaignWizardHeader />
           <WizardContent />
-          <MembershipCampaignWizardFooter 
+          <MembershipCampaignWizardFooter
             onSaveAsDraft={handleSaveAsDraft}
-            onSubmit={handleComplete}
+            onSubmit={handleSaveAndContinue}
             isSaving={saving}
           />
         </LoadingOverlay>

@@ -20,7 +20,7 @@ export default function MembershipCampaignWizardHeader() {
 
             let variantClass = 'text-muted'
             let bgClass = 'bg-light text-secondary'
-            let icon = index + 1
+            const icon = index + 1
 
             if (isActive) {
               variantClass = 'text-primary fw-bold'
