@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useSession } from 'next-auth/react'
 import { ApiError } from '@/lib/api'
 
 interface UseApiState<T> {
@@ -11,20 +12,24 @@ interface UseApiState<T> {
 
 // Client-side data fetching hook with loading/error state.
 // fn is a stable function reference (or deps array causes re-fetch).
+// Waits for NextAuth session to initialize before running query to ensure auth token is available.
 export function useApi<T>(
   fn: (() => Promise<T>) | null,
   deps: unknown[] = [],
 ): UseApiState<T> & { refetch: () => void } {
+  const { status } = useSession()
+  const isSessionReady = status !== 'loading'
+
   const [state, setState] = useState<UseApiState<T>>({
     data: null,
-    loading: fn !== null,
+    loading: fn !== null && isSessionReady,
     error: null,
   })
 
   const fetchIdRef = useRef(0)
 
   const execute = useCallback(async () => {
-    if (!fn) return
+    if (!fn || !isSessionReady) return
     const currentId = ++fetchIdRef.current
     setState((s) => ({ ...s, loading: true, error: null }))
     try {
@@ -42,7 +47,7 @@ export function useApi<T>(
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps)
+  }, [...deps, isSessionReady])
 
   useEffect(() => {
     execute()

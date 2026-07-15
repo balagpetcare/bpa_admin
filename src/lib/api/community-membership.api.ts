@@ -1,5 +1,30 @@
 import { api } from '../api'
 
+export interface CommunityMembershipTier {
+  id: string
+  code?: string | null
+  nameEn: string
+  nameBn: string
+  slug: string
+  launchPriceBdt: number
+  regularPriceBdt: number
+  petLimitMin: number
+  includedPets: number
+  petLimitMax: number
+  validityMonths: number
+  badgeTextEn?: string | null
+  badgeTextBn?: string | null
+  shortDescEn?: string | null
+  shortDescBn?: string | null
+  fullDescEn?: string | null
+  fullDescBn?: string | null
+  cardTheme?: string | null
+  version?: number
+  status?: string
+  isActive: boolean
+  sortOrder: number
+}
+
 export const communityMembershipApi = {
   // Dashboard
   getDashboard: () => api.get<any>('/admin/community-membership/dashboard'),
@@ -10,9 +35,9 @@ export const communityMembershipApi = {
 
   // Tiers
   listTiers: (params?: any) => api.get<any>('/admin/community-membership/tiers', { params }),
-  getTier: (id: string) => api.get<any>(`/admin/community-membership/tiers/${id}`),
-  createTier: (data: any) => api.post<any>('/admin/community-membership/tiers', data),
-  updateTier: (id: string, data: any) => api.put<any>(`/admin/community-membership/tiers/${id}`, data),
+  getTier: (id: string) => api.get<CommunityMembershipTier>(`/admin/community-membership/tiers/${id}`),
+  createTier: (data: Partial<CommunityMembershipTier>) => api.post<CommunityMembershipTier>('/admin/community-membership/tiers', data),
+  updateTier: (id: string, data: Partial<CommunityMembershipTier>) => api.put<CommunityMembershipTier>(`/admin/community-membership/tiers/${id}`, data),
   deleteTier: (id: string) => api.delete<any>(`/admin/community-membership/tiers/${id}`),
 
   // Services

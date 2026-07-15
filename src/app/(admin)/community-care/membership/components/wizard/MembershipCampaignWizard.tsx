@@ -26,6 +26,7 @@ import CampaignScheduleStep from './steps/CampaignScheduleStep'
 import CampaignMediaStep from './steps/CampaignMediaStep'
 import CampaignPolicyStep from './steps/CampaignPolicyStep'
 import CampaignSupportStep from './steps/CampaignSupportStep'
+import CampaignPlansStep from './steps/CampaignPlansStep'
 import CampaignReviewStep from './steps/CampaignReviewStep'
 
 function asIso(value?: string | null) {
@@ -43,6 +44,7 @@ function WizardContent() {
       {currentStepId === 'media' && <CampaignMediaStep />}
       {currentStepId === 'policy' && <CampaignPolicyStep />}
       {currentStepId === 'support' && <CampaignSupportStep />}
+      {currentStepId === 'plans' && <CampaignPlansStep />}
       {currentStepId === 'review' && <CampaignReviewStep />}
     </div>
   )
@@ -103,10 +105,36 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
       organizerNameBn: values.organizerNameBn || null,
     }
 
+    let payloadToSubmit: Partial<MembershipCampaign> = payload as Partial<MembershipCampaign>
+
+    if (campaignId) {
+      const dirtyFields = Object.keys(wizard.form.formState.dirtyFields)
+      const dirtyPayload: any = {}
+      for (const k of dirtyFields) {
+        if (k in payload) {
+          dirtyPayload[k] = (payload as any)[k]
+        }
+      }
+
+      // If we are publishing, or saving as draft, or a status change was explicitly requested, include status
+      const isPublishingNow = continueToNextStep === false && !asDraft && wizard.isLastStep
+      if (asDraft || isPublishingNow || dirtyFields.includes('status')) {
+        dirtyPayload.status = payload.status
+      }
+
+      // if nothing is dirty, just pretend it succeeded
+      if (Object.keys(dirtyPayload).length === 0) {
+        if (continueToNextStep && !wizard.isLastStep) wizard.nextStep()
+        else if (wizard.isLastStep && !asDraft) router.push('/community-care/membership/campaigns')
+        return
+      }
+      payloadToSubmit = dirtyPayload
+    }
+
     const result = await mutate(async () => (
       campaignId
-        ? membershipCampaignApi.updateCampaign(campaignId, payload as Partial<MembershipCampaign>)
-        : membershipCampaignApi.createCampaign(payload as Partial<MembershipCampaign>)
+        ? membershipCampaignApi.updateCampaign(campaignId, payloadToSubmit)
+        : membershipCampaignApi.createCampaign(payloadToSubmit)
     ), values)
     
     if (!result) return
@@ -233,7 +261,9 @@ export default function MembershipCampaignWizard({ campaignId }: { campaignId?: 
     [campaignId],
   )
 
-  if (loading) {
+  const isHydrating = !!campaignId && (!campaign && !error)
+
+  if (loading || isHydrating) {
     return (
       <div className="container-fluid mt-4">
         <LoadingOverlay loading={true}><div style={{ height: '300px' }} /></LoadingOverlay>

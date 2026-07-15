@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Button, Modal, Row, Col, InputGroup, Form, Badge } from 'react-bootstrap'
+import { Alert, Button, Modal, Row, Col, InputGroup, Form, Badge } from 'react-bootstrap'
 import { Icon } from '@iconify/react'
 import { useApi } from '@/hooks/useApi'
 import { mediaApi } from '@/lib/api/media.api'
@@ -24,6 +24,7 @@ interface MediaPickerInputProps {
   uploadLabel?: string
   accept?: string
   enableUpload?: boolean
+  maxFileSizeBytes?: number
   customTrigger?: React.ReactNode
 }
 
@@ -46,6 +47,7 @@ export default function MediaPickerInput({
   uploadLabel = 'Upload file',
   accept,
   enableUpload = true,
+  maxFileSizeBytes,
   customTrigger,
 }: MediaPickerInputProps) {
   const [open, setOpen] = useState(false)
@@ -84,6 +86,12 @@ export default function MediaPickerInput({
       return
     }
 
+    if (maxFileSizeBytes && file.size > maxFileSizeBytes) {
+      setUploadError(new ApiError('MEDIA_TOO_LARGE', `File size must be ${formatBytes(maxFileSizeBytes)} or smaller.`))
+      event.target.value = ''
+      return
+    }
+
     setUploading(true)
     setUploadError(null)
 
@@ -102,6 +110,14 @@ export default function MediaPickerInput({
   const displayUrl = previewFile?.url ?? previewUrl
   const resolvedDisplayUrl = displayUrl ? getMediaImageUrl(displayUrl) : null
   const displayMimeType = previewFile?.mimeType ?? previewMimeType ?? null
+  const displaySizeBytes = previewFile?.sizeBytes ?? null
+  const displayMimeMismatch = Boolean(displayMimeType && mimeTypePrefix && !displayMimeType.startsWith(mimeTypePrefix))
+  const displayTooLarge = Boolean(maxFileSizeBytes && displaySizeBytes && Number(displaySizeBytes) > maxFileSizeBytes)
+  const selectedMediaIssue = displayMimeMismatch
+    ? `Selected media is not a valid ${mimeTypePrefix.replace('/', '')} file.`
+    : displayTooLarge
+      ? `Selected media exceeds the ${formatBytes(maxFileSizeBytes ?? 0)} limit.`
+      : null
 
   if (customTrigger) {
     return (
@@ -221,6 +237,11 @@ export default function MediaPickerInput({
             className="rounded border"
             style={{ maxHeight: 160, maxWidth: '100%', display: 'block' }}
           />
+          {selectedMediaIssue && (
+            <Alert variant="warning" className="small mt-2 mb-2 py-2">
+              {selectedMediaIssue} Use Replace to choose a valid file.
+            </Alert>
+          )}
           <div className="mt-2 d-flex gap-2">
             <Button variant="outline-secondary" size="sm" onClick={() => setOpen(true)}>
               <Icon icon="solar:pen-bold" className="me-1" />
@@ -247,6 +268,11 @@ export default function MediaPickerInput({
       )}
 
       {helpText && <Form.Text className="text-muted">{helpText}</Form.Text>}
+      {maxFileSizeBytes && (
+        <Form.Text className="d-block text-muted">
+          Maximum file size: {formatBytes(maxFileSizeBytes)}
+        </Form.Text>
+      )}
 
       {/* Library picker modal */}
       <Modal show={open} onHide={() => setOpen(false)} size="xl" scrollable>

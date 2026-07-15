@@ -29,14 +29,14 @@ export default function Pagination({
     <div className="d-flex flex-wrap justify-content-between align-items-center mt-3 gap-3">
       <div className="d-flex align-items-center gap-2">
         <small className="text-muted text-nowrap">
-          {total} {label} · Page {page} of {totalPages || 1}
+          {total} {label} - Page {page} of {totalPages || 1}
         </small>
-        <Form.Select 
-          size="sm" 
-          value={limit} 
+        <Form.Select
+          size="sm"
+          value={limit}
           onChange={(e) => {
             onLimitChange(Number(e.target.value))
-            onPageChange(1) // Reset to page 1 on limit change
+            onPageChange(1)
           }}
           style={{ width: 'auto' }}
         >
@@ -47,18 +47,18 @@ export default function Pagination({
         </Form.Select>
       </div>
       <div className="d-flex gap-1">
-        <Button 
-          size="sm" 
-          variant="outline-secondary" 
-          disabled={!hasPrev || page <= 1} 
+        <Button
+          size="sm"
+          variant="outline-secondary"
+          disabled={!hasPrev || page <= 1}
           onClick={() => onPageChange(page - 1)}
         >
           Previous
         </Button>
-        <Button 
-          size="sm" 
-          variant="outline-secondary" 
-          disabled={!hasNext || page >= totalPages} 
+        <Button
+          size="sm"
+          variant="outline-secondary"
+          disabled={!hasNext || page >= totalPages}
           onClick={() => onPageChange(page + 1)}
         >
           Next

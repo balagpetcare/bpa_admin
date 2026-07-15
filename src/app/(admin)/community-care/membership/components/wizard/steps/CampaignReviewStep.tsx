@@ -1,14 +1,18 @@
 'use client'
 
 import React from 'react'
-import { Card, Alert, Row, Col } from 'react-bootstrap'
+import { Card, Alert, Row, Col, Button } from 'react-bootstrap'
 import { useWizardContext } from '../useCampaignWizard'
 import MediaPreview from '@/components/ui/MediaPreview'
 import { Icon } from '@iconify/react'
+import { getPublishIssues } from '../campaign-workflow'
 
 export default function CampaignReviewStep() {
-  const { form: { getValues }, isEdit } = useWizardContext()
+  const { form: { getValues }, isEdit, campaign, goToStep } = useWizardContext()
   const values = getValues()
+  const issues = getPublishIssues(values, campaign, new Date(), values.status, undefined)
+  const warnings = issues.filter((item) => item.severity === 'warning')
+  const blockers = issues.filter((item) => item.severity === 'error')
 
   return (
     <Card>
@@ -17,6 +21,28 @@ export default function CampaignReviewStep() {
         <Alert variant="info">
           Please review the campaign details before completing the setup. 
           {values.status === 'published' && ' This campaign will be immediately visible to the public.'}
+        </Alert>
+
+        <Alert variant={blockers.length ? 'danger' : warnings.length ? 'warning' : 'success'} className="small">
+          <div className="fw-semibold mb-1">
+            {blockers.length ? `${blockers.length} blocker(s)` : 'Ready for publish review'}
+            {warnings.length ? `, ${warnings.length} warning(s)` : ''}
+          </div>
+          <ul className="mb-0 ps-3">
+            {issues.slice(0, 4).map((item) => {
+              const isPlanIssue = item.message.toLowerCase().includes('plan')
+              return (
+                <li key={item.message}>
+                  {item.message}
+                  {isPlanIssue && (
+                    <Button variant="link" className="p-0 ms-2 text-decoration-none align-baseline" style={{ fontSize: 'inherit' }} onClick={() => goToStep('plans')}>
+                      Fix in Plans step
+                    </Button>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
         </Alert>
 
         <Row className="mb-4 g-4">

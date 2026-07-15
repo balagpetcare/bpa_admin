@@ -36,7 +36,7 @@ export default function PetsContent() {
 
   const { data: ownersData, loading: lOwners, error: eOwners, refetch: rOwners } = useApi(tab === 'owners' ? ownersFn : null, [page, search, tab])
   const { data: petsData, loading: lPets, error: ePets, refetch: rPets } = useApi(tab === 'pets' ? petsFn : null, [page, search, tab])
-  const ownersFull = useCallback(() => petsApi.listOwners({ limit: 200 }), [])
+  const ownersFull = useCallback(() => petsApi.listOwners({ limit: 100 }), [])
   const { data: allOwners } = useApi(ownersFull, [])
 
   function switchTab(t: Tab) { setTab(t); setPage(1); setSearch('') }

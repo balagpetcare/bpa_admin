@@ -33,7 +33,7 @@ const MenuItemWithChildren = ({ item, className, linkClassName, subMenuClassName
   return (
     <li className={className}>
       <div onClick={toggleMenuItem} aria-expanded={open} role="button" className={clsx(linkClassName)}>
-        {isChild ? <span className="nav-dot" aria-hidden="true" /> : item.icon && <span className="nav-icon"> <IconifyIcon icon={item.icon} /> </span>}
+        {isChild ? <span className="nav-dot" aria-hidden="true" /> : item.icon && <span className="nav-icon" aria-hidden="true"> <IconifyIcon icon={item.icon} /> </span>}
         <span className="nav-text">{item.label}</span>
         {!item.badge ? (
           <IconifyIcon icon="bx:chevron-down" className="menu-arrow ms-auto" />
@@ -85,7 +85,7 @@ const MenuItemLink = ({ item, className, isChild }: SubMenus) => {
         <span className="nav-dot" aria-hidden="true" />
       ) : (
         item.icon && (
-          <span className="nav-icon">
+          <span className="nav-icon" aria-hidden="true">
             <IconifyIcon icon={item.icon} />
           </span>
         )

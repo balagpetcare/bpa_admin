@@ -1,14 +1,16 @@
 'use client'
 
 import React from 'react'
-import { Card, Col, Form, Row } from 'react-bootstrap'
+import { Alert, Card, Col, Form, Row } from 'react-bootstrap'
 import { Controller } from 'react-hook-form'
 import { useWizardContext } from '../useCampaignWizard'
+import { hasTestCampaignTitle } from '../campaign-workflow'
 
 export default function CampaignBasicsStep() {
   const { form: { control, formState: { errors, dirtyFields }, setValue, watch } } = useWizardContext()
 
   const titleEn = watch('titleEn')
+  const titleBn = watch('titleBn')
   const slug = watch('slug')
 
   React.useEffect(() => {
@@ -41,9 +43,9 @@ export default function CampaignBasicsStep() {
             <Controller name="status" control={control} render={({ field }) => (
               <Form.Select {...field} isInvalid={!!errors.status}>
                 <option value="draft">Draft</option>
+                <option value="scheduled">Scheduled</option>
                 <option value="published">Published</option>
-                <option value="application_open">Application Open</option>
-                <option value="closed">Closed</option>
+                <option value="application_closed">Paused</option>
                 <option value="archived">Archived</option>
               </Form.Select>
             )} />
@@ -73,6 +75,11 @@ export default function CampaignBasicsStep() {
             )} />
           </Col>
         </Row>
+        {hasTestCampaignTitle(titleEn, titleBn) && (
+          <Alert variant="warning" className="mt-3 mb-0">
+            This title looks like a test campaign. Use development data only.
+          </Alert>
+        )}
       </Card.Body>
     </Card>
   )

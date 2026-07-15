@@ -47,10 +47,6 @@ export function useCampaignWizard(campaign?: MembershipCampaign | null) {
     mode: 'onTouched',
   })
 
-  useEffect(() => {
-    if (campaign) form.reset(campaignToWizardValues(campaign))
-  }, [campaign, form])
-
   const stepQuery = searchParams.get('step') as WizardStepId | null
   const currentStepIndex = Math.max(0, WIZARD_STEPS.findIndex((s) => s.id === stepQuery))
   const currentStepId = WIZARD_STEPS[currentStepIndex].id

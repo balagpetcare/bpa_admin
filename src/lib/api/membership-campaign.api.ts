@@ -1,21 +1,48 @@
 import { api } from '../api'
 import type { PaginatedResult } from '@/types/bpa.types'
 
-export type MembershipCampaignStatus = 'draft' | 'published' | 'application_open' | 'closed' | 'archived'
+export type MembershipCampaignStatus = 'draft' | 'scheduled' | 'application_open' | 'application_closed' | 'published' | 'archived' | 'cancelled'
 export type MembershipApplicationStatus = 'draft' | 'submitted' | 'pending_payment' | 'paid' | 'approved' | 'rejected'
 export type MembershipRecordStatus = 'active' | 'pending' | 'suspended' | 'expired' | 'cancelled'
 export type MembershipUpgradeStatus = 'pending_payment' | 'paid' | 'completed' | 'cancelled' | 'failed'
 export type MembershipCoveredPetStatus = 'ACTIVE' | 'DECEASED' | 'LOST' | 'REPLACEMENT_PENDING' | 'REPLACED' | 'REMOVED_BY_ADMIN_CORRECTION'
+export type MembershipPricingStatus = 'upcoming' | 'offer_active' | 'regular_price' | 'unavailable'
+
+export interface MembershipTierLink {
+  id: string
+  code?: string | null
+  slug: string
+  nameEn: string
+  nameBn: string
+  launchPrice?: number | null
+  regularPrice?: number | null
+  minPets?: number | null
+  includedPets?: number | null
+  maxPets?: number | null
+  validityMonths?: number | null
+  version?: number | null
+  status?: string | null
+}
 
 export interface MembershipPlan {
   id: string
   campaignId: string
+  tierId: string
   code: string
   nameEn: string
   nameBn: string | null
+  regularPriceSnapshot: number
+  campaignPrice: number
+  minPetsSnapshot: number
+  includedPetsSnapshot: number
+  maxPetsSnapshot: number
+  validityMonthsSnapshot: number
+  benefitsSnapshot?: string[] | null
+  tierVersion?: number | null
+  allowPriceIncrease?: boolean
   regularPrice: number
   offerPrice: number | null
-  maxCoveredPets: number
+  maxCoveredPets: number | null
   validityYears?: number | null
   validityMonths?: number | null
   maximumReplacementCount?: number | null
@@ -23,7 +50,25 @@ export interface MembershipPlan {
   replacementFee?: number | null
   sortOrder?: number
   isActive?: boolean
+  changeReason?: string | null
+  effectiveAt?: string | null
+  existingMembersAffected?: boolean
   campaign?: { id: string; titleEn: string; slug: string } | null
+  tier?: MembershipTierLink | null
+}
+
+export interface MembershipPlanHistoryEntry {
+  id: string
+  action: string
+  entityType: string
+  entityId: string
+  changedBy: string
+  changedAt: string
+  previousValues?: Record<string, unknown> | null
+  newValues?: Record<string, unknown> | null
+  reason?: string | null
+  effectiveDate?: string | null
+  existingMembersAffected: boolean
 }
 
 export interface MembershipBenefit {
@@ -122,6 +167,113 @@ export interface MembershipCampaign {
   mediaItems?: MembershipMediaItem[]
   documents?: MembershipDocumentItem[]
   faqs?: MembershipFaqItem[]
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface MembershipCampaignPreview {
+  id: string
+  slug: string
+  campaignStatus: MembershipCampaignStatus
+  applicationStatus: string
+  offerStatus: string
+  heroImageUrl?: string | null
+  mobileImageUrl?: string | null
+  thumbnailUrl?: string | null
+  shortDescription?: string | null
+  pricing: {
+    regularPrice: number | null
+    offerPrice: number | null
+    effectivePrice: number | null
+    discountAmount: number
+    discountPercentage: number
+    isOfferActive: boolean
+    pricingStatus: MembershipPricingStatus
+    offerEndsAt?: string | null
+    offerStartsAt?: string | null
+    applicationEndsAt?: string | null
+    serverNow?: string
+    serverTime?: string
+    remainingOfferTimeMs?: number
+  }
+  availablePlans: Array<{
+    id: string
+    tierId: string
+    code: string
+    nameEn: string
+    nameBn: string
+    regularPriceSnapshot: number
+    campaignPrice: number
+    minPetsSnapshot: number
+    includedPetsSnapshot: number
+    maxPetsSnapshot: number
+    benefitsSnapshot?: string[] | null
+    tierVersion?: number | null
+    tier?: MembershipTierLink | null
+    maxCoveredPets: number
+    validityYears?: number | null
+    validityMonths?: number | null
+    regularPrice: number
+    offerPrice: number | null
+    effectivePrice: number
+    discountAmount: number
+    discountPercentage: number
+    isOfferActive: boolean
+    pricingStatus: MembershipPricingStatus
+    offerEndsAt?: string | null
+    applicationEndsAt?: string | null
+    serverNow?: string
+  }>
+  applicationAvailability: {
+    isOpen: boolean
+    startsAt: string | null
+    endsAt: string | null
+    timezone: string
+  }
+  serverTime: string
+  remainingOfferTimeMs: number
+  plans: Array<{
+    id: string
+    tierId: string
+    code: string
+    nameEn: string
+    nameBn: string
+    regularPriceSnapshot: number
+    campaignPrice: number
+    minPetsSnapshot: number
+    includedPetsSnapshot: number
+    maxPetsSnapshot: number
+    validityMonthsSnapshot: number
+    benefitsSnapshot?: string[] | null
+    tierVersion?: number | null
+    allowPriceIncrease?: boolean
+    tier?: MembershipTierLink | null
+    regularPrice: number | null
+    offerPrice: number | null
+    maxCoveredPets: number
+    validityYears?: number | null
+    validityMonths?: number | null
+    maximumReplacementCount?: number | null
+    replacementRequiresApproval?: boolean
+    replacementFee?: number | null
+    sortOrder?: number
+    isActive?: boolean
+    pricing: {
+      regularPrice: number
+      offerPrice: number | null
+      effectivePrice: number
+      discountAmount: number
+      discountPercentage: number
+      isOfferActive: boolean
+      pricingStatus: MembershipPricingStatus
+      offerEndsAt?: string | null
+      offerStartsAt?: string | null
+      applicationEndsAt?: string | null
+      serverNow?: string
+      serverTime?: string
+      remainingOfferTimeMs?: number
+    }
+  }>
 }
 
 export interface MembershipApplication {
@@ -135,6 +287,19 @@ export interface MembershipApplication {
   applicantMobile: string
   applicantEmail?: string | null
   applicantAddress?: string | null
+  regularPriceSnapshot: number
+  offerPriceSnapshot?: number | null
+  finalPriceSnapshot: number
+  tierIdSnapshot?: string | null
+  tierCodeSnapshot?: string | null
+  tierNameEnSnapshot?: string | null
+  tierNameBnSnapshot?: string | null
+  tierVersionSnapshot?: number | null
+  minCoveredPetsSnapshot?: number | null
+  includedPetsSnapshot?: number | null
+  maxCoveredPetsSnapshot?: number | null
+  validityMonthsSnapshot?: number | null
+  benefitsSnapshot?: string[] | null
   status: MembershipApplicationStatus
   submittedAt?: string | null
   approvedAt?: string | null
@@ -161,9 +326,19 @@ export interface MembershipDetail {
     | MembershipPlan
     | {
         id?: string | null
+        tierId?: string | null
+        tierCodeSnapshot?: string | null
+        tierNameEnSnapshot?: string | null
+        tierNameBnSnapshot?: string | null
+        tierVersion?: number | null
         code?: string | null
         nameEn?: string | null
         nameBn?: string | null
+        minPetsSnapshot?: number | null
+        includedPetsSnapshot?: number | null
+        maxPetsSnapshot?: number | null
+        validityMonths?: number | null
+        benefitsSnapshot?: string[] | null
         regularPrice?: number | null
         offerPrice?: number | null
         maxCoveredPets?: number | null
@@ -431,59 +606,65 @@ const base = '/admin/membership'
 
 export const membershipCampaignApi = {
   listCampaigns: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.get<PaginatedResult<MembershipCampaign>>(`${base}/campaigns`, params),
+    api.getPaginated<MembershipCampaign>(`${base}/campaigns`, params),
   getCampaign: (id: string) => api.get<MembershipCampaign>(`${base}/campaigns/${id}`),
+  getCampaignPreview: (id: string) => api.get<MembershipCampaignPreview>(`${base}/campaigns/${id}/preview`),
   createCampaign: (data: Partial<MembershipCampaign>) => api.post<MembershipCampaign>(`${base}/campaigns`, data),
   updateCampaign: (id: string, data: Partial<MembershipCampaign>) => api.put<MembershipCampaign>(`${base}/campaigns/${id}`, data),
   deleteCampaign: (id: string) => api.delete<void>(`${base}/campaigns/${id}`),
 
-  listPlans: (params?: Record<string, string | number | boolean | undefined>) => api.get<PaginatedResult<MembershipPlan>>(`${base}/plans`, params),
+  listPlans: (params?: Record<string, string | number | boolean | undefined>) =>
+    api.getPaginated<PaginatedResult<MembershipPlan>>(`${base}/plans`, params),
+  getPlanHistory: (id: string) => api.get<MembershipPlanHistoryEntry[]>(`${base}/plans/${id}/history`),
   createPlan: (data: Partial<MembershipPlan>) => api.post<MembershipPlan>(`${base}/plans`, data),
   updatePlan: (id: string, data: Partial<MembershipPlan>) => api.put<MembershipPlan>(`${base}/plans/${id}`, data),
   deletePlan: (id: string) => api.delete<void>(`${base}/plans/${id}`),
+  syncPlans: (campaignId: string) => api.post<{ syncedCount: number; totalPlans: number }>(`${base}/campaigns/${campaignId}/plans/sync`),
 
   listBenefits: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.get<PaginatedResult<MembershipBenefit>>(`${base}/benefits`, params),
+    api.getPaginated<PaginatedResult<MembershipBenefit>>(`${base}/benefits`, params),
   createBenefit: (data: Partial<MembershipBenefit> & { planIds?: string[] }) => api.post<MembershipBenefit>(`${base}/benefits`, data),
   updateBenefit: (id: string, data: Partial<MembershipBenefit> & { planIds?: string[] }) =>
     api.put<MembershipBenefit>(`${base}/benefits/${id}`, data),
   deleteBenefit: (id: string) => api.delete<void>(`${base}/benefits/${id}`),
 
   listMedia: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.get<PaginatedResult<MembershipMediaItem>>(`${base}/media`, params),
+    api.getPaginated<PaginatedResult<MembershipMediaItem>>(`${base}/media`, params),
   createMedia: (data: Partial<MembershipMediaItem>) => api.post<MembershipMediaItem>(`${base}/media`, data),
   updateMedia: (id: string, data: Partial<MembershipMediaItem>) => api.put<MembershipMediaItem>(`${base}/media/${id}`, data),
   deleteMedia: (id: string) => api.delete<void>(`${base}/media/${id}`),
 
   listDocuments: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.get<PaginatedResult<MembershipDocumentItem>>(`${base}/documents`, params),
+    api.getPaginated<PaginatedResult<MembershipDocumentItem>>(`${base}/documents`, params),
   createDocument: (data: Partial<MembershipDocumentItem>) => api.post<MembershipDocumentItem>(`${base}/documents`, data),
   updateDocument: (id: string, data: Partial<MembershipDocumentItem>) => api.put<MembershipDocumentItem>(`${base}/documents/${id}`, data),
   deleteDocument: (id: string) => api.delete<void>(`${base}/documents/${id}`),
 
-  listFaqs: (params?: Record<string, string | number | boolean | undefined>) => api.get<PaginatedResult<MembershipFaqItem>>(`${base}/faqs`, params),
+  listFaqs: (params?: Record<string, string | number | boolean | undefined>) =>
+    api.getPaginated<PaginatedResult<MembershipFaqItem>>(`${base}/faqs`, params),
   createFaq: (data: Partial<MembershipFaqItem>) => api.post<MembershipFaqItem>(`${base}/faqs`, data),
   updateFaq: (id: string, data: Partial<MembershipFaqItem>) => api.put<MembershipFaqItem>(`${base}/faqs/${id}`, data),
   deleteFaq: (id: string) => api.delete<void>(`${base}/faqs/${id}`),
 
   listApplications: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.get<PaginatedResult<MembershipApplication>>(`${base}/applications`, params),
+    api.getPaginated<PaginatedResult<MembershipApplication>>(`${base}/applications`, params),
   getApplication: (id: string) => api.get<MembershipApplication>(`${base}/applications/${id}`),
   reviewApplication: (id: string, data: { status: 'approved' | 'rejected'; reviewNotes?: string | null }) =>
     api.post<MembershipApplication>(`${base}/applications/${id}/review`, data),
   activateMembership: (id: string, data?: { validFrom?: string; activatedAt?: string; reviewNotes?: string | null }) =>
     api.post<MembershipDetail>(`${base}/applications/${id}/activate`, data ?? {}),
 
-  listMemberships: (params?: Record<string, string | number | boolean | undefined>) => api.get<PaginatedResult<any>>(`${base}/memberships`, params),
+  listMemberships: (params?: Record<string, string | number | boolean | undefined>) =>
+    api.getPaginated<PaginatedResult<any>>(`${base}/memberships`, params),
   getMembership: (id: string) => api.get<MembershipDetail>(`${base}/memberships/${id}`),
   updateMembershipStatus: (id: string, data: { status: MembershipRecordStatus; notes?: string | null }) =>
     api.patch<MembershipDetail>(`${base}/memberships/${id}/status`, data),
 
   listCoveredPets: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.get<PaginatedResult<MembershipCoveredPetListItem>>(`${base}/covered-pets`, params),
+    api.getPaginated<PaginatedResult<MembershipCoveredPetListItem>>(`${base}/covered-pets`, params),
 
   listReplacements: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.get<PaginatedResult<MembershipReplacement>>(`${base}/membership-pet-replacements`, params),
+    api.getPaginated<PaginatedResult<MembershipReplacement>>(`${base}/membership-pet-replacements`, params),
   getReplacement: (id: string) => api.get<MembershipReplacement>(`${base}/membership-pet-replacements/${id}`),
   approveReplacement: (id: string, data?: { reviewNotes?: string | null }) =>
     api.post<MembershipReplacement>(`${base}/membership-pet-replacements/${id}/approve`, data ?? {}),
@@ -493,13 +674,13 @@ export const membershipCampaignApi = {
     api.post<MembershipReplacement>(`${base}/membership-pet-replacements/${id}/complete`, data),
 
   listUpgrades: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.get<PaginatedResult<MembershipUpgrade>>(`${base}/upgrades`, params),
+    api.getPaginated<PaginatedResult<MembershipUpgrade>>(`${base}/upgrades`, params),
   getUpgrade: (id: string) => api.get<MembershipUpgrade>(`${base}/upgrades/${id}`),
   reviewUpgrade: (id: string, data: { status: 'completed' | 'cancelled'; reviewNotes?: string | null }) =>
     api.post<MembershipUpgrade>(`${base}/upgrades/${id}/review`, data),
 
   listServiceUsage: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.get<PaginatedResult<MembershipServiceUsageItem>>(`${base}/service-usage`, params),
+    api.getPaginated<PaginatedResult<MembershipServiceUsageItem>>(`${base}/service-usage`, params),
 
   getReports: () => api.get<MembershipReports>(`${base}/reports`),
 }
