@@ -1,7 +1,6 @@
 'use client'
 
 import IconifyIcon from '@/components/wrappers/IconifyIcon'
-import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
 import { Dropdown, DropdownHeader, DropdownItem, DropdownMenu, DropdownToggle } from 'react-bootstrap'
 
@@ -40,10 +39,6 @@ const ProfileDropdown = () => {
         <DropdownHeader as={'h6'} className="dropdown-header">
           {displayName}
         </DropdownHeader>
-        <DropdownItem as={Link as any} href="/auth/lock-screen">
-          <IconifyIcon icon="bx:lock" className="text-muted fs-18 align-middle me-1" />
-          <span className="align-middle">Lock screen</span>
-        </DropdownItem>
         <div className="dropdown-divider my-1" />
         <DropdownItem className="text-danger" onClick={() => signOut({ callbackUrl: '/auth/sign-in' })}>
           <IconifyIcon icon="bx:log-out" className="fs-18 align-middle me-1" />

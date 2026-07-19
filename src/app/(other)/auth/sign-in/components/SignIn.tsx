@@ -1,4 +1,5 @@
 'use client'
+import { useSearchParams } from 'next/navigation'
 import LoginFrom from './LoginFrom'
 
 const FEATURES = [
@@ -17,6 +18,9 @@ const BpaLogomark = ({ size = 44 }: { size?: number }) => (
 )
 
 const SignIn = () => {
+  const searchParams = useSearchParams()
+  const sessionExpired = searchParams.get('reason') === 'session_expired'
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
 
@@ -53,6 +57,23 @@ const SignIn = () => {
           <p style={{ fontSize: 14, color: '#64748b', marginBottom: 28, lineHeight: 1.6 }}>
             Sign in to manage BPA campaigns, members, and community programs.
           </p>
+
+          {sessionExpired && (
+            <div
+              role="alert"
+              style={{
+                background: '#fff7ed',
+                border: '1px solid #fdba74',
+                color: '#9a3412',
+                borderRadius: 8,
+                padding: '10px 14px',
+                fontSize: 13,
+                marginBottom: 20,
+              }}
+            >
+              Your session expired. Please sign in again.
+            </div>
+          )}
 
           <LoginFrom />
 

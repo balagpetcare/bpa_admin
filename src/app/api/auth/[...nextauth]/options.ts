@@ -13,6 +13,34 @@ if (!BACKEND_API_URL && process.env['NODE_ENV'] === 'production') {
 
 const BACKEND_API = BACKEND_API_URL ?? 'http://localhost:4000/api/v1'
 
+/**
+ * The backend never returns a ready-made expiry timestamp — both
+ * /auth/login and /auth/refresh send `expiresIn` as an env-style duration
+ * string (e.g. "15m", "7d"; see bpa/api's JWT_ACCESS_EXPIRY and
+ * src/modules/auth/utils/duration.util.ts parseDurationMs, which this
+ * mirrors). Compute the absolute epoch-ms expiry ourselves from it.
+ */
+const DURATION_UNIT_MS: Record<string, number> = {
+  ms: 1,
+  s: 1000,
+  m: 60_000,
+  h: 3_600_000,
+  d: 86_400_000,
+  w: 604_800_000,
+}
+
+function expiryFromNow(expiresIn: unknown): number {
+  const spec = String(expiresIn ?? '').trim()
+  const match = /^(\d+)(ms|s|m|h|d|w)$/i.exec(spec)
+  if (match) {
+    const amount = parseInt(match[1], 10)
+    const unit = DURATION_UNIT_MS[match[2].toLowerCase()]
+    if (unit) return Date.now() + amount * unit
+  }
+  // Fallback: treat as already-expired rather than silently caching forever.
+  return Date.now()
+}
+
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     const res = await fetch(`${BACKEND_API}/auth/refresh`, {
@@ -27,11 +55,13 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       return { ...token, error: 'RefreshTokenExpired' }
     }
 
+    // /auth/refresh returns tokens flat on `data` (unlike /auth/login, which
+    // nests them under `data.tokens` — see authorize() below).
     return {
       ...token,
       accessToken: json.data.accessToken,
       refreshToken: json.data.refreshToken ?? token.refreshToken,
-      accessTokenExpires: json.data.accessTokenExpires,
+      accessTokenExpires: expiryFromNow(json.data.expiresIn),
       error: undefined,
     }
   } catch {
@@ -65,7 +95,21 @@ export const options: NextAuthOptions = {
           throw new Error(json.error?.message ?? 'Invalid credentials')
         }
 
-        const { user, accessToken, refreshToken, accessTokenExpires } = json.data
+        // /auth/login nests tokens under `data.tokens` and returns a single
+        // `role` string (not `roles`, not a top-level `name`) — see
+        // AuthResponse / AuthUserResponse / AuthTokensResponse in
+        // bpa/api's src/modules/auth/types/auth.interfaces.ts. The previous
+        // version of this code destructured accessToken/refreshToken/
+        // accessTokenExpires straight off `data`, which don't exist there,
+        // so every login silently produced a session with no real tokens —
+        // the very next jwt() callback treated it as already expired and
+        // tried to refresh with an undefined refresh token, which fails
+        // immediately (confirmed live: /api/auth/session showed
+        // error: "RefreshTokenExpired" seconds after a correct-password
+        // login). This is the confirmed root cause of the reported
+        // login/session-expiry issue.
+        const { user, tokens } = json.data
+        const { accessToken, refreshToken, expiresIn } = tokens
 
         // Permissions are intentionally excluded from the session token.
         // Including them (~32 KB for super_admin) produces a JWT that exceeds
@@ -73,12 +117,12 @@ export const options: NextAuthOptions = {
         // Permissions are loaded on-demand via /api/proxy/permissions when needed.
         return {
           id: user.id,
-          name: user.name,
+          name: [user.firstName, user.lastName].filter(Boolean).join(' '),
           email: user.email,
-          roles: user.roles ?? [],
+          roles: user.role ? [user.role] : [],
           accessToken,
           refreshToken,
-          accessTokenExpires,
+          accessTokenExpires: expiryFromNow(expiresIn),
         }
       },
     }),
