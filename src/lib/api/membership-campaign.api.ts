@@ -53,6 +53,7 @@ export interface MembershipPlan {
   changeReason?: string | null
   effectiveAt?: string | null
   existingMembersAffected?: boolean
+  updatedAt?: string | null
   campaign?: { id: string; titleEn: string; slug: string } | null
   tier?: MembershipTierLink | null
 }
@@ -614,7 +615,7 @@ export const membershipCampaignApi = {
   deleteCampaign: (id: string) => api.delete<void>(`${base}/campaigns/${id}`),
 
   listPlans: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<PaginatedResult<MembershipPlan>>(`${base}/plans`, params),
+    api.getPaginated<MembershipPlan>(`${base}/plans`, params),
   getPlanHistory: (id: string) => api.get<MembershipPlanHistoryEntry[]>(`${base}/plans/${id}/history`),
   createPlan: (data: Partial<MembershipPlan>) => api.post<MembershipPlan>(`${base}/plans`, data),
   updatePlan: (id: string, data: Partial<MembershipPlan>) => api.put<MembershipPlan>(`${base}/plans/${id}`, data),
@@ -622,32 +623,32 @@ export const membershipCampaignApi = {
   syncPlans: (campaignId: string) => api.post<{ syncedCount: number; totalPlans: number }>(`${base}/campaigns/${campaignId}/plans/sync`),
 
   listBenefits: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<PaginatedResult<MembershipBenefit>>(`${base}/benefits`, params),
+    api.getPaginated<MembershipBenefit>(`${base}/benefits`, params),
   createBenefit: (data: Partial<MembershipBenefit> & { planIds?: string[] }) => api.post<MembershipBenefit>(`${base}/benefits`, data),
   updateBenefit: (id: string, data: Partial<MembershipBenefit> & { planIds?: string[] }) =>
     api.put<MembershipBenefit>(`${base}/benefits/${id}`, data),
   deleteBenefit: (id: string) => api.delete<void>(`${base}/benefits/${id}`),
 
   listMedia: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<PaginatedResult<MembershipMediaItem>>(`${base}/media`, params),
+    api.getPaginated<MembershipMediaItem>(`${base}/media`, params),
   createMedia: (data: Partial<MembershipMediaItem>) => api.post<MembershipMediaItem>(`${base}/media`, data),
   updateMedia: (id: string, data: Partial<MembershipMediaItem>) => api.put<MembershipMediaItem>(`${base}/media/${id}`, data),
   deleteMedia: (id: string) => api.delete<void>(`${base}/media/${id}`),
 
   listDocuments: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<PaginatedResult<MembershipDocumentItem>>(`${base}/documents`, params),
+    api.getPaginated<MembershipDocumentItem>(`${base}/documents`, params),
   createDocument: (data: Partial<MembershipDocumentItem>) => api.post<MembershipDocumentItem>(`${base}/documents`, data),
   updateDocument: (id: string, data: Partial<MembershipDocumentItem>) => api.put<MembershipDocumentItem>(`${base}/documents/${id}`, data),
   deleteDocument: (id: string) => api.delete<void>(`${base}/documents/${id}`),
 
   listFaqs: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<PaginatedResult<MembershipFaqItem>>(`${base}/faqs`, params),
+    api.getPaginated<MembershipFaqItem>(`${base}/faqs`, params),
   createFaq: (data: Partial<MembershipFaqItem>) => api.post<MembershipFaqItem>(`${base}/faqs`, data),
   updateFaq: (id: string, data: Partial<MembershipFaqItem>) => api.put<MembershipFaqItem>(`${base}/faqs/${id}`, data),
   deleteFaq: (id: string) => api.delete<void>(`${base}/faqs/${id}`),
 
   listApplications: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<PaginatedResult<MembershipApplication>>(`${base}/applications`, params),
+    api.getPaginated<MembershipApplication>(`${base}/applications`, params),
   getApplication: (id: string) => api.get<MembershipApplication>(`${base}/applications/${id}`),
   reviewApplication: (id: string, data: { status: 'approved' | 'rejected'; reviewNotes?: string | null }) =>
     api.post<MembershipApplication>(`${base}/applications/${id}/review`, data),
@@ -655,16 +656,16 @@ export const membershipCampaignApi = {
     api.post<MembershipDetail>(`${base}/applications/${id}/activate`, data ?? {}),
 
   listMemberships: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<PaginatedResult<any>>(`${base}/memberships`, params),
+    api.getPaginated<any>(`${base}/memberships`, params),
   getMembership: (id: string) => api.get<MembershipDetail>(`${base}/memberships/${id}`),
   updateMembershipStatus: (id: string, data: { status: MembershipRecordStatus; notes?: string | null }) =>
     api.patch<MembershipDetail>(`${base}/memberships/${id}/status`, data),
 
   listCoveredPets: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<PaginatedResult<MembershipCoveredPetListItem>>(`${base}/covered-pets`, params),
+    api.getPaginated<MembershipCoveredPetListItem>(`${base}/covered-pets`, params),
 
   listReplacements: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<PaginatedResult<MembershipReplacement>>(`${base}/membership-pet-replacements`, params),
+    api.getPaginated<MembershipReplacement>(`${base}/membership-pet-replacements`, params),
   getReplacement: (id: string) => api.get<MembershipReplacement>(`${base}/membership-pet-replacements/${id}`),
   approveReplacement: (id: string, data?: { reviewNotes?: string | null }) =>
     api.post<MembershipReplacement>(`${base}/membership-pet-replacements/${id}/approve`, data ?? {}),
@@ -674,13 +675,13 @@ export const membershipCampaignApi = {
     api.post<MembershipReplacement>(`${base}/membership-pet-replacements/${id}/complete`, data),
 
   listUpgrades: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<PaginatedResult<MembershipUpgrade>>(`${base}/upgrades`, params),
+    api.getPaginated<MembershipUpgrade>(`${base}/upgrades`, params),
   getUpgrade: (id: string) => api.get<MembershipUpgrade>(`${base}/upgrades/${id}`),
   reviewUpgrade: (id: string, data: { status: 'completed' | 'cancelled'; reviewNotes?: string | null }) =>
     api.post<MembershipUpgrade>(`${base}/upgrades/${id}/review`, data),
 
   listServiceUsage: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<PaginatedResult<MembershipServiceUsageItem>>(`${base}/service-usage`, params),
+    api.getPaginated<MembershipServiceUsageItem>(`${base}/service-usage`, params),
 
   getReports: () => api.get<MembershipReports>(`${base}/reports`),
 }
