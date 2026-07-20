@@ -6,7 +6,7 @@ import useSignIn from './useSignIn'
 import PasswordFormInput from '@/components/form/PasswordFormInput'
 
 const LoginFrom = () => {
-  const { loading, login, control } = useSignIn()
+  const { loading, ssoLoading, login, loginWithCentralAuth, control } = useSignIn()
   return (
     <form className="authentication-form" onSubmit={login}>
       <TextFormInput control={control} name="email" containerClassName="mb-3" label="Email" id="email-id" placeholder="Enter your email" />
@@ -34,6 +34,20 @@ const LoginFrom = () => {
       <div className="mb-1 text-center d-grid">
         <Button variant="primary" type="submit" disabled={loading}>
           Sign In
+        </Button>
+      </div>
+
+      <div className="d-flex align-items-center my-3">
+        <hr className="flex-grow-1" />
+        <span className="mx-2 text-muted" style={{ fontSize: 12 }}>
+          or
+        </span>
+        <hr className="flex-grow-1" />
+      </div>
+
+      <div className="mb-1 text-center d-grid">
+        <Button variant="outline-secondary" type="button" disabled={ssoLoading} onClick={loginWithCentralAuth}>
+          {ssoLoading ? 'Redirecting…' : 'Sign in with WPA Central Auth'}
         </Button>
       </div>
     </form>

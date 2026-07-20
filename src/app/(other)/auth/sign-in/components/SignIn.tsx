@@ -20,6 +20,11 @@ const BpaLogomark = ({ size = 44 }: { size?: number }) => (
 const SignIn = () => {
   const searchParams = useSearchParams()
   const sessionExpired = searchParams.get('reason') === 'session_expired'
+  // next-auth redirects here with `?error=<code>` when an OAuth sign-in
+  // fails (bad/expired code, PKCE/state mismatch, wrong audience, denied
+  // consent, etc.) — the code is a generic next-auth error identifier, never
+  // the backend's own error text, so nothing sensitive is ever surfaced here.
+  const ssoError = searchParams.get('error')
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
@@ -72,6 +77,23 @@ const SignIn = () => {
               }}
             >
               Your session expired. Please sign in again.
+            </div>
+          )}
+
+          {ssoError && (
+            <div
+              role="alert"
+              style={{
+                background: '#fef2f2',
+                border: '1px solid #fca5a5',
+                color: '#991b1b',
+                borderRadius: 8,
+                padding: '10px 14px',
+                fontSize: 13,
+                marginBottom: 20,
+              }}
+            >
+              Sign-in was unsuccessful. Please try again, or sign in with your email and password below.
             </div>
           )}
 

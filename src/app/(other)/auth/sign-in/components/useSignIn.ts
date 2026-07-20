@@ -11,6 +11,7 @@ import useQueryParams from '@/hooks/useQueryParams'
 
 const useSignIn = () => {
   const [loading, setLoading] = useState(false)
+  const [ssoLoading, setSsoLoading] = useState(false)
   const { push } = useRouter()
   const { showNotification } = useNotificationContext()
 
@@ -48,7 +49,18 @@ const useSignIn = () => {
     setLoading(false)
   })
 
-  return { loading, login, control }
+  // Generic account SSO via Central Auth (Global Super Admin role, checked
+  // server-side by bpa/api — this button intentionally carries no
+  // "admin-only" branding, matching the rest of the local sign-in form).
+  // next-auth handles the redirect to Central Auth's login page itself; the
+  // `redirectTo` query param is preserved through `callbackUrl` so the user
+  // lands back where they intended after the round trip.
+  const loginWithCentralAuth = () => {
+    setSsoLoading(true)
+    signIn('central-auth', { callbackUrl: queryParams['redirectTo'] ?? '/dashboard' })
+  }
+
+  return { loading, ssoLoading, login, loginWithCentralAuth, control }
 }
 
 export default useSignIn
