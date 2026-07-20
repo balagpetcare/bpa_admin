@@ -358,20 +358,12 @@ export async function exportDonationsCsv(params?: {
   dateFrom?: string;
   dateTo?: string;
 }) {
-  const { getApiBase } = await import('@/lib/utils/api-url');
-  const url = new URL(`${getApiBase()}/admin/donations/export/csv`);
+  const url = new URL('/api/backend/admin/donations/export/csv', window.location.origin);
   if (params?.status) url.searchParams.set('status', params.status);
   if (params?.dateFrom) url.searchParams.set('dateFrom', params.dateFrom);
   if (params?.dateTo) url.searchParams.set('dateTo', params.dateTo);
 
-  const { getSession } = await import('next-auth/react');
-  const session = await getSession();
-  const headers: Record<string, string> = {};
-  if (session?.accessToken) {
-    headers['Authorization'] = `Bearer ${session.accessToken}`;
-  }
-
-  const res = await fetch(url.toString(), { headers });
+  const res = await fetch(url.toString());
   if (!res.ok) throw new Error('Failed to export CSV');
 
   const blob = await res.blob();

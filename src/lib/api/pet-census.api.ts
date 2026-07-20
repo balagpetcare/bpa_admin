@@ -1,4 +1,3 @@
-import { getSession } from 'next-auth/react'
 import { api, ApiError } from '../api'
 import { isUuid } from '../uuid'
 import { getApiBase } from '@/lib/utils/api-url'
@@ -33,16 +32,13 @@ export const petCensusApi = {
   remove: (id: string) => api.delete<void>(`/admin/pet-census/${requireValidId(id, 'Submission')}`),
 
   exportCsv: async (params?: any): Promise<Blob> => {
-    const url = new URL(`${BASE_URL}/admin/pet-census/export`)
+    const url = new URL('/api/backend/admin/pet-census/export', window.location.origin)
     if (params) {
       Object.entries(params).forEach(([k, v]) => {
         if (v !== undefined && v !== '') url.searchParams.set(k, String(v))
       })
     }
-    const session = await getSession()
-    const res = await fetch(url.toString(), {
-      headers: { Authorization: `Bearer ${session?.accessToken}` },
-    })
+    const res = await fetch(url.toString())
     if (!res.ok) throw new Error('Failed to export CSV')
     return res.blob()
   },
