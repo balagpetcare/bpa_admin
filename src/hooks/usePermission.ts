@@ -14,7 +14,7 @@ export function usePermission() {
     let cancelled = false
 
     async function loadPermissions() {
-      if (!session?.accessToken || roles.includes('super_admin')) {
+      if (!session || roles.includes('super_admin')) {
         setFetchedPermissions([])
         return
       }
@@ -36,7 +36,7 @@ export function usePermission() {
     return () => {
       cancelled = true
     }
-  }, [roles, session?.accessToken])
+  }, [roles, session])
 
   const permissions = useMemo(
     () => (session?.user as any)?.permissions ?? fetchedPermissions ?? [],

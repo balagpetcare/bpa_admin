@@ -1,4 +1,5 @@
-import { getSession, signOut } from 'next-auth/react'
+import { signOut } from 'next-auth/react'
+import type { GetTokenParams } from 'next-auth/jwt'
 import type { ApiResponse, ApiErrorResponse } from '@/types/bpa.types'
 import { getApiBase } from '@/lib/utils/api-url'
 
@@ -19,16 +20,21 @@ const BASE_URL = getApiBase()
 async function getAccessToken(): Promise<string | null> {
   if (typeof window === 'undefined') {
     // Dynamic imports keep these server-only modules out of the client bundle.
-    // options.ts has a module-level throw when BACKEND_API_URL is absent; in the
-    // browser that env var is always undefined (no NEXT_PUBLIC_ prefix), so a
-    // static import would crash the client on every page load in production.
-    const { getServerSession } = await import('next-auth/next')
-    const { options: authOptions } = await import('@/app/api/auth/[...nextauth]/options')
-    const session = await getServerSession(authOptions)
-    return session?.accessToken ?? null
+    const { cookies } = await import('next/headers')
+    const { getToken } = await import('next-auth/jwt')
+    const cookieStore = await cookies()
+    const cookieHeader = cookieStore
+      .getAll()
+      .map(({ name, value }) => `${encodeURIComponent(name)}=${encodeURIComponent(value)}`)
+      .join('; ')
+    const req = { headers: { cookie: cookieHeader } } as GetTokenParams['req']
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET,
+    })
+    return typeof token?.accessToken === 'string' ? token.accessToken : null
   }
-  const session = await getSession()
-  return session?.accessToken ?? null
+  return null
 }
 
 export interface RequestOptions extends Omit<RequestInit, 'body'> {
@@ -44,14 +50,15 @@ export async function apiClient<T = unknown>(
   const { body, params, isMultipart, headers: extraHeaders, ...fetchOpts } = opts
 
   // Build URL with query params
-  const url = new URL(`${BASE_URL}${endpoint}`)
+  const requestBase = typeof window !== 'undefined' ? `${window.location.origin}/api/backend` : BASE_URL
+  const url = new URL(`${requestBase}${endpoint}`)
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
       if (v !== undefined) url.searchParams.set(k, String(v))
     })
   }
 
-  const token = await getAccessToken()
+  const token = typeof window === 'undefined' ? await getAccessToken() : null
 
   const headers: Record<string, string> = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -112,14 +119,15 @@ export async function apiClientPaginated<T = unknown>(
 ): Promise<PaginatedResponse<T>> {
   const { body, params, isMultipart, headers: extraHeaders, ...fetchOpts } = opts
 
-  const url = new URL(`${BASE_URL}${endpoint}`)
+  const requestBase = typeof window !== 'undefined' ? `${window.location.origin}/api/backend` : BASE_URL
+  const url = new URL(`${requestBase}${endpoint}`)
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
       if (v !== undefined) url.searchParams.set(k, String(v))
     })
   }
 
-  const token = await getAccessToken()
+  const token = typeof window === 'undefined' ? await getAccessToken() : null
 
   const headers: Record<string, string> = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),

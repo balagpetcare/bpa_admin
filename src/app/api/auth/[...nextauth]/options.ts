@@ -365,7 +365,8 @@ export const options: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      session.accessToken = token.accessToken
+      // Bearer tokens remain inside the encrypted HttpOnly NextAuth cookie.
+      // Browser API calls use /api/backend; never serialize them to session JSON.
       session.error = token.error
       session.user = token.user
       session.authProvider = token.authProvider

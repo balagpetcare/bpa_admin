@@ -3,7 +3,6 @@ import { BpaUser } from './bpa.types'
 
 declare module 'next-auth' {
   interface Session {
-    accessToken: string
     error?: 'RefreshTokenExpired'
     user: BpaUser
     /** Which provider issued the tokens backing this session. */
