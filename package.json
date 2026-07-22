@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
-    "build": "tsc && next build",
+    "typegen": "next typegen",
+    "build": "npm run typegen && tsc && next build",
     "start": "next start -p 3001",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx}'",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "npm run typegen && tsc --noEmit"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
