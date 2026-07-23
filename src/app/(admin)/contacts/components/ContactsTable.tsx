@@ -47,7 +47,14 @@ export default function ContactsTable({ data, loading, onView }: ContactsTablePr
         header: '',
         id: 'actions',
         cell: ({ row }) => (
-          <Button variant="soft-primary" size="sm" onClick={(e) => { e.stopPropagation(); onView(row.original) }} title="View message">
+          <Button
+            variant="soft-primary"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation()
+              onView(row.original)
+            }}
+            title="View message">
             <Icon icon="solar:eye-bold" />
           </Button>
         ),
@@ -87,8 +94,7 @@ export default function ContactsTable({ data, loading, onView }: ContactsTablePr
                 <tr
                   key={row.id}
                   style={{ cursor: 'pointer', fontWeight: row.original.status === 'unread' ? 600 : undefined }}
-                  onClick={() => onView(row.original)}
-                >
+                  onClick={() => onView(row.original)}>
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
                   ))}

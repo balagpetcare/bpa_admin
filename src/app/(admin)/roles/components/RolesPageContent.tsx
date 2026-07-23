@@ -21,8 +21,14 @@ export default function RolesPageContent() {
   const { data, loading, error, refetch } = useApi(() => rolesApi.list(), [])
   const roles = data ?? []
 
-  const openCreate = () => { setEditRole(null); setModalOpen(true) }
-  const openEdit = (role: Role) => { setEditRole(role); setModalOpen(true) }
+  const openCreate = () => {
+    setEditRole(null)
+    setModalOpen(true)
+  }
+  const openEdit = (role: Role) => {
+    setEditRole(role)
+    setModalOpen(true)
+  }
 
   return (
     <div className="container-fluid">
@@ -47,12 +53,7 @@ export default function RolesPageContent() {
         </Card.Body>
       </Card>
 
-      <RoleFormModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSuccess={refetch}
-        role={editRole}
-      />
+      <RoleFormModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onSuccess={refetch} role={editRole} />
     </div>
   )
 }

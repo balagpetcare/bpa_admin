@@ -38,8 +38,7 @@ export default function Pagination({
             onLimitChange(Number(e.target.value))
             onPageChange(1)
           }}
-          style={{ width: 'auto' }}
-        >
+          style={{ width: 'auto' }}>
           <option value="10">10 / page</option>
           <option value="20">20 / page</option>
           <option value="50">50 / page</option>
@@ -47,20 +46,10 @@ export default function Pagination({
         </Form.Select>
       </div>
       <div className="d-flex gap-1">
-        <Button
-          size="sm"
-          variant="outline-secondary"
-          disabled={!hasPrev || page <= 1}
-          onClick={() => onPageChange(page - 1)}
-        >
+        <Button size="sm" variant="outline-secondary" disabled={!hasPrev || page <= 1} onClick={() => onPageChange(page - 1)}>
           Previous
         </Button>
-        <Button
-          size="sm"
-          variant="outline-secondary"
-          disabled={!hasNext || page >= totalPages}
-          onClick={() => onPageChange(page + 1)}
-        >
+        <Button size="sm" variant="outline-secondary" disabled={!hasNext || page >= totalPages} onClick={() => onPageChange(page + 1)}>
           Next
         </Button>
       </div>

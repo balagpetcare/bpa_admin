@@ -11,7 +11,12 @@ export default function EditCampaignPage() {
   const fn = useCallback(() => getCampaign(id), [id])
   const { data, loading } = useApi(fn, [id])
 
-  if (loading) return <div className="d-flex justify-content-center p-5"><div className="spinner-border text-primary" /></div>
+  if (loading)
+    return (
+      <div className="d-flex justify-content-center p-5">
+        <div className="spinner-border text-primary" />
+      </div>
+    )
   if (!data) return null
 
   return <DonationCampaignForm campaignId={id} initial={data} />

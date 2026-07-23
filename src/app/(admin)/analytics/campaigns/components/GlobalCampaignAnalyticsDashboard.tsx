@@ -48,13 +48,7 @@ export default function GlobalCampaignAnalyticsDashboard() {
 
   return (
     <div className="container-fluid">
-      <PageHeader
-        title="Global Campaign Analytics"
-        breadcrumbs={[
-          { label: 'Analytics', href: '/analytics' },
-          { label: 'Campaigns' },
-        ]}
-      />
+      <PageHeader title="Global Campaign Analytics" breadcrumbs={[{ label: 'Analytics', href: '/analytics' }, { label: 'Campaigns' }]} />
 
       <ApiErrorAlert error={error as ApiError | null} />
 
@@ -131,9 +125,7 @@ export default function GlobalCampaignAnalyticsDashboard() {
                           <td className="text-end">{c.analytics?.totalRegistrations ?? '—'}</td>
                           <td className="text-end">{c.analytics?.totalPaid ?? '—'}</td>
                           <td className="text-end">{c.analytics?.totalVaccinated ?? '—'}</td>
-                          <td className="text-end">
-                            {c.analytics ? `৳${Number(c.analytics.totalRevenueBdt).toLocaleString('en-BD')}` : '—'}
-                          </td>
+                          <td className="text-end">{c.analytics ? `৳${Number(c.analytics.totalRevenueBdt).toLocaleString('en-BD')}` : '—'}</td>
                           <td>
                             <Link href={`/campaigns/${c.id}/analytics`} className="btn btn-sm btn-soft-secondary">
                               <Icon icon="solar:chart-2-bold" className="me-1" />

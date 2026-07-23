@@ -123,9 +123,12 @@ export default function MembershipClinicServiceContent() {
   }, [])
 
   const venuesFn = useCallback(() => locationsApi.listVenues({ isActive: true }), [])
-  const doctorsFn = useCallback(() => fetchAllPages((p, l) => doctorsApi.list({ page: p, limit: l, isActive: true })).then(d => ({ data: d })), [])
-  const staffFn = useCallback(() => fetchAllPages((p, l) => usersApi.list({ page: p, limit: l, isActive: true })).then(d => ({ data: d })), [])
-  const benefitsFn = useCallback(() => fetchAllPages((p, l) => membershipCampaignApi.listBenefits({ page: p, limit: l })).then(d => ({ data: d })), [])
+  const doctorsFn = useCallback(() => fetchAllPages((p, l) => doctorsApi.list({ page: p, limit: l, isActive: true })).then((d) => ({ data: d })), [])
+  const staffFn = useCallback(() => fetchAllPages((p, l) => usersApi.list({ page: p, limit: l, isActive: true })).then((d) => ({ data: d })), [])
+  const benefitsFn = useCallback(
+    () => fetchAllPages((p, l) => membershipCampaignApi.listBenefits({ page: p, limit: l })).then((d) => ({ data: d })),
+    [],
+  )
   const { data: venues } = useApi(venuesFn, [])
   const { data: doctors } = useApi(doctorsFn, [])
   const { data: staffUsers } = useApi(staffFn, [])
@@ -928,4 +931,3 @@ export default function MembershipClinicServiceContent() {
     </div>
   )
 }
-

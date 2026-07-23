@@ -51,7 +51,13 @@ export default function NewsForm({ existing }: NewsFormProps) {
   const categoryOptions = (categories ?? []).map((c) => ({ value: c.id, label: c.name }))
   const tagOptions = (tags ?? []).map((t) => ({ value: t.id, label: t.name }))
 
-  const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormValues>({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<FormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: yupResolver(schema as any),
     defaultValues: {
@@ -139,19 +145,9 @@ export default function NewsForm({ existing }: NewsFormProps) {
         <Col lg={8}>
           <Card className="mb-3">
             <Card.Body>
-              <TextFormInput
-                name="title"
-                label="Title"
-                placeholder="Enter article title"
-                containerClassName="mb-3"
-                control={control}
-              />
+              <TextFormInput name="title" label="Title" placeholder="Enter article title" containerClassName="mb-3" control={control} />
 
-              <NewsSlugInput
-                value={slugValue}
-                onChange={(s) => setValue('slug', s)}
-                title={titleValue}
-              />
+              <NewsSlugInput value={slugValue} onChange={(s) => setValue('slug', s)} title={titleValue} />
 
               <TextAreaFormInput
                 name="excerpt"
@@ -162,11 +158,7 @@ export default function NewsForm({ existing }: NewsFormProps) {
                 control={control}
               />
 
-              <NewsBodyEditor
-                value={bodyValue}
-                onChange={(html) => setValue('body', html)}
-                error={errors.body?.message}
-              />
+              <NewsBodyEditor value={bodyValue} onChange={(html) => setValue('body', html)} error={errors.body?.message} />
             </Card.Body>
           </Card>
         </Col>
@@ -188,7 +180,9 @@ export default function NewsForm({ existing }: NewsFormProps) {
           />
 
           <Card className="mb-3">
-            <Card.Header className="py-2"><h6 className="mb-0">Cover Image</h6></Card.Header>
+            <Card.Header className="py-2">
+              <h6 className="mb-0">Cover Image</h6>
+            </Card.Header>
             <Card.Body>
               <MediaPickerInput
                 value={watch('coverImageId')}
@@ -203,7 +197,9 @@ export default function NewsForm({ existing }: NewsFormProps) {
           </Card>
 
           <Card className="mb-3">
-            <Card.Header className="py-2"><h6 className="mb-0">Category</h6></Card.Header>
+            <Card.Header className="py-2">
+              <h6 className="mb-0">Category</h6>
+            </Card.Header>
             <Card.Body>
               <Controller
                 name="categoryId"
@@ -223,13 +219,20 @@ export default function NewsForm({ existing }: NewsFormProps) {
           </Card>
 
           <Card className="mb-3">
-            <Card.Header className="py-2"><h6 className="mb-0">Tags</h6></Card.Header>
+            <Card.Header className="py-2">
+              <h6 className="mb-0">Tags</h6>
+            </Card.Header>
             <Card.Body>
               <ReactSelect
                 isMulti
                 options={tagOptions}
                 value={tagOptions.filter((o) => (tagIdsValue ?? []).includes(o.value))}
-                onChange={(opts) => setValue('tagIds', opts.map((o) => o.value))}
+                onChange={(opts) =>
+                  setValue(
+                    'tagIds',
+                    opts.map((o) => o.value),
+                  )
+                }
                 classNamePrefix="react-select"
                 placeholder="Select tags…"
               />

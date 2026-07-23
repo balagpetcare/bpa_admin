@@ -21,8 +21,8 @@ export default function OperationsTab({ membership, campaigns, petCensus, loadin
   const p = petCensus ?? { censusPoints: [], zoneBreakdown: [], petTypes: [] }
 
   // 1. Membership Chart Config
-  const memDates = m.membershipPoints.map(pt => pt.date)
-  const memCounts = m.membershipPoints.map(pt => pt.count)
+  const memDates = m.membershipPoints.map((pt) => pt.date)
+  const memCounts = m.membershipPoints.map((pt) => pt.count)
   const membershipOptions: ApexOptions = {
     chart: { type: 'area', height: 200, toolbar: { show: false }, zoom: { enabled: false } },
     stroke: { curve: 'smooth', width: 2 },
@@ -31,32 +31,32 @@ export default function OperationsTab({ membership, campaigns, petCensus, loadin
     colors: ['#0dcaf0'],
     grid: { borderColor: '#f1f1f1', strokeDashArray: 3 },
     dataLabels: { enabled: false },
-    tooltip: { x: { format: 'yyyy-MM-dd' } }
+    tooltip: { x: { format: 'yyyy-MM-dd' } },
   }
   const membershipSeries = [{ name: 'Memberships Issued', data: memCounts }]
 
   // 2. Campaign Regs Chart Config
-  const campDates = c.campaignPoints.map(pt => pt.date)
-  const campCounts = c.campaignPoints.map(pt => pt.count)
+  const campDates = c.campaignPoints.map((pt) => pt.date)
+  const campCounts = c.campaignPoints.map((pt) => pt.count)
   const campaignOptions: ApexOptions = {
     chart: { type: 'bar', height: 200, toolbar: { show: false } },
     xaxis: { categories: campDates, labels: { rotate: -30, style: { fontSize: '9px', colors: '#6c757d' } } },
     colors: ['#fd7e14'],
     grid: { borderColor: '#f1f1f1', strokeDashArray: 3 },
-    dataLabels: { enabled: false }
+    dataLabels: { enabled: false },
   }
   const campaignSeries = [{ name: 'Registrations', data: campCounts }]
 
   // 3. Pet Census Chart Config
-  const censusDates = p.censusPoints.map(pt => pt.date)
-  const censusCounts = p.censusPoints.map(pt => pt.count)
+  const censusDates = p.censusPoints.map((pt) => pt.date)
+  const censusCounts = p.censusPoints.map((pt) => pt.count)
   const censusOptions: ApexOptions = {
     chart: { type: 'line', height: 200, toolbar: { show: false } },
     stroke: { width: 3, curve: 'straight' },
     xaxis: { categories: censusDates, labels: { rotate: -30, style: { fontSize: '9px', colors: '#6c757d' } } },
     colors: ['#6f42c1'],
     grid: { borderColor: '#f1f1f1', strokeDashArray: 3 },
-    dataLabels: { enabled: false }
+    dataLabels: { enabled: false },
   }
   const censusSeries = [{ name: 'Census Logs', data: censusCounts }]
 
@@ -114,7 +114,9 @@ export default function OperationsTab({ membership, campaigns, petCensus, loadin
                   {m.zoneBreakdown.slice(0, 3).map((z) => (
                     <div key={z.name} className="d-flex justify-content-between align-items-center py-1 border-bottom border-light">
                       <span className="small text-dark fw-semibold">{z.name}</span>
-                      <Badge bg="secondary-subtle" className="text-secondary fs-10">{z.count} members</Badge>
+                      <Badge bg="secondary-subtle" className="text-secondary fs-10">
+                        {z.count} members
+                      </Badge>
                     </div>
                   ))}
                   {m.zoneBreakdown.length === 0 && <span className="text-muted fs-11">No zone activities.</span>}
@@ -156,8 +158,12 @@ export default function OperationsTab({ membership, campaigns, petCensus, loadin
                 return (
                   <div key={cap.title} className="small">
                     <div className="d-flex justify-content-between mb-1">
-                      <span className="text-dark fw-semibold text-truncate" style={{ maxWidth: '70%' }}>{cap.title}</span>
-                      <span className="text-muted fs-10">{cap.booked} / {cap.capacity} ({percent}%)</span>
+                      <span className="text-dark fw-semibold text-truncate" style={{ maxWidth: '70%' }}>
+                        {cap.title}
+                      </span>
+                      <span className="text-muted fs-10">
+                        {cap.booked} / {cap.capacity} ({percent}%)
+                      </span>
                     </div>
                     <ProgressBar now={percent} variant={percent > 90 ? 'danger' : percent > 50 ? 'warning' : 'success'} style={{ height: '5px' }} />
                   </div>
@@ -212,7 +218,9 @@ export default function OperationsTab({ membership, campaigns, petCensus, loadin
                   {p.zoneBreakdown.slice(0, 3).map((z) => (
                     <div key={z.name} className="d-flex justify-content-between align-items-center py-1 border-bottom border-light">
                       <span className="small text-dark fw-semibold">{z.name}</span>
-                      <Badge bg="secondary-subtle" className="text-secondary fs-10">{z.count} logs</Badge>
+                      <Badge bg="secondary-subtle" className="text-secondary fs-10">
+                        {z.count} logs
+                      </Badge>
                     </div>
                   ))}
                   {p.zoneBreakdown.length === 0 && <span className="text-muted fs-11">No zone data logged.</span>}

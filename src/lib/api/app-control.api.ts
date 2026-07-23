@@ -2,15 +2,7 @@ import { api } from '../api'
 import type { PaginatedResult } from '@/types/bpa.types'
 
 export type AppControlStatus = 'draft' | 'published' | 'archived'
-export type AppControlDestinationType =
-  | 'CAMPAIGN'
-  | 'MEMBERSHIP'
-  | 'DONATION'
-  | 'PET_CENSUS'
-  | 'SERVICE'
-  | 'INTERNAL_PAGE'
-  | 'EXTERNAL_URL'
-  | 'NONE'
+export type AppControlDestinationType = 'CAMPAIGN' | 'MEMBERSHIP' | 'DONATION' | 'PET_CENSUS' | 'SERVICE' | 'INTERNAL_PAGE' | 'EXTERNAL_URL' | 'NONE'
 
 export type AppControlTargetAudience = 'all' | 'guest' | 'member' | 'donor' | 'volunteer' | 'staff'
 export type AppHomeSectionType =
@@ -139,7 +131,12 @@ export const APP_CONTROL_PAGE_OPTIONS = [
 
 export const APP_HOME_SECTION_OPTIONS: Array<{ value: AppHomeSectionType; label: string; summary: string; critical?: boolean }> = [
   { value: 'HERO_SLIDER', label: 'Hero Slider', summary: 'Top-of-home promotional carousel and key campaign messaging.', critical: true },
-  { value: 'QUICK_ACTIONS', label: 'Quick Actions', summary: 'Shortcut buttons for core app actions such as donate, join, or register.', critical: true },
+  {
+    value: 'QUICK_ACTIONS',
+    label: 'Quick Actions',
+    summary: 'Shortcut buttons for core app actions such as donate, join, or register.',
+    critical: true,
+  },
   { value: 'ACTIVE_CAMPAIGNS', label: 'Active Campaigns', summary: 'Live campaigns and current participation opportunities.', critical: true },
   { value: 'MEMBERSHIP_OFFER', label: 'Membership Offer', summary: 'Membership upsell, benefits, and join flow entry point.' },
   { value: 'DONATION_CTA', label: 'Donation CTA', summary: 'Donation-focused callout block for current giving priorities.' },
@@ -165,17 +162,14 @@ export const appControlApi = {
   list: <T = AppControlRecord>(resource: string, params?: AppControlListParams) =>
     api.getPaginated<T>(`/admin/app-control/${resource}`, paramsWithBooleans(params)),
 
-  getById: <T = AppControlRecord>(resource: string, id: string) =>
-    api.get<T>(`/admin/app-control/${resource}/${id}`),
+  getById: <T = AppControlRecord>(resource: string, id: string) => api.get<T>(`/admin/app-control/${resource}/${id}`),
 
-  create: <T = AppControlRecord, P = AppControlPayload>(resource: string, payload: P) =>
-    api.post<T>(`/admin/app-control/${resource}`, payload),
+  create: <T = AppControlRecord, P = AppControlPayload>(resource: string, payload: P) => api.post<T>(`/admin/app-control/${resource}`, payload),
 
   update: <T = AppControlRecord, P = Partial<AppControlPayload>>(resource: string, id: string, payload: P) =>
     api.patch<T>(`/admin/app-control/${resource}/${id}`, payload),
 
-  remove: (resource: string, id: string) =>
-    api.delete<void>(`/admin/app-control/${resource}/${id}`),
+  remove: (resource: string, id: string) => api.delete<void>(`/admin/app-control/${resource}/${id}`),
 
   publish: <T = AppControlRecord>(resource: string, id: string, published: boolean) =>
     api.patch<T>(`/admin/app-control/${resource}/${id}/publish`, { published }),

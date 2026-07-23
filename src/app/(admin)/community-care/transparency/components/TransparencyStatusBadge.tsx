@@ -9,5 +9,9 @@ const MAP: Record<TransparencyReportStatus, { bg: string; label: string }> = {
 
 export default function TransparencyStatusBadge({ status }: { status: TransparencyReportStatus }) {
   const { bg, label } = MAP[status] ?? { bg: 'secondary', label: status }
-  return <Badge bg={`${bg}-subtle`} text={bg}>{label}</Badge>
+  return (
+    <Badge bg={`${bg}-subtle`} text={bg}>
+      {label}
+    </Badge>
+  )
 }

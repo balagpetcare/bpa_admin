@@ -55,7 +55,9 @@ export default function EventsTable({ data, loading, onDeleted }: EventsTablePro
         cell: ({ row }) => {
           const { capacity, registrationCount } = row.original
           return capacity ? (
-            <span>{registrationCount}/{capacity}</span>
+            <span>
+              {registrationCount}/{capacity}
+            </span>
           ) : (
             <span className="text-muted">Open</span>
           )
@@ -92,9 +94,11 @@ export default function EventsTable({ data, loading, onDeleted }: EventsTablePro
                 size="sm"
                 onClick={async () => {
                   const ok = await confirmDelete(row.original.title)
-                  if (ok) { await eventsApi.remove(row.original.id); onDeleted() }
-                }}
-              >
+                  if (ok) {
+                    await eventsApi.remove(row.original.id)
+                    onDeleted()
+                  }
+                }}>
                 <Icon icon="solar:trash-bin-trash-bold" />
               </Button>
             )}
@@ -124,11 +128,7 @@ export default function EventsTable({ data, loading, onDeleted }: EventsTablePro
             {data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length}>
-                  <EmptyState
-                    icon="solar:calendar-bold-duotone"
-                    title="No events found"
-                    description="Create the first event to get started."
-                  />
+                  <EmptyState icon="solar:calendar-bold-duotone" title="No events found" description="Create the first event to get started." />
                 </td>
               </tr>
             ) : (

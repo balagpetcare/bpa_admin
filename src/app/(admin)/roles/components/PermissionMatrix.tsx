@@ -24,10 +24,7 @@ export default function PermissionMatrix({ permissions, selected, onChange, read
     return { resources, allActions, actionsByResource: resourceMap }
   }, [permissions])
 
-  const allActions = useMemo(
-    () => Array.from(new Set(permissions.map((p) => p.action))).sort(),
-    [permissions],
-  )
+  const allActions = useMemo(() => Array.from(new Set(permissions.map((p) => p.action))).sort(), [permissions])
 
   const toggle = (id: string) => {
     if (readOnly) return
@@ -66,8 +63,7 @@ export default function PermissionMatrix({ permissions, selected, onChange, read
                     role="button"
                     className="d-flex flex-column align-items-center gap-1 cursor-pointer"
                     onClick={() => toggleAction(action)}
-                    title={`Toggle all ${action}`}
-                  >
+                    title={`Toggle all ${action}`}>
                     <FormCheck
                       readOnly
                       checked={permissions.filter((p) => p.action === action).every((p) => selected.includes(p.id))}
@@ -94,8 +90,7 @@ export default function PermissionMatrix({ permissions, selected, onChange, read
                       className="text-capitalize fw-semibold"
                       onClick={() => toggleResource(resource)}
                       title={`Toggle all ${resource}`}
-                      style={{ cursor: 'pointer' }}
-                    >
+                      style={{ cursor: 'pointer' }}>
                       {resource}
                     </span>
                   ) : (

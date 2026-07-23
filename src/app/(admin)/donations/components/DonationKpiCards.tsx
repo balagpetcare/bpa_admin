@@ -117,7 +117,9 @@ export default function DonationKpiCards({ stats, loading }: Props) {
           <Card className="h-100 border-0 shadow-sm card-hover">
             <Card.Body>
               <div className="d-flex align-items-center gap-3">
-                <div className={`avatar-md bg-soft-${k.variant} rounded flex-centered flex-shrink-0`} style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div
+                  className={`avatar-md bg-soft-${k.variant} rounded flex-centered flex-shrink-0`}
+                  style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Icon icon={k.icon} className={`fs-24 text-${k.variant}`} style={{ fontSize: '24px' }} />
                 </div>
                 <div className="overflow-hidden">

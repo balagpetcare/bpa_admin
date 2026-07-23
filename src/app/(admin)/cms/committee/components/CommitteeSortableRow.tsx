@@ -31,13 +31,7 @@ export default function CommitteeSortableRow({ member, onEdit, onDeleted, onTogg
   return (
     <tr ref={setNodeRef} style={style}>
       <td style={{ width: 40 }}>
-        <span
-          {...attributes}
-          {...listeners}
-          style={{ cursor: 'grab', touchAction: 'none' }}
-          title="Drag to reorder"
-          className="text-muted"
-        >
+        <span {...attributes} {...listeners} style={{ cursor: 'grab', touchAction: 'none' }} title="Drag to reorder" className="text-muted">
           <Icon icon="solar:sort-vertical-bold" style={{ fontSize: 20 }} />
         </span>
       </td>
@@ -54,8 +48,7 @@ export default function CommitteeSortableRow({ member, onEdit, onDeleted, onTogg
           ) : (
             <div
               className="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white fw-bold"
-              style={{ width: 36, height: 36, fontSize: 14, flexShrink: 0 }}
-            >
+              style={{ width: 36, height: 36, fontSize: 14, flexShrink: 0 }}>
               {member.name.charAt(0).toUpperCase()}
             </div>
           )}
@@ -83,9 +76,11 @@ export default function CommitteeSortableRow({ member, onEdit, onDeleted, onTogg
               title="Delete"
               onClick={async () => {
                 const ok = await confirmDelete(member.name)
-                if (ok) { await committeeApi.remove(member.id); onDeleted() }
-              }}
-            >
+                if (ok) {
+                  await committeeApi.remove(member.id)
+                  onDeleted()
+                }
+              }}>
               <Icon icon="solar:trash-bin-trash-bold" />
             </Button>
           )}

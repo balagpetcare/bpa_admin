@@ -1,12 +1,15 @@
 import * as yup from 'yup'
 import type { HeroSlide, HeroSlideCtaType, HeroSlideLocale, HeroSlideMediaType, HeroSlideOverlayPosition, HeroSlideStatus } from '@/types/bpa.types'
 
-const mediaRefSchema = yup.object({
-  id: yup.string().required('Media id is required'),
-  url: yup.string().url('Media URL must be valid').required('Media URL is required'),
-  mimeType: yup.string().required('Media mime type is required'),
-  altText: yup.string().nullable().default(null),
-}).nullable().default(null)
+const mediaRefSchema = yup
+  .object({
+    id: yup.string().required('Media id is required'),
+    url: yup.string().url('Media URL must be valid').required('Media URL is required'),
+    mimeType: yup.string().required('Media mime type is required'),
+    altText: yup.string().nullable().default(null),
+  })
+  .nullable()
+  .default(null)
 
 const ctaTypeValues: HeroSlideCtaType[] = ['none', 'internal', 'external']
 const localeValues: HeroSlideLocale[] = ['en', 'bn']

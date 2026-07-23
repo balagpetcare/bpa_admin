@@ -66,22 +66,22 @@ export default function CommitteeForm({ isOpen, onClose, onSuccess, member }: Co
   }, [isOpen, member, reset, clearError])
 
   const onSubmit = async (values: FormValues) => {
-    const result = await mutate(
-      async (vals) => {
-        const dto = {
-          name: vals.name,
-          designation: vals.designation,
-          bio: vals.bio ?? null,
-          email: vals.email ?? null,
-          phone: vals.phone ?? null,
-          photoId: vals.photoId ?? null,
-          isActive: vals.isActive,
-        }
-        return isEdit ? committeeApi.update(member!.id, dto) : committeeApi.create(dto)
-      },
-      values,
-    )
-    if (result) { onSuccess(); onClose() }
+    const result = await mutate(async (vals) => {
+      const dto = {
+        name: vals.name,
+        designation: vals.designation,
+        bio: vals.bio ?? null,
+        email: vals.email ?? null,
+        phone: vals.phone ?? null,
+        photoId: vals.photoId ?? null,
+        isActive: vals.isActive,
+      }
+      return isEdit ? committeeApi.update(member!.id, dto) : committeeApi.create(dto)
+    }, values)
+    if (result) {
+      onSuccess()
+      onClose()
+    }
   }
 
   return (
@@ -95,7 +95,13 @@ export default function CommitteeForm({ isOpen, onClose, onSuccess, member }: Co
           <Row>
             <Col md={7}>
               <TextFormInput name="name" label="Full Name" placeholder="Member name" containerClassName="mb-3" control={control} />
-              <TextFormInput name="designation" label="Designation / Title" placeholder="e.g. President" containerClassName="mb-3" control={control} />
+              <TextFormInput
+                name="designation"
+                label="Designation / Title"
+                placeholder="e.g. President"
+                containerClassName="mb-3"
+                control={control}
+              />
               <Row>
                 <Col md={6}>
                   <TextFormInput name="email" label="Email (optional)" placeholder="member@example.com" containerClassName="mb-3" control={control} />
@@ -104,12 +110,25 @@ export default function CommitteeForm({ isOpen, onClose, onSuccess, member }: Co
                   <TextFormInput name="phone" label="Phone (optional)" placeholder="+880…" containerClassName="mb-3" control={control} />
                 </Col>
               </Row>
-              <TextAreaFormInput name="bio" label="Biography (optional)" placeholder="Brief bio…" rows={4} containerClassName="mb-3" control={control} />
+              <TextAreaFormInput
+                name="bio"
+                label="Biography (optional)"
+                placeholder="Brief bio…"
+                rows={4}
+                containerClassName="mb-3"
+                control={control}
+              />
               <Controller
                 name="isActive"
                 control={control}
                 render={({ field }) => (
-                  <Form.Check type="switch" id="memberActive" label="Active member" checked={!!field.value} onChange={(e) => field.onChange(e.target.checked)} />
+                  <Form.Check
+                    type="switch"
+                    id="memberActive"
+                    label="Active member"
+                    checked={!!field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                  />
                 )}
               />
             </Col>
@@ -126,8 +145,12 @@ export default function CommitteeForm({ isOpen, onClose, onSuccess, member }: Co
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="light" onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="primary" disabled={loading}>{loading ? 'Saving…' : isEdit ? 'Save Changes' : 'Add Member'}</Button>
+          <Button variant="light" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" variant="primary" disabled={loading}>
+            {loading ? 'Saving…' : isEdit ? 'Save Changes' : 'Add Member'}
+          </Button>
         </Modal.Footer>
       </Form>
     </Modal>

@@ -11,9 +11,7 @@ export default function CardsPage() {
       <PageTItle title="Care Partner Cards (Legacy)" />
       <div className="alert alert-info mb-3 d-flex align-items-center gap-2" role="alert">
         <span>ℹ️</span>
-        <span className="small">
-          This section manages legacy Care Partner Cards. New purchases are issued as BPA Community Care Partner Cards.
-        </span>
+        <span className="small">This section manages legacy Care Partner Cards. New purchases are issued as BPA Community Care Partner Cards.</span>
       </div>
       <CardListContent />
     </>

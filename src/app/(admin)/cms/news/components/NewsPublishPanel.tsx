@@ -41,12 +41,7 @@ export default function NewsPublishPanel({
       <Card.Body>
         <div className="d-flex align-items-center gap-2 mb-3">
           <span className={`badge bg-${statusColor}`}>{status}</span>
-          <Form.Select
-            size="sm"
-            value={status}
-            onChange={(e) => onStatusChange(e.target.value as NewsStatus)}
-            style={{ width: 'auto' }}
-          >
+          <Form.Select size="sm" value={status} onChange={(e) => onStatusChange(e.target.value as NewsStatus)} style={{ width: 'auto' }}>
             <option value="draft">Draft</option>
             <option value="published">Published</option>
             <option value="archived">Archived</option>

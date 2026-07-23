@@ -28,9 +28,7 @@ export default function CardDetailContent({ id }: { id: string }) {
   const { data: card, loading, error, refetch } = useApi(fetchFn, [id])
 
   function buildVerifyUrl(qrToken: string) {
-    const base =
-      process.env['NEXT_PUBLIC_FRONTEND_URL'] ??
-      (typeof window !== 'undefined' ? window.location.origin : '')
+    const base = process.env['NEXT_PUBLIC_FRONTEND_URL'] ?? (typeof window !== 'undefined' ? window.location.origin : '')
     return `${base}/verify/care-card/${qrToken}`
   }
 
@@ -64,7 +62,8 @@ export default function CardDetailContent({ id }: { id: string }) {
         breadcrumbs={[{ label: 'Community Care Fund' }, { label: 'Partner Cards', href: '/community-care/cards' }, { label: 'Detail' }]}
         action={
           <Button variant="outline-secondary" size="sm" onClick={() => router.push('/community-care/cards')}>
-            <Icon icon="solar:arrow-left-bold" className="me-1" />Back
+            <Icon icon="solar:arrow-left-bold" className="me-1" />
+            Back
           </Button>
         }
       />
@@ -100,12 +99,14 @@ export default function CardDetailContent({ id }: { id: string }) {
                   <div className="mt-3 d-flex gap-2">
                     {card.status === 'active' && can('care_partner_cards:update') && (
                       <Button variant="danger" size="sm" onClick={() => setShowRevokeModal(true)} disabled={mutating}>
-                        <Icon icon="solar:forbidden-circle-bold" className="me-1" />Revoke
+                        <Icon icon="solar:forbidden-circle-bold" className="me-1" />
+                        Revoke
                       </Button>
                     )}
                     {card.status === 'revoked' && can('care_partner_cards:update') && (
                       <Button variant="success" size="sm" onClick={handleReactivate} disabled={mutating}>
-                        <Icon icon="solar:check-circle-bold" className="me-1" />Reactivate
+                        <Icon icon="solar:check-circle-bold" className="me-1" />
+                        Reactivate
                       </Button>
                     )}
                   </div>
@@ -147,21 +148,13 @@ export default function CardDetailContent({ id }: { id: string }) {
                   <p className="text-muted small text-center mb-0 font-monospace" style={{ wordBreak: 'break-all', fontSize: '0.65rem' }}>
                     {card.qrToken}
                   </p>
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    className="w-100"
-                    onClick={() => handleCopyLink(card.qrToken)}
-                  >
-                    <Icon icon="solar:copy-bold" className="me-1" />Copy Verification Link
+                  <Button variant="outline-primary" size="sm" className="w-100" onClick={() => handleCopyLink(card.qrToken)}>
+                    <Icon icon="solar:copy-bold" className="me-1" />
+                    Copy Verification Link
                   </Button>
-                  <a
-                    href={buildVerifyUrl(card.qrToken)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-soft-secondary btn-sm w-100"
-                  >
-                    <Icon icon="solar:link-bold" className="me-1" />Open Verify Page
+                  <a href={buildVerifyUrl(card.qrToken)} target="_blank" rel="noopener noreferrer" className="btn btn-soft-secondary btn-sm w-100">
+                    <Icon icon="solar:link-bold" className="me-1" />
+                    Open Verify Page
                   </a>
                 </Card.Body>
               </Card>
@@ -171,7 +164,11 @@ export default function CardDetailContent({ id }: { id: string }) {
               <Card className="border-warning bg-warning-subtle">
                 <Card.Body>
                   <Icon icon="solar:shield-warning-bold" className="me-2 text-warning" />
-                  <small>{card.legalDisclaimerSnapshot ?? card.contribution.plan.legalDisclaimerText ?? 'Care Partner Card is a contribution recognition and service benefit card only. It is not ownership, share, profit-sharing, investment, or financial return. Product, medicine, food, accessories, and third-party cost discounts are not guaranteed.'}</small>
+                  <small>
+                    {card.legalDisclaimerSnapshot ??
+                      card.contribution.plan.legalDisclaimerText ??
+                      'Care Partner Card is a contribution recognition and service benefit card only. It is not ownership, share, profit-sharing, investment, or financial return. Product, medicine, food, accessories, and third-party cost discounts are not guaranteed.'}
+                  </small>
                 </Card.Body>
               </Card>
             </Col>
@@ -185,7 +182,9 @@ export default function CardDetailContent({ id }: { id: string }) {
         </Modal.Header>
         <Modal.Body>
           <Form.Group>
-            <Form.Label>Reason for revocation <span className="text-danger">*</span></Form.Label>
+            <Form.Label>
+              Reason for revocation <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
@@ -196,7 +195,9 @@ export default function CardDetailContent({ id }: { id: string }) {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-secondary" onClick={() => setShowRevokeModal(false)}>Cancel</Button>
+          <Button variant="outline-secondary" onClick={() => setShowRevokeModal(false)}>
+            Cancel
+          </Button>
           <Button variant="danger" onClick={handleRevoke} disabled={!revokeReason.trim() || mutating}>
             {mutating && <span className="spinner-border spinner-border-sm me-2" />}
             Revoke Card

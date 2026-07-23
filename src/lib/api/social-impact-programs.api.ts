@@ -17,12 +17,8 @@ export type SocialImpactProgramUpdatePayload = Partial<SocialImpactProgramCreate
 export const socialImpactProgramsApi = {
   list: (params?: PaginationQuery & { impactType?: SocialImpactProgramType; isActive?: boolean }) =>
     api.getPaginated<SocialImpactProgram>('/admin/social-impact-programs', params),
-  getById: (id: string) =>
-    api.get<SocialImpactProgram>(`/admin/social-impact-programs/${id}`),
-  create: (data: SocialImpactProgramCreatePayload) =>
-    api.post<SocialImpactProgram>('/admin/social-impact-programs', data),
-  update: (id: string, data: SocialImpactProgramUpdatePayload) =>
-    api.patch<SocialImpactProgram>(`/admin/social-impact-programs/${id}`, data),
-  remove: (id: string) =>
-    api.delete<void>(`/admin/social-impact-programs/${id}`),
+  getById: (id: string) => api.get<SocialImpactProgram>(`/admin/social-impact-programs/${id}`),
+  create: (data: SocialImpactProgramCreatePayload) => api.post<SocialImpactProgram>('/admin/social-impact-programs', data),
+  update: (id: string, data: SocialImpactProgramUpdatePayload) => api.patch<SocialImpactProgram>(`/admin/social-impact-programs/${id}`, data),
+  remove: (id: string) => api.delete<void>(`/admin/social-impact-programs/${id}`),
 }

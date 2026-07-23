@@ -100,16 +100,8 @@ export default function SeoEditorForm({ entry, onSaved, onCancel }: SeoEditorFor
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <Row className="g-3">
         <Col md={12}>
-          <TextFormInput
-            name="route"
-            label="Route"
-            control={control}
-            placeholder="/about"
-            disabled={isEdit}
-          />
-          <Form.Text className="text-muted">
-            {isEdit ? 'Route cannot be changed after creation.' : 'E.g. /about, /events, /contact'}
-          </Form.Text>
+          <TextFormInput name="route" label="Route" control={control} placeholder="/about" disabled={isEdit} />
+          <Form.Text className="text-muted">{isEdit ? 'Route cannot be changed after creation.' : 'E.g. /about, /events, /contact'}</Form.Text>
         </Col>
 
         <Col md={6}>
@@ -123,7 +115,13 @@ export default function SeoEditorForm({ entry, onSaved, onCancel }: SeoEditorFor
           <TextFormInput name="ogTitle" label="OG Title" control={control} placeholder="Defaults to page title if empty" />
         </Col>
         <Col md={6}>
-          <TextAreaFormInput name="ogDescription" label="OG Description" control={control} rows={3} placeholder="Defaults to meta description if empty" />
+          <TextAreaFormInput
+            name="ogDescription"
+            label="OG Description"
+            control={control}
+            rows={3}
+            placeholder="Defaults to meta description if empty"
+          />
         </Col>
 
         <Col md={12}>
@@ -145,7 +143,9 @@ export default function SeoEditorForm({ entry, onSaved, onCancel }: SeoEditorFor
 
         <Col md={12}>
           <Form.Group>
-            <Form.Label>Schema.org JSON-LD <span className="text-muted small">(optional)</span></Form.Label>
+            <Form.Label>
+              Schema.org JSON-LD <span className="text-muted small">(optional)</span>
+            </Form.Label>
             <Controller
               name="schemaJson"
               control={control}
@@ -155,7 +155,10 @@ export default function SeoEditorForm({ entry, onSaved, onCancel }: SeoEditorFor
                   rows={6}
                   placeholder={'{\n  "@context": "https://schema.org",\n  "@type": "Organization"\n}'}
                   value={field.value ?? ''}
-                  onChange={(e) => { field.onChange(e.target.value || null); setJsonError(null) }}
+                  onChange={(e) => {
+                    field.onChange(e.target.value || null)
+                    setJsonError(null)
+                  }}
                   isInvalid={!!jsonError}
                   style={{ fontFamily: 'monospace', fontSize: 13 }}
                 />
@@ -185,12 +188,20 @@ export default function SeoEditorForm({ entry, onSaved, onCancel }: SeoEditorFor
       </Row>
 
       <div className="d-flex gap-2 justify-content-end mt-4">
-        <Button variant="secondary" onClick={onCancel} disabled={saving}>Cancel</Button>
+        <Button variant="secondary" onClick={onCancel} disabled={saving}>
+          Cancel
+        </Button>
         <Button type="submit" variant="primary" disabled={saving}>
           {saving ? (
-            <><span className="spinner-border spinner-border-sm me-1" />Saving…</>
+            <>
+              <span className="spinner-border spinner-border-sm me-1" />
+              Saving…
+            </>
           ) : (
-            <><Icon icon="solar:diskette-bold" className="me-1" />{isEdit ? 'Update' : 'Create'}</>
+            <>
+              <Icon icon="solar:diskette-bold" className="me-1" />
+              {isEdit ? 'Update' : 'Create'}
+            </>
           )}
         </Button>
       </div>

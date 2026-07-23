@@ -37,12 +37,7 @@ export default function UsersPageContent() {
   const mappedError = useMemo(() => {
     if (!error) return null
     if (error.code === 'VALIDATION_ERROR') {
-      return new ApiError(
-        'VALIDATION_ERROR',
-        'User list request limit is invalid. Please refresh or contact admin.',
-        undefined,
-        error.status
-      )
+      return new ApiError('VALIDATION_ERROR', 'User list request limit is invalid. Please refresh or contact admin.', undefined, error.status)
     }
     return error
   }, [error])
@@ -99,16 +94,19 @@ export default function UsersPageContent() {
   }
 
   // Handle Suspension Toggle
-  const handleToggleActive = useCallback(async (user: AdminUser) => {
-    try {
-      const updated = await usersApi.update(user.id, { isActive: !user.isActive })
-      if (updated) {
-        refetch()
+  const handleToggleActive = useCallback(
+    async (user: AdminUser) => {
+      try {
+        const updated = await usersApi.update(user.id, { isActive: !user.isActive })
+        if (updated) {
+          refetch()
+        }
+      } catch (err) {
+        alert(err instanceof Error ? err.message : 'Failed to update user status.')
       }
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to update user status.')
-    }
-  }, [refetch])
+    },
+    [refetch],
+  )
 
   // Handle Password Reset
   const handleResetPassword = useCallback(async (user: AdminUser) => {
@@ -138,7 +136,11 @@ export default function UsersPageContent() {
         breadcrumbs={[{ label: 'Administration' }, { label: 'Users' }]}
         action={
           can('users:create') ? (
-            <Button variant="primary" onClick={openCreate} className="d-flex align-items-center gap-1 border-0" style={{ backgroundColor: '#1a6b3c' }}>
+            <Button
+              variant="primary"
+              onClick={openCreate}
+              className="d-flex align-items-center gap-1 border-0"
+              style={{ backgroundColor: '#1a6b3c' }}>
               <Icon icon="solar:user-plus-bold" />
               <span>Create Account</span>
             </Button>
@@ -153,7 +155,9 @@ export default function UsersPageContent() {
         <Col xs={6} lg={3}>
           <Card className="border-0 shadow-sm">
             <Card.Body className="d-flex align-items-center gap-3 p-3">
-              <div className="avatar-md rounded-3 bg-soft-primary text-primary flex-centered p-2" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div
+                className="avatar-md rounded-3 bg-soft-primary text-primary flex-centered p-2"
+                style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon icon="solar:users-group-two-rounded-bold-duotone" width={22} />
               </div>
               <div>
@@ -166,7 +170,9 @@ export default function UsersPageContent() {
         <Col xs={6} lg={3}>
           <Card className="border-0 shadow-sm">
             <Card.Body className="d-flex align-items-center gap-3 p-3">
-              <div className="avatar-md rounded-3 bg-soft-success text-success flex-centered p-2" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div
+                className="avatar-md rounded-3 bg-soft-success text-success flex-centered p-2"
+                style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon icon="solar:user-check-bold-duotone" width={22} />
               </div>
               <div>
@@ -179,7 +185,9 @@ export default function UsersPageContent() {
         <Col xs={6} lg={3}>
           <Card className="border-0 shadow-sm">
             <Card.Body className="d-flex align-items-center gap-3 p-3">
-              <div className="avatar-md rounded-3 bg-soft-danger text-danger flex-centered p-2" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div
+                className="avatar-md rounded-3 bg-soft-danger text-danger flex-centered p-2"
+                style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon icon="solar:user-block-bold-duotone" width={22} />
               </div>
               <div>
@@ -192,7 +200,9 @@ export default function UsersPageContent() {
         <Col xs={6} lg={3}>
           <Card className="border-0 shadow-sm">
             <Card.Body className="d-flex align-items-center gap-3 p-3">
-              <div className="avatar-md rounded-3 bg-soft-warning text-warning flex-centered p-2" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div
+                className="avatar-md rounded-3 bg-soft-warning text-warning flex-centered p-2"
+                style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon icon="solar:user-hand-up-bold-duotone" width={22} />
               </div>
               <div>
@@ -230,12 +240,7 @@ export default function UsersPageContent() {
 
             {/* Role Filter */}
             <Col xs={6} md={3}>
-              <Form.Select
-                size="sm"
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-                className="bg-light border-light"
-              >
+              <Form.Select size="sm" value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} className="bg-light border-light">
                 <option value="all">All Access Roles</option>
                 {roles.map((r) => (
                   <option key={r.id} value={r.id}>
@@ -247,12 +252,7 @@ export default function UsersPageContent() {
 
             {/* Status Filter */}
             <Col xs={6} md={3}>
-              <Form.Select
-                size="sm"
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="bg-light border-light"
-              >
+              <Form.Select size="sm" value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="bg-light border-light">
                 <option value="all">All Statuses</option>
                 <option value="active">Active</option>
                 <option value="suspended">Suspended</option>
@@ -283,12 +283,7 @@ export default function UsersPageContent() {
       </Card>
 
       {/* Form Modal */}
-      <UserFormModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSuccess={refetch}
-        user={editUser}
-      />
+      <UserFormModal isOpen={modalOpen} onClose={() => setModalOpen(false)} onSuccess={refetch} user={editUser} />
 
       {/* Audit Log Details Modal */}
       <Modal show={!!auditUser} onHide={() => setAuditUser(null)} centered>
@@ -304,7 +299,9 @@ export default function UsersPageContent() {
               </div>
               <div>
                 <span className="text-muted d-block">Account Holder</span>
-                <strong className="text-dark">{auditUser.name} ({auditUser.email})</strong>
+                <strong className="text-dark">
+                  {auditUser.name} ({auditUser.email})
+                </strong>
               </div>
               <hr className="my-1 border-light" />
               <div className="d-flex justify-content-between">
@@ -320,7 +317,7 @@ export default function UsersPageContent() {
               <div>
                 <span className="text-muted d-block">Assigned Access Roles</span>
                 <div className="d-flex flex-wrap gap-1 mt-1">
-                  {auditUser.roles.map(r => (
+                  {auditUser.roles.map((r) => (
                     <Badge key={r.id} bg="primary-subtle" className="text-primary border border-primary-subtle fw-normal">
                       {r.name.replace(/_/g, ' ').toUpperCase()}
                     </Badge>

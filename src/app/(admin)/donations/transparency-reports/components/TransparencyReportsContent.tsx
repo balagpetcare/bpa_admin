@@ -42,12 +42,21 @@ export default function TransparencyReportsContent() {
   const fn = useCallback(() => listTransparencyReports(), [])
   const { data: reports, loading, error, refetch } = useApi(fn, [])
 
-  function openCreate() { setEditing(EMPTY); setEditingId(null) }
-  function openEdit(r: TransparencyReport) { setEditing(r); setEditingId(r.id) }
-  function closeModal() { setEditing(null); setEditingId(null) }
+  function openCreate() {
+    setEditing(EMPTY)
+    setEditingId(null)
+  }
+  function openEdit(r: TransparencyReport) {
+    setEditing(r)
+    setEditingId(r.id)
+  }
+  function closeModal() {
+    setEditing(null)
+    setEditingId(null)
+  }
 
   function set<K extends keyof TransparencyReport>(key: K, value: any) {
-    setEditing((f) => f ? { ...f, [key]: value } : f)
+    setEditing((f) => (f ? { ...f, [key]: value } : f))
   }
 
   async function handleSave(e: React.FormEvent) {
@@ -77,7 +86,8 @@ export default function TransparencyReportsContent() {
         breadcrumbs={[{ label: 'Donations' }, { label: 'Transparency Reports' }]}
         action={
           <Button variant="primary" size="sm" onClick={openCreate}>
-            <Icon icon="solar:add-circle-bold" className="me-1" />New Report
+            <Icon icon="solar:add-circle-bold" className="me-1" />
+            New Report
           </Button>
         }
       />
@@ -91,7 +101,9 @@ export default function TransparencyReportsContent() {
                 <Card.Body>
                   <Icon icon="solar:eye-bold-duotone" className="text-muted fs-1 mb-3" />
                   <h5 className="text-muted">No reports published yet</h5>
-                  <Button variant="primary" size="sm" onClick={openCreate}>Add First Report</Button>
+                  <Button variant="primary" size="sm" onClick={openCreate}>
+                    Add First Report
+                  </Button>
                 </Card.Body>
               </Card>
             </Col>
@@ -106,15 +118,22 @@ export default function TransparencyReportsContent() {
                   <Card.Body>
                     <div className="d-flex justify-content-between align-items-start mb-3">
                       <div>
-                        <Badge bg={r.isPublished ? 'success-subtle' : 'secondary-subtle'} text={r.isPublished ? 'success' : 'secondary'} className="mb-1">
+                        <Badge
+                          bg={r.isPublished ? 'success-subtle' : 'secondary-subtle'}
+                          text={r.isPublished ? 'success' : 'secondary'}
+                          className="mb-1">
                           {r.isPublished ? 'Published' : 'Draft'}
                         </Badge>
                         <h6 className="mb-0 mt-1">{r.titleEn}</h6>
                         <small className="text-muted">{r.reportMonth}</small>
                       </div>
                       <div className="d-flex gap-1">
-                        <Button variant="soft-primary" size="sm" onClick={() => openEdit(r)}><Icon icon="solar:pen-bold" /></Button>
-                        <Button variant="soft-danger" size="sm" onClick={() => handleDelete(r.id, r.titleEn)}><Icon icon="solar:trash-bin-trash-bold" /></Button>
+                        <Button variant="soft-primary" size="sm" onClick={() => openEdit(r)}>
+                          <Icon icon="solar:pen-bold" />
+                        </Button>
+                        <Button variant="soft-danger" size="sm" onClick={() => handleDelete(r.id, r.titleEn)}>
+                          <Icon icon="solar:trash-bin-trash-bold" />
+                        </Button>
                       </div>
                     </div>
 
@@ -129,14 +148,23 @@ export default function TransparencyReportsContent() {
                     <div className="d-flex gap-3 border-top pt-3">
                       <div className="text-center flex-1">
                         <div className="fw-bold text-success small">৳{Number(r.totalReceived).toLocaleString()}</div>
-                        <div className="text-muted" style={{ fontSize: '10px' }}>Received</div>
+                        <div className="text-muted" style={{ fontSize: '10px' }}>
+                          Received
+                        </div>
                       </div>
                       <div className="text-center flex-1">
                         <div className="fw-bold small">৳{Number(r.totalUsed).toLocaleString()}</div>
-                        <div className="text-muted" style={{ fontSize: '10px' }}>Used</div>
+                        <div className="text-muted" style={{ fontSize: '10px' }}>
+                          Used
+                        </div>
                       </div>
                       {r.pdfUrl && (
-                        <a href={r.pdfUrl} target="_blank" rel="noopener noreferrer" className="btn btn-soft-primary btn-sm align-self-center" title="Download PDF">
+                        <a
+                          href={r.pdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn btn-soft-primary btn-sm align-self-center"
+                          title="Download PDF">
                           <Icon icon="solar:download-bold" />
                         </a>
                       )}
@@ -161,13 +189,22 @@ export default function TransparencyReportsContent() {
                 <Row className="g-3">
                   <Col md={6}>
                     <Form.Group>
-                      <Form.Label>Report Month (YYYY-MM) <span className="text-danger">*</span></Form.Label>
-                      <Form.Control value={editing.reportMonth ?? ''} onChange={(e) => set('reportMonth', e.target.value)} placeholder="2026-06" required />
+                      <Form.Label>
+                        Report Month (YYYY-MM) <span className="text-danger">*</span>
+                      </Form.Label>
+                      <Form.Control
+                        value={editing.reportMonth ?? ''}
+                        onChange={(e) => set('reportMonth', e.target.value)}
+                        placeholder="2026-06"
+                        required
+                      />
                     </Form.Group>
                   </Col>
                   <Col md={6}>
                     <Form.Group>
-                      <Form.Label>Title (English) <span className="text-danger">*</span></Form.Label>
+                      <Form.Label>
+                        Title (English) <span className="text-danger">*</span>
+                      </Form.Label>
                       <Form.Control value={editing.titleEn ?? ''} onChange={(e) => set('titleEn', e.target.value)} required />
                     </Form.Group>
                   </Col>
@@ -179,14 +216,30 @@ export default function TransparencyReportsContent() {
                 <Row className="g-3">
                   <Col md={6}>
                     <Form.Group>
-                      <Form.Label>Total Received (BDT) <span className="text-danger">*</span></Form.Label>
-                      <Form.Control type="number" min={0} value={editing.totalReceived ?? '0'} onChange={(e) => set('totalReceived', e.target.value)} required />
+                      <Form.Label>
+                        Total Received (BDT) <span className="text-danger">*</span>
+                      </Form.Label>
+                      <Form.Control
+                        type="number"
+                        min={0}
+                        value={editing.totalReceived ?? '0'}
+                        onChange={(e) => set('totalReceived', e.target.value)}
+                        required
+                      />
                     </Form.Group>
                   </Col>
                   <Col md={6}>
                     <Form.Group>
-                      <Form.Label>Total Used (BDT) <span className="text-danger">*</span></Form.Label>
-                      <Form.Control type="number" min={0} value={editing.totalUsed ?? '0'} onChange={(e) => set('totalUsed', e.target.value)} required />
+                      <Form.Label>
+                        Total Used (BDT) <span className="text-danger">*</span>
+                      </Form.Label>
+                      <Form.Control
+                        type="number"
+                        min={0}
+                        value={editing.totalUsed ?? '0'}
+                        onChange={(e) => set('totalUsed', e.target.value)}
+                        required
+                      />
                     </Form.Group>
                   </Col>
                 </Row>
@@ -195,8 +248,15 @@ export default function TransparencyReportsContent() {
                   {(['vaccinationExpense', 'foodExpense', 'treatmentExpense', 'rescueExpense', 'administrationExpense'] as const).map((field) => (
                     <Col key={field} md={4}>
                       <Form.Group>
-                        <Form.Label className="small text-muted text-capitalize">{field.replace('Expense', '').replace(/([A-Z])/g, ' $1')}</Form.Label>
-                        <Form.Control type="number" min={0} value={(editing as any)[field] ?? '0'} onChange={(e) => set(field as any, e.target.value)} />
+                        <Form.Label className="small text-muted text-capitalize">
+                          {field.replace('Expense', '').replace(/([A-Z])/g, ' $1')}
+                        </Form.Label>
+                        <Form.Control
+                          type="number"
+                          min={0}
+                          value={(editing as any)[field] ?? '0'}
+                          onChange={(e) => set(field as any, e.target.value)}
+                        />
                       </Form.Group>
                     </Col>
                   ))}
@@ -219,14 +279,30 @@ export default function TransparencyReportsContent() {
                   <Form.Label>PDF URL</Form.Label>
                   <Form.Control type="url" value={editing.pdfUrl ?? ''} onChange={(e) => set('pdfUrl', e.target.value)} placeholder="https://..." />
                 </Form.Group>
-                <Form.Check type="switch" label="Published (visible on website)" checked={editing.isPublished ?? false} onChange={(e) => set('isPublished', e.target.checked)} />
+                <Form.Check
+                  type="switch"
+                  label="Published (visible on website)"
+                  checked={editing.isPublished ?? false}
+                  onChange={(e) => set('isPublished', e.target.checked)}
+                />
               </>
             )}
           </Modal.Body>
           <Modal.Footer>
-            <Button type="button" variant="outline-secondary" size="sm" onClick={closeModal}>Cancel</Button>
+            <Button type="button" variant="outline-secondary" size="sm" onClick={closeModal}>
+              Cancel
+            </Button>
             <Button type="submit" variant="primary" size="sm" disabled={saving}>
-              {saving ? <><span className="spinner-border spinner-border-sm me-1" />Saving…</> : editingId ? 'Update Report' : 'Create Report'}
+              {saving ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-1" />
+                  Saving…
+                </>
+              ) : editingId ? (
+                'Update Report'
+              ) : (
+                'Create Report'
+              )}
             </Button>
           </Modal.Footer>
         </Form>

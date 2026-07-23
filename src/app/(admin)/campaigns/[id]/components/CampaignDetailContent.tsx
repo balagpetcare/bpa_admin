@@ -23,8 +23,12 @@ const LIFECYCLE_ACTIONS = [
   { status: 'registration_closed', action: 'complete', label: 'Mark Completed', variant: 'info', icon: 'solar:check-read-bold-duotone' },
 ]
 
-function fmt(n: number) { return n.toLocaleString() }
-function fmtBdt(n: number) { return `৳${n.toLocaleString()}` }
+function fmt(n: number) {
+  return n.toLocaleString()
+}
+function fmtBdt(n: number) {
+  return `৳${n.toLocaleString()}`
+}
 
 // ─── KPI card ────────────────────────────────────────────────────
 
@@ -56,7 +60,9 @@ function KpiCard({ label, value, icon, variant, sub }: KpiCardProps) {
 
 function PayCard({ label, count, amount, variant, icon }: { label: string; count: number; amount?: number; variant: string; icon: string }) {
   return (
-    <div className={`border border-${variant} border-opacity-25 rounded p-3 text-center h-100`} style={{ background: `var(--bs-${variant}-bg-subtle, #f8f9fa)` }}>
+    <div
+      className={`border border-${variant} border-opacity-25 rounded p-3 text-center h-100`}
+      style={{ background: `var(--bs-${variant}-bg-subtle, #f8f9fa)` }}>
       <Icon icon={icon} className={`fs-24 text-${variant} mb-2`} />
       <div className="fw-bold fs-5">{fmt(count)}</div>
       {amount !== undefined && <div className={`small fw-semibold text-${variant}`}>{fmtBdt(amount)}</div>}
@@ -100,17 +106,29 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
       refetch()
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
-      setReopenError(msg.includes('registration close date') || msg.includes('close date')
-        ? 'Please update the registration close date before reopening.'
-        : msg || 'Failed to reopen campaign.')
+      setReopenError(
+        msg.includes('registration close date') || msg.includes('close date')
+          ? 'Please update the registration close date before reopening.'
+          : msg || 'Failed to reopen campaign.',
+      )
     }
   }
 
-  if (loading) return <LoadingOverlay loading><div style={{ minHeight: 400 }} /></LoadingOverlay>
-  if (error) return <div className="p-4"><ApiErrorAlert error={error as ApiError} /></div>
+  if (loading)
+    return (
+      <LoadingOverlay loading>
+        <div style={{ minHeight: 400 }} />
+      </LoadingOverlay>
+    )
+  if (error)
+    return (
+      <div className="p-4">
+        <ApiErrorAlert error={error as ApiError} />
+      </div>
+    )
   if (!campaign) return null
 
-  const nextAction = LIFECYCLE_ACTIONS.find(a => a.status === campaign.status)
+  const nextAction = LIFECYCLE_ACTIONS.find((a) => a.status === campaign.status)
   const s: CampaignLiveStats | null = campaign.stats ?? null
 
   // Fallback counts for when stats are loading / missing
@@ -142,22 +160,26 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
           <div className="d-flex gap-2 flex-wrap">
             {nextAction && can('campaigns:lifecycle') && (
               <Button variant={nextAction.variant} onClick={() => handleLifecycle(nextAction.action)} className="d-flex align-items-center gap-1">
-                <Icon icon={nextAction.icon} className="fs-18" />{nextAction.label}
+                <Icon icon={nextAction.icon} className="fs-18" />
+                {nextAction.label}
               </Button>
             )}
             {can('campaigns:update') && (
               <Link href={`/campaigns/${campaignId}/edit`} className="btn btn-outline-primary d-flex align-items-center gap-1">
-                <Icon icon="solar:pen-bold-duotone" className="fs-18" />Edit
+                <Icon icon="solar:pen-bold-duotone" className="fs-18" />
+                Edit
               </Link>
             )}
             {['registration_closed', 'completed'].includes(campaign.status) && can('campaigns:lifecycle') && (
               <Button variant="outline-warning" onClick={handleReopen} className="d-flex align-items-center gap-1">
-                <Icon icon="solar:refresh-bold-duotone" className="fs-18" />Reopen
+                <Icon icon="solar:refresh-bold-duotone" className="fs-18" />
+                Reopen
               </Button>
             )}
             {!['completed', 'cancelled'].includes(campaign.status) && can('campaigns:lifecycle') && (
               <Button variant="outline-danger" onClick={handleCancel} className="d-flex align-items-center gap-1">
-                <Icon icon="solar:trash-bin-trash-bold-duotone" className="fs-18" />Cancel
+                <Icon icon="solar:trash-bin-trash-bold-duotone" className="fs-18" />
+                Cancel
               </Button>
             )}
           </div>
@@ -176,7 +198,13 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
           <KpiCard label="Status" value={<CampaignStatusBadge status={campaign.status} />} icon="solar:info-circle-bold-duotone" variant="primary" />
         </Col>
         <Col xl={2} lg={3} sm={6}>
-          <KpiCard label="Total Bookings" value={fmt(totalReg)} icon="solar:clipboard-list-bold-duotone" variant="warning" sub={`${fmt(campaign._count?.sessions ?? campaign.sessions?.length ?? 0)} sessions`} />
+          <KpiCard
+            label="Total Bookings"
+            value={fmt(totalReg)}
+            icon="solar:clipboard-list-bold-duotone"
+            variant="warning"
+            sub={`${fmt(campaign._count?.sessions ?? campaign.sessions?.length ?? 0)} sessions`}
+          />
         </Col>
         <Col xl={2} lg={3} sm={6}>
           <KpiCard label="Total Pets" value={fmt(totalPets)} icon="solar:pet-bold-duotone" variant="info" />
@@ -185,10 +213,22 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
           <KpiCard label="Paid" value={fmt(paidCount)} icon="solar:check-circle-bold-duotone" variant="success" sub={fmtBdt(paidAmount)} />
         </Col>
         <Col xl={2} lg={3} sm={6}>
-          <KpiCard label="Pending Payment" value={fmt(pendingCount)} icon="solar:clock-circle-bold-duotone" variant="warning" sub={fmtBdt(pendingAmount)} />
+          <KpiCard
+            label="Pending Payment"
+            value={fmt(pendingCount)}
+            icon="solar:clock-circle-bold-duotone"
+            variant="warning"
+            sub={fmtBdt(pendingAmount)}
+          />
         </Col>
         <Col xl={2} lg={3} sm={6}>
-          <KpiCard label="Cancelled / Failed" value={fmt(cancelledCount + failedCount)} icon="solar:close-circle-bold-duotone" variant="danger" sub={`${fmt(cancelledCount)} cancelled · ${fmt(failedCount)} failed`} />
+          <KpiCard
+            label="Cancelled / Failed"
+            value={fmt(cancelledCount + failedCount)}
+            icon="solar:close-circle-bold-duotone"
+            variant="danger"
+            sub={`${fmt(cancelledCount)} cancelled · ${fmt(failedCount)} failed`}
+          />
         </Col>
         <Col xl={2} lg={3} sm={6}>
           <KpiCard label="Total Collected" value={fmtBdt(paidAmount)} icon="solar:wad-of-money-bold-duotone" variant="success" />
@@ -206,7 +246,12 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
           <KpiCard label="Waitlist" value={fmt(waitlist)} icon="solar:list-bold-duotone" variant="dark" />
         </Col>
         <Col xl={2} lg={3} sm={6}>
-          <KpiCard label="Campaign Fee / Pet" value={fmtBdt(Number(campaign.basePriceBdt ?? 0))} icon="solar:tag-price-bold-duotone" variant="success" />
+          <KpiCard
+            label="Campaign Fee / Pet"
+            value={fmtBdt(Number(campaign.basePriceBdt ?? 0))}
+            icon="solar:tag-price-bold-duotone"
+            variant="success"
+          />
         </Col>
       </Row>
 
@@ -252,11 +297,7 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
                   <span className="small fw-semibold text-muted text-uppercase">Fill Rate</span>
                   <span className="fw-bold fs-5">{fillPct}%</span>
                 </div>
-                <ProgressBar
-                  now={fillPct}
-                  variant={fillPct >= 90 ? 'danger' : fillPct >= 70 ? 'warning' : 'success'}
-                  style={{ height: 10 }}
-                />
+                <ProgressBar now={fillPct} variant={fillPct >= 90 ? 'danger' : fillPct >= 70 ? 'warning' : 'success'} style={{ height: 10 }} />
               </div>
               <Row className="g-2 text-center">
                 <Col xs={4}>
@@ -286,7 +327,6 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
       <Row className="g-4">
         {/* ─── Left column ─────────────────────────────────────────── */}
         <Col lg={8}>
-
           {/* Campaign Details */}
           <Card className="border-0 shadow-sm mb-4">
             <Card.Header className="bg-white border-bottom py-3">
@@ -303,7 +343,9 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
                       <label className="text-muted small fw-semibold text-uppercase mb-1 d-block">Campaign Dates</label>
                       <div className="d-flex align-items-center gap-2">
                         <Icon icon="solar:calendar-date-bold-duotone" className="text-primary" />
-                        <span>{dayjs(campaign.startDate).format('MMM D, YYYY')} — {dayjs(campaign.endDate).format('MMM D, YYYY')}</span>
+                        <span>
+                          {dayjs(campaign.startDate).format('MMM D, YYYY')} — {dayjs(campaign.endDate).format('MMM D, YYYY')}
+                        </span>
                       </div>
                     </div>
                     <div>
@@ -311,7 +353,8 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
                       <div className="d-flex align-items-center gap-2">
                         <Icon icon="solar:user-plus-bold-duotone" className="text-success" />
                         <span>
-                          {campaign.registrationOpenAt ? dayjs(campaign.registrationOpenAt).format('MMM D') : 'N/A'} — {campaign.registrationCloseAt ? dayjs(campaign.registrationCloseAt).format('MMM D, YYYY') : 'N/A'}
+                          {campaign.registrationOpenAt ? dayjs(campaign.registrationOpenAt).format('MMM D') : 'N/A'} —{' '}
+                          {campaign.registrationCloseAt ? dayjs(campaign.registrationCloseAt).format('MMM D, YYYY') : 'N/A'}
                         </span>
                       </div>
                     </div>
@@ -356,7 +399,9 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
                 <Icon icon="solar:calendar-bold-duotone" className="text-primary" />
                 Session Summary
               </h5>
-              <Link href={`/campaigns/${campaignId}/sessions`} className="btn btn-sm btn-soft-primary">Manage</Link>
+              <Link href={`/campaigns/${campaignId}/sessions`} className="btn btn-sm btn-soft-primary">
+                Manage
+              </Link>
             </Card.Header>
             <Card.Body className="p-0">
               <div className="table-responsive">
@@ -376,23 +421,41 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
                   </thead>
                   <tbody>
                     {(campaign.sessions?.length ?? 0) === 0 ? (
-                      <tr><td colSpan={9} className="text-center py-5 text-muted">No sessions scheduled yet</td></tr>
+                      <tr>
+                        <td colSpan={9} className="text-center py-5 text-muted">
+                          No sessions scheduled yet
+                        </td>
+                      </tr>
                     ) : sessionStats.length > 0 ? (
-                      sessionStats.map(ss => {
+                      sessionStats.map((ss) => {
                         const fill = ss.capacity > 0 ? Math.round((ss.totalBookings / ss.capacity) * 100) : 0
                         return (
                           <tr key={ss.sessionId}>
                             <td className="ps-3">
                               <div className="fw-semibold">{dayjs(ss.sessionDate).format('ddd, MMM D')}</div>
-                              <div className="text-muted">{ss.startTime} — {ss.endTime}</div>
+                              <div className="text-muted">
+                                {ss.startTime} — {ss.endTime}
+                              </div>
                               <div className="text-muted">{ss.venueName || '—'}</div>
                             </td>
                             <td className="text-center fw-semibold">{fmt(ss.capacity)}</td>
                             <td className="text-center">{fmt(ss.totalBookings)}</td>
                             <td className="text-center">{fmt(ss.totalPets)}</td>
-                            <td className="text-center"><Badge bg="success-subtle" text="success">{fmt(ss.paidCount)}</Badge></td>
-                            <td className="text-center"><Badge bg="warning-subtle" text="warning">{fmt(ss.pendingCount)}</Badge></td>
-                            <td className="text-center"><Badge bg="danger-subtle" text="danger">{fmt(ss.cancelledCount)}</Badge></td>
+                            <td className="text-center">
+                              <Badge bg="success-subtle" text="success">
+                                {fmt(ss.paidCount)}
+                              </Badge>
+                            </td>
+                            <td className="text-center">
+                              <Badge bg="warning-subtle" text="warning">
+                                {fmt(ss.pendingCount)}
+                              </Badge>
+                            </td>
+                            <td className="text-center">
+                              <Badge bg="danger-subtle" text="danger">
+                                {fmt(ss.cancelledCount)}
+                              </Badge>
+                            </td>
                             <td className="text-center fw-semibold text-success">{fmt(ss.remaining)}</td>
                             <td className="text-center pe-3">
                               <div className="d-flex align-items-center gap-1">
@@ -412,7 +475,9 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
                           <tr key={s.id}>
                             <td className="ps-3">
                               <div className="fw-semibold">{dayjs(s.sessionDate).format('ddd, MMM D')}</div>
-                              <div className="text-muted">{s.startTime} — {s.endTime}</div>
+                              <div className="text-muted">
+                                {s.startTime} — {s.endTime}
+                              </div>
                               <div className="text-muted">{s.venue?.name ?? '—'}</div>
                             </td>
                             <td className="text-center fw-semibold">{fmt(s.capacity)}</td>
@@ -452,32 +517,109 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
             </Card.Header>
             <Card.Body className="p-2">
               <div className="nav flex-column nav-pills campaign-mgmt-nav">
-
-                <div className="px-3 py-1 text-muted small text-uppercase fw-semibold" style={{ fontSize: '0.68rem', letterSpacing: '0.06em' }}>Operations</div>
-                <MgmtLink href={`/campaigns/${campaignId}/registrations`} icon="solar:clipboard-list-bold-duotone" label="Registrations" variant="primary" count={totalReg} />
-                <MgmtLink href={`/campaigns/${campaignId}/participants`} icon="solar:users-group-two-rounded-bold-duotone" label="Participants & Payments" variant="success" badge="New" />
-                <MgmtLink href={`/campaigns/${campaignId}/waitlist`} icon="solar:clock-circle-bold-duotone" label="Waitlist" variant="warning" count={waitlist} />
-                <MgmtLink href={`/campaigns/${campaignId}/checkin`} icon="solar:qr-code-bold-duotone" label="Check-In / Vaccinate" variant="success" />
+                <div className="px-3 py-1 text-muted small text-uppercase fw-semibold" style={{ fontSize: '0.68rem', letterSpacing: '0.06em' }}>
+                  Operations
+                </div>
+                <MgmtLink
+                  href={`/campaigns/${campaignId}/registrations`}
+                  icon="solar:clipboard-list-bold-duotone"
+                  label="Registrations"
+                  variant="primary"
+                  count={totalReg}
+                />
+                <MgmtLink
+                  href={`/campaigns/${campaignId}/participants`}
+                  icon="solar:users-group-two-rounded-bold-duotone"
+                  label="Participants & Payments"
+                  variant="success"
+                  badge="New"
+                />
+                <MgmtLink
+                  href={`/campaigns/${campaignId}/waitlist`}
+                  icon="solar:clock-circle-bold-duotone"
+                  label="Waitlist"
+                  variant="warning"
+                  count={waitlist}
+                />
+                <MgmtLink
+                  href={`/campaigns/${campaignId}/checkin`}
+                  icon="solar:qr-code-bold-duotone"
+                  label="Check-In / Vaccinate"
+                  variant="success"
+                />
 
                 <hr className="my-2 mx-3 opacity-10" />
-                <div className="px-3 py-1 text-muted small text-uppercase fw-semibold" style={{ fontSize: '0.68rem', letterSpacing: '0.06em' }}>Export & SMS</div>
-                <MgmtLink href={`/campaigns/${campaignId}/export`} icon="solar:file-download-bold-duotone" label="Export Center" variant="info" badge="CSV · XLSX" />
-                <MgmtLink href={`/campaigns/${campaignId}/bulk-sms`} icon="solar:chat-round-like-bold-duotone" label="Bulk SMS Center" variant="primary" badge="New" />
+                <div className="px-3 py-1 text-muted small text-uppercase fw-semibold" style={{ fontSize: '0.68rem', letterSpacing: '0.06em' }}>
+                  Export & SMS
+                </div>
+                <MgmtLink
+                  href={`/campaigns/${campaignId}/export`}
+                  icon="solar:file-download-bold-duotone"
+                  label="Export Center"
+                  variant="info"
+                  badge="CSV · XLSX"
+                />
+                <MgmtLink
+                  href={`/campaigns/${campaignId}/bulk-sms`}
+                  icon="solar:chat-round-like-bold-duotone"
+                  label="Bulk SMS Center"
+                  variant="primary"
+                  badge="New"
+                />
 
                 <hr className="my-2 mx-3 opacity-10" />
-                <div className="px-3 py-1 text-muted small text-uppercase fw-semibold" style={{ fontSize: '0.68rem', letterSpacing: '0.06em' }}>Campaign Setup</div>
+                <div className="px-3 py-1 text-muted small text-uppercase fw-semibold" style={{ fontSize: '0.68rem', letterSpacing: '0.06em' }}>
+                  Campaign Setup
+                </div>
                 <MgmtLink href={`/campaigns/${campaignId}/edit`} icon="solar:pen-bold-duotone" label="Edit Campaign Details" variant="primary" />
-                <MgmtLink href={`/campaigns/${campaignId}/sessions`} icon="solar:calendar-bold-duotone" label="Sessions" count={campaign._count.sessions ?? campaign.sessions?.length} />
-                <MgmtLink href={`/campaigns/${campaignId}/services`} icon="solar:sticker-square-bold-duotone" label="Services" count={campaign._count.services ?? campaign.services?.length} />
-                <MgmtLink href={`/campaigns/${campaignId}/doctors`} icon="solar:stethoscope-bold-duotone" label="Doctors" count={campaign._count.doctors ?? campaign.doctors?.length} />
-                <MgmtLink href={`/campaigns/${campaignId}/coverage-areas`} icon="solar:map-point-wave-bold-duotone" label="Coverage Areas" variant="success" />
+                <MgmtLink
+                  href={`/campaigns/${campaignId}/sessions`}
+                  icon="solar:calendar-bold-duotone"
+                  label="Sessions"
+                  count={campaign._count.sessions ?? campaign.sessions?.length}
+                />
+                <MgmtLink
+                  href={`/campaigns/${campaignId}/services`}
+                  icon="solar:sticker-square-bold-duotone"
+                  label="Services"
+                  count={campaign._count.services ?? campaign.services?.length}
+                />
+                <MgmtLink
+                  href={`/campaigns/${campaignId}/doctors`}
+                  icon="solar:stethoscope-bold-duotone"
+                  label="Doctors"
+                  count={campaign._count.doctors ?? campaign.doctors?.length}
+                />
+                <MgmtLink
+                  href={`/campaigns/${campaignId}/coverage-areas`}
+                  icon="solar:map-point-wave-bold-duotone"
+                  label="Coverage Areas"
+                  variant="success"
+                />
                 <MgmtLink href={`/campaigns/${campaignId}/staff`} icon="solar:users-group-two-rounded-bold-duotone" label="Staff & Volunteers" />
 
                 <hr className="my-2 mx-3 opacity-10" />
-                <div className="px-3 py-1 text-muted small text-uppercase fw-semibold" style={{ fontSize: '0.68rem', letterSpacing: '0.06em' }}>Monitoring</div>
-                <MgmtLink href={`/campaigns/${campaignId}/field-ops`} icon="solar:play-stream-bold-duotone" label="Field Operations" variant="success" />
-                <MgmtLink href={`/campaigns/${campaignId}/vaccination`} icon="solar:syringe-bold-duotone" label="Vaccination Records" variant="secondary" />
-                <MgmtLink href={`/campaigns/${campaignId}/certificates`} icon="solar:document-text-bold-duotone" label="Certificates" variant="dark" />
+                <div className="px-3 py-1 text-muted small text-uppercase fw-semibold" style={{ fontSize: '0.68rem', letterSpacing: '0.06em' }}>
+                  Monitoring
+                </div>
+                <MgmtLink
+                  href={`/campaigns/${campaignId}/field-ops`}
+                  icon="solar:play-stream-bold-duotone"
+                  label="Field Operations"
+                  variant="success"
+                />
+                <MgmtLink
+                  href={`/campaigns/${campaignId}/vaccination`}
+                  icon="solar:syringe-bold-duotone"
+                  label="Vaccination Records"
+                  variant="secondary"
+                />
+                <MgmtLink
+                  href={`/campaigns/${campaignId}/certificates`}
+                  icon="solar:document-text-bold-duotone"
+                  label="Certificates"
+                  variant="dark"
+                />
                 <MgmtLink href={`/campaigns/${campaignId}/analytics`} icon="solar:chart-bold-duotone" label="Analytics" variant="primary" />
 
                 <hr className="my-2 mx-3 opacity-10" />
@@ -492,32 +634,62 @@ export default function CampaignDetailContent({ campaignId }: { campaignId: stri
 
       <style jsx global>{`
         .campaign-mgmt-nav .nav-link {
-          display: flex; align-items: center;
-          padding: 0.65rem 1rem; margin: 0.15rem 0.5rem;
-          border-radius: 0.5rem; color: #5d7186; font-weight: 500;
+          display: flex;
+          align-items: center;
+          padding: 0.65rem 1rem;
+          margin: 0.15rem 0.5rem;
+          border-radius: 0.5rem;
+          color: #5d7186;
+          font-weight: 500;
           transition: all 0.15s;
         }
         .campaign-mgmt-nav .nav-link:hover {
-          background-color: #f1f5f9; color: #1e293b; transform: translateX(3px);
+          background-color: #f1f5f9;
+          color: #1e293b;
+          transform: translateX(3px);
         }
-        .campaign-mgmt-nav .nav-icon { margin-right: 0.7rem; font-size: 1.15rem; opacity: 0.8; }
-        .campaign-mgmt-nav .nav-link:hover .nav-icon { opacity: 1; }
+        .campaign-mgmt-nav .nav-icon {
+          margin-right: 0.7rem;
+          font-size: 1.15rem;
+          opacity: 0.8;
+        }
+        .campaign-mgmt-nav .nav-link:hover .nav-icon {
+          opacity: 1;
+        }
       `}</style>
     </div>
   )
 }
 
 function MgmtLink({
-  href, icon, label, variant = 'primary', count, badge,
+  href,
+  icon,
+  label,
+  variant = 'primary',
+  count,
+  badge,
 }: {
-  href: string; icon: string; label: string; variant?: string; count?: number; badge?: string
+  href: string
+  icon: string
+  label: string
+  variant?: string
+  count?: number
+  badge?: string
 }) {
   return (
     <Link href={href} className="nav-link">
       <Icon icon={icon} className={`nav-icon text-${variant}`} />
       <span className="flex-grow-1">{label}</span>
-      {count !== undefined && <Badge bg="light" text="dark" className="border ms-1">{count}</Badge>}
-      {badge && <Badge bg={`${variant}-subtle`} text={variant} className="ms-1" style={{ fontSize: '0.65rem' }}>{badge}</Badge>}
+      {count !== undefined && (
+        <Badge bg="light" text="dark" className="border ms-1">
+          {count}
+        </Badge>
+      )}
+      {badge && (
+        <Badge bg={`${variant}-subtle`} text={variant} className="ms-1" style={{ fontSize: '0.65rem' }}>
+          {badge}
+        </Badge>
+      )}
     </Link>
   )
 }

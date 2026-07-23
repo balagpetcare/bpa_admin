@@ -14,7 +14,7 @@ async function fetchBadgeCounts(): Promise<{ newInquiries: number; pendingVolunt
     apiClientPaginated('/volunteers', { method: 'GET', params: { status: 'pending', limit: 1 } }),
   ])
   return {
-    newInquiries:      inqRes.status === 'fulfilled' ? (inqRes.value.meta?.total ?? 0) : 0,
+    newInquiries: inqRes.status === 'fulfilled' ? (inqRes.value.meta?.total ?? 0) : 0,
     pendingVolunteers: volRes.status === 'fulfilled' ? (volRes.value.meta?.total ?? 0) : 0,
   }
 }
@@ -24,17 +24,24 @@ export default function AppMenuWithBadges() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
-    fetchBadgeCounts().then(setCounts).catch(() => {})
+    fetchBadgeCounts()
+      .then(setCounts)
+      .catch(() => {})
     intervalRef.current = setInterval(
-      () => fetchBadgeCounts().then(setCounts).catch(() => {}),
+      () =>
+        fetchBadgeCounts()
+          .then(setCounts)
+          .catch(() => {}),
       POLL_MS,
     )
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
   }, [])
 
   const menuItems = getMenuItems({
-    newInquiries:      counts.newInquiries      || undefined,
-    pendingVolunteers: counts.pendingVolunteers  || undefined,
+    newInquiries: counts.newInquiries || undefined,
+    pendingVolunteers: counts.pendingVolunteers || undefined,
   })
 
   return <AppMenu menuItems={menuItems} />

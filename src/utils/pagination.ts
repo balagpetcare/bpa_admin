@@ -13,7 +13,7 @@ export function normalizePagination(page?: number | string | null, limit?: numbe
 }
 
 export async function fetchAllPages<T>(
-  fetchPage: (page: number, limit: number) => Promise<{ data: T[]; meta?: { totalPages: number } }>
+  fetchPage: (page: number, limit: number) => Promise<{ data: T[]; meta?: { totalPages: number } }>,
 ): Promise<T[]> {
   const limit = API_MAX_PAGE_SIZE
   const allData: T[] = []
@@ -32,7 +32,7 @@ export async function fetchAllPages<T>(
     } else if (response.data.length < limit) {
       break
     }
-    
+
     currentPage++
   }
 

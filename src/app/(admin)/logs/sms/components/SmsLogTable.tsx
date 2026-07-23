@@ -22,7 +22,11 @@ export default function SmsLogTable({ data, loading, onView, onResend }: Props) 
   const handleResend = async (log: SmsLog, e: React.MouseEvent) => {
     e.stopPropagation()
     setResendingId(log.id)
-    try { await onResend(log) } finally { setResendingId(null) }
+    try {
+      await onResend(log)
+    } finally {
+      setResendingId(null)
+    }
   }
 
   const columns = useMemo<ColumnDef<SmsLog>[]>(
@@ -36,9 +40,7 @@ export default function SmsLogTable({ data, loading, onView, onResend }: Props) 
         header: 'Recipient',
         id: 'recipient',
         cell: ({ row }) => (
-          <code className="text-primary small">
-            {row.original.isOtp ? row.original.recipientMasked ?? row.original.to : row.original.to}
-          </code>
+          <code className="text-primary small">{row.original.isOtp ? (row.original.recipientMasked ?? row.original.to) : row.original.to}</code>
         ),
       },
       {
@@ -95,17 +97,18 @@ export default function SmsLogTable({ data, loading, onView, onResend }: Props) 
           const isBusy = resendingId === log.id
           return (
             <div className="d-flex gap-1">
-              <Button variant="soft-primary" size="sm" title="View details" onClick={(e) => { e.stopPropagation(); onView(log) }}>
+              <Button
+                variant="soft-primary"
+                size="sm"
+                title="View details"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onView(log)
+                }}>
                 <Icon icon="solar:eye-bold" />
               </Button>
               {canResend && (
-                <Button
-                  variant="soft-warning"
-                  size="sm"
-                  title="Resend SMS"
-                  disabled={isBusy}
-                  onClick={(e) => handleResend(log, e)}
-                >
+                <Button variant="soft-warning" size="sm" title="Resend SMS" disabled={isBusy} onClick={(e) => handleResend(log, e)}>
                   {isBusy ? <Spinner size="sm" /> : <Icon icon="solar:refresh-bold" />}
                 </Button>
               )}
@@ -127,7 +130,9 @@ export default function SmsLogTable({ data, loading, onView, onResend }: Props) 
             {table.getHeaderGroups().map((hg) => (
               <tr key={hg.id}>
                 {hg.headers.map((h) => (
-                  <th key={h.id} className="small text-nowrap">{flexRender(h.column.columnDef.header, h.getContext())}</th>
+                  <th key={h.id} className="small text-nowrap">
+                    {flexRender(h.column.columnDef.header, h.getContext())}
+                  </th>
                 ))}
               </tr>
             ))}

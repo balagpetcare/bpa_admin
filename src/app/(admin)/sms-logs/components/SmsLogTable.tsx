@@ -63,8 +63,10 @@ export default function SmsLogTable({ data, loading, onView }: SmsLogTableProps)
             variant="soft-primary"
             size="sm"
             title="View details"
-            onClick={(e) => { e.stopPropagation(); onView(row.original) }}
-          >
+            onClick={(e) => {
+              e.stopPropagation()
+              onView(row.original)
+            }}>
             <Icon icon="solar:eye-bold" />
           </Button>
         ),
@@ -92,11 +94,7 @@ export default function SmsLogTable({ data, loading, onView }: SmsLogTableProps)
             {data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length}>
-                  <EmptyState
-                    icon="solar:chat-round-bold-duotone"
-                    title="No SMS logs found"
-                    description="No SMS records match the current filter."
-                  />
+                  <EmptyState icon="solar:chat-round-bold-duotone" title="No SMS logs found" description="No SMS records match the current filter." />
                 </td>
               </tr>
             ) : (

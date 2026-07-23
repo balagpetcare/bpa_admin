@@ -13,13 +13,9 @@ export interface PaymentListParams {
 
 export const paymentsApi = {
   list: (params?: PaymentListParams) =>
-    api.get<PaginatedResult<Payment>>(
-      '/admin/payments',
-      params as Record<string, string | number | boolean | undefined>,
-    ),
+    api.get<PaginatedResult<Payment>>('/admin/payments', params as Record<string, string | number | boolean | undefined>),
 
   getById: (id: string) => api.get<Payment>(`/admin/payments/${id}`),
 
-  sync: (id: string) =>
-    api.post<{ id: string; status: PaymentStatus }>(`/admin/payments/${id}/sync`, {}),
+  sync: (id: string) => api.post<{ id: string; status: PaymentStatus }>(`/admin/payments/${id}/sync`, {}),
 }

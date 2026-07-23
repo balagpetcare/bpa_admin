@@ -25,33 +25,71 @@ function safe404<T>(fn: () => Promise<T>, fallback: T): () => Promise<T> {
 }
 
 // ─── KPI Card Component ──────────────────────────────────────────
-function KpiCard({ icon, label, value, sub, color, href, trend }: {
-  icon: string; label: string; value: number | string; sub?: string; color: string; href?: string;
+function KpiCard({
+  icon,
+  label,
+  value,
+  sub,
+  color,
+  href,
+  trend,
+}: {
+  icon: string
+  label: string
+  value: number | string
+  sub?: string
+  color: string
+  href?: string
   trend?: { direction: 'up' | 'down' | 'flat'; value: string }
 }) {
   const inner = (
     <Card className="h-100 border-0 shadow-sm card-hover position-relative overflow-hidden" style={{ transition: 'transform 0.2s, box-shadow 0.2s' }}>
       <Card.Body className="p-3">
         <div className="d-flex justify-content-between align-items-start mb-2">
-          <div className={`rounded-3 p-2 bg-soft-${color} text-${color} d-flex align-items-center justify-content-center`} style={{ width: '40px', height: '40px' }}>
+          <div
+            className={`rounded-3 p-2 bg-soft-${color} text-${color} d-flex align-items-center justify-content-center`}
+            style={{ width: '40px', height: '40px' }}>
             <Icon icon={icon} width={20} />
           </div>
           {trend && (
-            <Badge bg={trend.direction === 'up' ? 'success-subtle' : trend.direction === 'down' ? 'danger-subtle' : 'secondary-subtle'} className={`text-${trend.direction === 'up' ? 'success' : trend.direction === 'down' ? 'danger' : 'secondary'} border border-${trend.direction === 'up' ? 'success-subtle' : trend.direction === 'down' ? 'danger-subtle' : 'secondary-subtle'} fs-10 px-2 py-1`}>
-              <Icon icon={trend.direction === 'up' ? 'solar:arrow-right-up-linear' : trend.direction === 'down' ? 'solar:arrow-right-down-linear' : 'solar:minus-linear'} className="me-1" />
+            <Badge
+              bg={trend.direction === 'up' ? 'success-subtle' : trend.direction === 'down' ? 'danger-subtle' : 'secondary-subtle'}
+              className={`text-${trend.direction === 'up' ? 'success' : trend.direction === 'down' ? 'danger' : 'secondary'} border border-${trend.direction === 'up' ? 'success-subtle' : trend.direction === 'down' ? 'danger-subtle' : 'secondary-subtle'} fs-10 px-2 py-1`}>
+              <Icon
+                icon={
+                  trend.direction === 'up'
+                    ? 'solar:arrow-right-up-linear'
+                    : trend.direction === 'down'
+                      ? 'solar:arrow-right-down-linear'
+                      : 'solar:minus-linear'
+                }
+                className="me-1"
+              />
               {trend.value}
             </Badge>
           )}
         </div>
         <div>
           <h4 className="fw-bold text-dark mb-1 fs-5">{value}</h4>
-          <p className="text-muted small fw-semibold mb-1 text-truncate" style={{ fontSize: '0.75rem' }}>{label}</p>
-          {sub && <p className="text-muted mb-0 text-truncate fw-normal" style={{ fontSize: '0.68rem' }}>{sub}</p>}
+          <p className="text-muted small fw-semibold mb-1 text-truncate" style={{ fontSize: '0.75rem' }}>
+            {label}
+          </p>
+          {sub && (
+            <p className="text-muted mb-0 text-truncate fw-normal" style={{ fontSize: '0.68rem' }}>
+              {sub}
+            </p>
+          )}
         </div>
       </Card.Body>
     </Card>
   )
-  return href ? <Link href={href} className="text-decoration-none">{inner}</Link> : inner
+  return href ? (
+    <Link href={href} className="text-decoration-none">
+      {inner}
+    </Link>
+  ) : (
+    inner
+  )
 }
 
 // ─── KPI Card Skeleton Loader ─────────────────────────────────────
@@ -75,7 +113,11 @@ function KpiCardSkeleton() {
 function HealthBadge({ status }: { status: string }) {
   const label = status === 'healthy' ? 'Healthy' : status === 'degraded' ? 'Degraded' : 'Critical'
   const variant = status === 'healthy' ? 'success' : status === 'degraded' ? 'warning' : 'danger'
-  return <Badge bg={`${variant}-subtle`} className={`text-${variant} border border-${variant}-subtle px-2 py-1 fs-11 fw-semibold`}>{label}</Badge>
+  return (
+    <Badge bg={`${variant}-subtle`} className={`text-${variant} border border-${variant}-subtle px-2 py-1 fs-11 fw-semibold`}>
+      {label}
+    </Badge>
+  )
 }
 
 // ─── Time Ago Helper ──────────────────────────────────────────────
@@ -106,10 +148,14 @@ function RevenueTrendChart({ data }: { data: { date: string; amount: number }[] 
 
   return (
     <Card className="border-0 shadow-sm h-100">
-      <Card.Header className="bg-transparent border-light py-3"><h6 className="mb-0 fw-bold text-dark">Revenue Trend (Last 7 Days)</h6></Card.Header>
+      <Card.Header className="bg-transparent border-light py-3">
+        <h6 className="mb-0 fw-bold text-dark">Revenue Trend (Last 7 Days)</h6>
+      </Card.Header>
       <Card.Body>
         {data.length === 0 ? (
-          <div className="d-flex justify-content-center align-items-center text-muted" style={{ height: 200 }}>No revenue trend data.</div>
+          <div className="d-flex justify-content-center align-items-center text-muted" style={{ height: 200 }}>
+            No revenue trend data.
+          </div>
         ) : (
           <ReactApexChart options={options} series={series} type="area" height={220} />
         )}
@@ -119,13 +165,15 @@ function RevenueTrendChart({ data }: { data: { date: string; amount: number }[] 
 }
 
 function CombinedActivityChart({
-  memberships, campaigns, petCensus
+  memberships,
+  campaigns,
+  petCensus,
 }: {
   memberships: { date: string; count: number }[]
   campaigns: { date: string; count: number }[]
   petCensus: { date: string; count: number }[]
 }) {
-  const categories = memberships.map(d => d.date)
+  const categories = memberships.map((d) => d.date)
   const options: ApexOptions = {
     chart: { type: 'bar', height: 260, toolbar: { show: false } },
     stroke: { width: [2, 2, 2], curve: 'smooth' },
@@ -136,17 +184,21 @@ function CombinedActivityChart({
     dataLabels: { enabled: false },
   }
   const series = [
-    { name: 'Memberships', type: 'column', data: memberships.map(d => d.count) },
-    { name: 'Campaign Registrations', type: 'column', data: campaigns.map(d => d.count) },
-    { name: 'Pet Census Submissions', type: 'line', data: petCensus.map(d => d.count) }
+    { name: 'Memberships', type: 'column', data: memberships.map((d) => d.count) },
+    { name: 'Campaign Registrations', type: 'column', data: campaigns.map((d) => d.count) },
+    { name: 'Pet Census Submissions', type: 'line', data: petCensus.map((d) => d.count) },
   ]
 
   return (
     <Card className="border-0 shadow-sm h-100">
-      <Card.Header className="bg-transparent border-light py-3"><h6 className="mb-0 fw-bold text-dark">Activity Operations (Last 7 Days)</h6></Card.Header>
+      <Card.Header className="bg-transparent border-light py-3">
+        <h6 className="mb-0 fw-bold text-dark">Activity Operations (Last 7 Days)</h6>
+      </Card.Header>
       <Card.Body>
         {memberships.length === 0 ? (
-          <div className="d-flex justify-content-center align-items-center text-muted" style={{ height: 200 }}>No activity data.</div>
+          <div className="d-flex justify-content-center align-items-center text-muted" style={{ height: 200 }}>
+            No activity data.
+          </div>
         ) : (
           <ReactApexChart options={options} series={series} type="line" height={220} />
         )}
@@ -179,9 +231,17 @@ const fallbackSummary: DashboardSummary = {
   pendingManualPayments: 0,
   systemHealth: { database: 'healthy', api: 'healthy', sms: 'healthy', email: 'healthy', storage: 'healthy', payments: 'healthy' },
   trends: {
-    revenue: [], memberships: [], campaigns: [], petCensus: [], contacts: [],
-    paymentStatuses: [], membershipTiers: [], donationCampaigns: [], campaignCapacities: [], zoneDemand: []
-  }
+    revenue: [],
+    memberships: [],
+    campaigns: [],
+    petCensus: [],
+    contacts: [],
+    paymentStatuses: [],
+    membershipTiers: [],
+    donationCampaigns: [],
+    campaignCapacities: [],
+    zoneDemand: [],
+  },
 }
 
 const fallbackPending: PendingActions = { newInquiries: [], pendingMfsPayments: [], pendingCampaignRegs: [], failedSms: [] }
@@ -190,15 +250,27 @@ const fallbackHealth: SystemHealth = {
   sms: { queued: 0, failed: 0, sent: 0, status: 'healthy' },
   email: { queued: 0, failed: 0, status: 'healthy' },
   payments: { failedLast24h: 0, status: 'healthy' },
-  checkedAt: new Date().toISOString()
+  checkedAt: new Date().toISOString(),
 }
 
 // ─── Main Component ───────────────────────────────────────────────
 export default function DashboardContent() {
-  const summaryFn = useCallback(safe404(() => dashboardApi.summary(), fallbackSummary), [])
-  const pendingFn = useCallback(safe404(() => dashboardApi.pendingActions(), fallbackPending), [])
-  const activityFn = useCallback(safe404(() => dashboardApi.recentActivity(), { feed: [] }), [])
-  const healthFn = useCallback(safe404(() => dashboardApi.systemHealth(), fallbackHealth), [])
+  const summaryFn = useCallback(
+    safe404(() => dashboardApi.summary(), fallbackSummary),
+    [],
+  )
+  const pendingFn = useCallback(
+    safe404(() => dashboardApi.pendingActions(), fallbackPending),
+    [],
+  )
+  const activityFn = useCallback(
+    safe404(() => dashboardApi.recentActivity(), { feed: [] }),
+    [],
+  )
+  const healthFn = useCallback(
+    safe404(() => dashboardApi.systemHealth(), fallbackHealth),
+    [],
+  )
 
   const { data: summaryData, loading: sumLoading, error: sumError, refetch: refetchSummary } = useApi(summaryFn, [])
   const { data: pendingData, loading: pendLoading, error: pendError, refetch: refetchPending } = useApi(pendingFn, [])
@@ -246,15 +318,20 @@ export default function DashboardContent() {
       {/* Dynamic pulse CSS injection */}
       <style jsx global>{`
         @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.4; }
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.4;
+          }
         }
         .animate-pulse {
           animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
         .card-hover:hover {
           transform: translateY(-2px);
-          box-shadow: 0 .5rem 1rem rgba(0,0,0,.08) !important;
+          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
         }
         .timeline-line {
           position: absolute;
@@ -272,7 +349,13 @@ export default function DashboardContent() {
           <h4 className="fw-bold text-dark mb-1">BPA Operations Dashboard</h4>
           <p className="text-muted small mb-0">Bangladesh Pet Association real-time administrative status metrics.</p>
         </div>
-        <Button variant="primary" size="sm" className="d-flex align-items-center gap-1 border-0" onClick={handleRefreshAll} disabled={isLoading} style={{ backgroundColor: '#1a6b3c' }}>
+        <Button
+          variant="primary"
+          size="sm"
+          className="d-flex align-items-center gap-1 border-0"
+          onClick={handleRefreshAll}
+          disabled={isLoading}
+          style={{ backgroundColor: '#1a6b3c' }}>
           {isLoading ? <Spinner animation="border" size="sm" /> : <Icon icon="solar:refresh-bold-duotone" />}
           <span>Refresh Console</span>
         </Button>
@@ -295,7 +378,10 @@ export default function DashboardContent() {
                 value={`৳${s.todayRevenue.toLocaleString()}`}
                 sub={`Month: ৳${s.monthRevenue.toLocaleString()}`}
                 color="success"
-                trend={{ direction: s.revenueChangePercent >= 0 ? 'up' : 'down', value: `${s.revenueChangePercent >= 0 ? '+' : ''}${s.revenueChangePercent.toFixed(1)}%` }}
+                trend={{
+                  direction: s.revenueChangePercent >= 0 ? 'up' : 'down',
+                  value: `${s.revenueChangePercent >= 0 ? '+' : ''}${s.revenueChangePercent.toFixed(1)}%`,
+                }}
               />
             </Col>
             <Col xs={12} sm={6} xl={3}>
@@ -376,7 +462,9 @@ export default function DashboardContent() {
         <Col xs={12} xl={6}>
           {sumLoading ? (
             <Card className="border-0 shadow-sm animate-pulse" style={{ height: '300px' }}>
-              <Card.Body className="d-flex justify-content-center align-items-center"><Spinner animation="border" variant="success" /></Card.Body>
+              <Card.Body className="d-flex justify-content-center align-items-center">
+                <Spinner animation="border" variant="success" />
+              </Card.Body>
             </Card>
           ) : (
             <RevenueTrendChart data={s.trends?.revenue ?? []} />
@@ -385,7 +473,9 @@ export default function DashboardContent() {
         <Col xs={12} xl={6}>
           {sumLoading ? (
             <Card className="border-0 shadow-sm animate-pulse" style={{ height: '300px' }}>
-              <Card.Body className="d-flex justify-content-center align-items-center"><Spinner animation="border" variant="info" /></Card.Body>
+              <Card.Body className="d-flex justify-content-center align-items-center">
+                <Spinner animation="border" variant="info" />
+              </Card.Body>
             </Card>
           ) : (
             <CombinedActivityChart
@@ -409,31 +499,49 @@ export default function DashboardContent() {
         <Card.Body>
           <Row className="g-3">
             <Col xs={6} md={4} lg={2} className="text-center border-end border-light">
-              <div className="text-muted small mb-1" style={{ fontSize: '0.7rem' }}>Database Engine</div>
+              <div className="text-muted small mb-1" style={{ fontSize: '0.7rem' }}>
+                Database Engine
+              </div>
               <HealthBadge status={s.systemHealth?.database ?? health.database} />
             </Col>
             <Col xs={6} md={4} lg={2} className="text-center border-end border-light">
-              <div className="text-muted small mb-1" style={{ fontSize: '0.7rem' }}>Core API Node</div>
+              <div className="text-muted small mb-1" style={{ fontSize: '0.7rem' }}>
+                Core API Node
+              </div>
               <HealthBadge status={s.systemHealth?.api ?? 'healthy'} />
             </Col>
             <Col xs={6} md={4} lg={2} className="text-center border-end border-light">
-              <div className="text-muted small mb-1" style={{ fontSize: '0.7rem' }}>SMS Gateway</div>
+              <div className="text-muted small mb-1" style={{ fontSize: '0.7rem' }}>
+                SMS Gateway
+              </div>
               <HealthBadge status={s.systemHealth?.sms ?? health.sms.status} />
-              <div className="text-muted mt-1" style={{ fontSize: '0.65rem' }}>Failed today: {s.failedSmsToday}</div>
+              <div className="text-muted mt-1" style={{ fontSize: '0.65rem' }}>
+                Failed today: {s.failedSmsToday}
+              </div>
             </Col>
             <Col xs={6} md={4} lg={2} className="text-center border-end border-light">
-              <div className="text-muted small mb-1" style={{ fontSize: '0.7rem' }}>Email Node</div>
+              <div className="text-muted small mb-1" style={{ fontSize: '0.7rem' }}>
+                Email Node
+              </div>
               <HealthBadge status={s.systemHealth?.email ?? health.email.status} />
-              <div className="text-muted mt-1" style={{ fontSize: '0.65rem' }}>Queued: {health.email.queued}</div>
+              <div className="text-muted mt-1" style={{ fontSize: '0.65rem' }}>
+                Queued: {health.email.queued}
+              </div>
             </Col>
             <Col xs={6} md={4} lg={2} className="text-center border-end border-light">
-              <div className="text-muted small mb-1" style={{ fontSize: '0.7rem' }}>S3 Media Storage</div>
+              <div className="text-muted small mb-1" style={{ fontSize: '0.7rem' }}>
+                S3 Media Storage
+              </div>
               <HealthBadge status={s.systemHealth?.storage ?? 'healthy'} />
             </Col>
             <Col xs={6} md={4} lg={2} className="text-center">
-              <div className="text-muted small mb-1" style={{ fontSize: '0.7rem' }}>Payment Systems</div>
+              <div className="text-muted small mb-1" style={{ fontSize: '0.7rem' }}>
+                Payment Systems
+              </div>
               <HealthBadge status={s.systemHealth?.payments ?? health.payments.status} />
-              <div className="text-muted mt-1" style={{ fontSize: '0.65rem' }}>Failed 24h: {health.payments.failedLast24h}</div>
+              <div className="text-muted mt-1" style={{ fontSize: '0.65rem' }}>
+                Failed 24h: {health.payments.failedLast24h}
+              </div>
             </Col>
           </Row>
         </Card.Body>
@@ -456,7 +564,9 @@ export default function DashboardContent() {
             </Card.Header>
             <Card.Body className="p-0">
               {pendLoading ? (
-                <div className="text-center py-5"><Spinner animation="border" variant="warning" /></div>
+                <div className="text-center py-5">
+                  <Spinner animation="border" variant="warning" />
+                </div>
               ) : pendingAlertCount === 0 ? (
                 <div className="text-center text-muted py-5 small">
                   <Icon icon="solar:check-circle-bold-duotone" className="text-success fs-2 mb-2" />
@@ -468,12 +578,18 @@ export default function DashboardContent() {
                     <div className="border-bottom p-3 bg-light-subtle">
                       <span className="small text-uppercase text-muted fw-bold d-block mb-2">Support Tickets ({pa.newInquiries.length})</span>
                       {pa.newInquiries.slice(0, 2).map((inq) => (
-                        <div key={inq.id} className="d-flex justify-content-between align-items-center py-2 border-bottom border-light last-no-border">
+                        <div
+                          key={inq.id}
+                          className="d-flex justify-content-between align-items-center py-2 border-bottom border-light last-no-border">
                           <div className="min-width-0">
                             <span className="small fw-bold text-dark d-block text-truncate">{inq.name}</span>
-                            <span className="text-muted text-truncate d-block" style={{ fontSize: '0.7rem' }}>{inq.subject || 'No Subject'}</span>
+                            <span className="text-muted text-truncate d-block" style={{ fontSize: '0.7rem' }}>
+                              {inq.subject || 'No Subject'}
+                            </span>
                           </div>
-                          <Link href={`/contact-inquiries/${inq.id}`} className="btn btn-soft-primary btn-sm px-3 py-1 fs-11 flex-shrink-0">View Ticket</Link>
+                          <Link href={`/contact-inquiries/${inq.id}`} className="btn btn-soft-primary btn-sm px-3 py-1 fs-11 flex-shrink-0">
+                            View Ticket
+                          </Link>
                         </div>
                       ))}
                     </div>
@@ -481,14 +597,22 @@ export default function DashboardContent() {
 
                   {pa.pendingMfsPayments.length > 0 && (
                     <div className="border-bottom p-3">
-                      <span className="small text-uppercase text-muted fw-bold d-block mb-2">Manual Membership Payments ({pa.pendingMfsPayments.length})</span>
+                      <span className="small text-uppercase text-muted fw-bold d-block mb-2">
+                        Manual Membership Payments ({pa.pendingMfsPayments.length})
+                      </span>
                       {pa.pendingMfsPayments.slice(0, 2).map((m) => (
                         <div key={m.id} className="d-flex justify-content-between align-items-center py-2 border-bottom border-light last-no-border">
                           <div className="min-width-0">
                             <span className="small fw-bold text-dark d-block text-truncate">{m.memberName}</span>
-                            <span className="text-muted text-truncate d-block" style={{ fontSize: '0.7rem' }}>{m.tier?.nameEn || 'Membership'} · ৳{Number(m.amountBdt).toLocaleString()}</span>
+                            <span className="text-muted text-truncate d-block" style={{ fontSize: '0.7rem' }}>
+                              {m.tier?.nameEn || 'Membership'} · ৳{Number(m.amountBdt).toLocaleString()}
+                            </span>
                           </div>
-                          <Link href={`/community-care/membership/purchases/${m.id}`} className="btn btn-soft-warning btn-sm px-3 py-1 fs-11 flex-shrink-0">Verify Pay</Link>
+                          <Link
+                            href={`/community-care/membership/purchases/${m.id}`}
+                            className="btn btn-soft-warning btn-sm px-3 py-1 fs-11 flex-shrink-0">
+                            Verify Pay
+                          </Link>
                         </div>
                       ))}
                     </div>
@@ -496,14 +620,20 @@ export default function DashboardContent() {
 
                   {pa.pendingCampaignRegs.length > 0 && (
                     <div className="p-3">
-                      <span className="small text-uppercase text-muted fw-bold d-block mb-2">Campaign Booking Approvals ({pa.pendingCampaignRegs.length})</span>
+                      <span className="small text-uppercase text-muted fw-bold d-block mb-2">
+                        Campaign Booking Approvals ({pa.pendingCampaignRegs.length})
+                      </span>
                       {pa.pendingCampaignRegs.slice(0, 2).map((r) => (
                         <div key={r.id} className="d-flex justify-content-between align-items-center py-2 border-bottom border-light last-no-border">
                           <div className="min-width-0">
                             <span className="small fw-bold text-dark d-block text-truncate">{r.campaign?.title || 'Campaign Booking'}</span>
-                            <span className="text-muted text-truncate d-block" style={{ fontSize: '0.7rem' }}>Booking Code: <code>{r.bookingNumber}</code></span>
+                            <span className="text-muted text-truncate d-block" style={{ fontSize: '0.7rem' }}>
+                              Booking Code: <code>{r.bookingNumber}</code>
+                            </span>
                           </div>
-                          <Link href={`/campaigns/${r.id}`} className="btn btn-soft-success btn-sm px-3 py-1 fs-11 flex-shrink-0">Approve Booking</Link>
+                          <Link href={`/campaigns/${r.id}`} className="btn btn-soft-success btn-sm px-3 py-1 fs-11 flex-shrink-0">
+                            Approve Booking
+                          </Link>
                         </div>
                       ))}
                     </div>
@@ -517,10 +647,14 @@ export default function DashboardContent() {
         {/* Recent Activity timeline */}
         <Col xs={12} xl={6}>
           <Card className="border-0 shadow-sm h-100">
-            <Card.Header className="bg-transparent border-light py-3"><h6 className="mb-0 fw-bold text-dark">Live Operations Activity Timeline</h6></Card.Header>
+            <Card.Header className="bg-transparent border-light py-3">
+              <h6 className="mb-0 fw-bold text-dark">Live Operations Activity Timeline</h6>
+            </Card.Header>
             <Card.Body className="p-3 position-relative" style={{ maxHeight: '350px', overflowY: 'auto' }}>
               {actLoading ? (
-                <div className="text-center py-5"><Spinner animation="border" variant="primary" /></div>
+                <div className="text-center py-5">
+                  <Spinner animation="border" variant="primary" />
+                </div>
               ) : feed.length === 0 ? (
                 <div className="text-center text-muted py-5 small">No operational logs recorded.</div>
               ) : (
@@ -528,25 +662,29 @@ export default function DashboardContent() {
                   <div className="timeline-line" />
                   <div className="d-flex flex-column gap-3">
                     {feed.map((item) => {
-                      const mapIcon = {
-                        contact_inquiry: 'solar:letter-bold-duotone',
-                        membership: 'solar:card-2-bold-duotone',
-                        donation: 'solar:hand-heart-bold-duotone',
-                        campaign_registration: 'solar:calendar-add-bold-duotone',
-                        pet_census: 'solar:cat-bold-duotone',
-                      }[item._type] || 'solar:bell-bold-duotone'
+                      const mapIcon =
+                        {
+                          contact_inquiry: 'solar:letter-bold-duotone',
+                          membership: 'solar:card-2-bold-duotone',
+                          donation: 'solar:hand-heart-bold-duotone',
+                          campaign_registration: 'solar:calendar-add-bold-duotone',
+                          pet_census: 'solar:cat-bold-duotone',
+                        }[item._type] || 'solar:bell-bold-duotone'
 
-                      const mapColor = {
-                        contact_inquiry: 'info',
-                        membership: 'primary',
-                        donation: 'success',
-                        campaign_registration: 'warning',
-                        pet_census: 'secondary',
-                      }[item._type] || 'secondary'
+                      const mapColor =
+                        {
+                          contact_inquiry: 'info',
+                          membership: 'primary',
+                          donation: 'success',
+                          campaign_registration: 'warning',
+                          pet_census: 'secondary',
+                        }[item._type] || 'secondary'
 
                       return (
                         <div key={`${item._type}:${item.id}`} className="d-flex gap-3 align-items-start position-relative" style={{ zIndex: 2 }}>
-                          <div className={`flex-shrink-0 rounded-circle text-${mapColor} bg-white border border-${mapColor}-subtle d-flex align-items-center justify-content-center`} style={{ width: '34px', height: '34px', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
+                          <div
+                            className={`flex-shrink-0 rounded-circle text-${mapColor} bg-white border border-${mapColor}-subtle d-flex align-items-center justify-content-center`}
+                            style={{ width: '34px', height: '34px', boxShadow: '0 2px 4px rgba(0,0,0,0.04)' }}>
                             <Icon icon={mapIcon} width={16} />
                           </div>
                           <div className="flex-grow-1 min-width-0 pt-1">
@@ -557,9 +695,14 @@ export default function DashboardContent() {
                               {item._type === 'campaign_registration' && `${(item.campaign as any)?.title ?? 'Campaign'} · ${item.bookingNumber}`}
                               {item._type === 'pet_census' && `Census submission · ${item.ownerName}`}
                             </span>
-                            <span className="text-muted" style={{ fontSize: '0.65rem' }}>{timeAgo(item.createdAt)}</span>
+                            <span className="text-muted" style={{ fontSize: '0.65rem' }}>
+                              {timeAgo(item.createdAt)}
+                            </span>
                           </div>
-                          <Badge bg={`${mapColor}-subtle`} className={`text-${mapColor} border border-${mapColor}-subtle text-uppercase flex-shrink-0 mt-1`} style={{ fontSize: '0.55rem' }}>
+                          <Badge
+                            bg={`${mapColor}-subtle`}
+                            className={`text-${mapColor} border border-${mapColor}-subtle text-uppercase flex-shrink-0 mt-1`}
+                            style={{ fontSize: '0.55rem' }}>
                             {item._type.replace(/_/g, ' ')}
                           </Badge>
                         </div>
@@ -577,21 +720,31 @@ export default function DashboardContent() {
         {/* Campaign progress fill rate */}
         <Col xs={12} xl={6}>
           <Card className="border-0 shadow-sm h-100">
-            <Card.Header className="bg-transparent border-light py-3"><h6 className="mb-0 fw-bold text-dark">Campaign Seats Allocation</h6></Card.Header>
+            <Card.Header className="bg-transparent border-light py-3">
+              <h6 className="mb-0 fw-bold text-dark">Campaign Seats Allocation</h6>
+            </Card.Header>
             <Card.Body className="p-3">
               {s.trends?.campaignCapacities?.length === 0 ? (
                 <p className="text-muted text-center py-5 mb-0">No active campaigns cataloged.</p>
               ) : (
                 <div className="d-flex flex-column gap-3">
-                  {(s.trends.campaignCapacities ?? []).map(c => {
+                  {(s.trends.campaignCapacities ?? []).map((c) => {
                     const percent = Math.min(Math.round(c.percent), 100)
                     return (
                       <div key={c.id}>
                         <div className="d-flex align-items-center justify-content-between mb-1">
-                          <span className="text-dark small fw-semibold text-truncate" style={{ maxWidth: '75%' }}>{c.title}</span>
-                          <span className="text-muted small fs-11 fw-bold">{c.booked} / {c.capacity} Allocated</span>
+                          <span className="text-dark small fw-semibold text-truncate" style={{ maxWidth: '75%' }}>
+                            {c.title}
+                          </span>
+                          <span className="text-muted small fs-11 fw-bold">
+                            {c.booked} / {c.capacity} Allocated
+                          </span>
                         </div>
-                        <ProgressBar now={percent} variant={percent > 85 ? 'danger' : percent > 50 ? 'warning' : 'success'} style={{ height: '5px' }} />
+                        <ProgressBar
+                          now={percent}
+                          variant={percent > 85 ? 'danger' : percent > 50 ? 'warning' : 'success'}
+                          style={{ height: '5px' }}
+                        />
                       </div>
                     )
                   })}
@@ -604,7 +757,9 @@ export default function DashboardContent() {
         {/* Zone Demand Ranking */}
         <Col xs={12} xl={6}>
           <Card className="border-0 shadow-sm h-100">
-            <Card.Header className="bg-transparent border-light py-3"><h6 className="mb-0 fw-bold text-dark">Top Regions by Census Submissions</h6></Card.Header>
+            <Card.Header className="bg-transparent border-light py-3">
+              <h6 className="mb-0 fw-bold text-dark">Top Regions by Census Submissions</h6>
+            </Card.Header>
             <Card.Body className="p-0">
               {(s.trends?.zoneDemand ?? []).length === 0 ? (
                 <p className="text-muted text-center py-5 mb-0">No zone demand records mapped.</p>
@@ -612,8 +767,12 @@ export default function DashboardContent() {
                 <Table hover className="table-centered align-middle mb-0 text-nowrap table-borderless">
                   <thead className="table-light text-muted small">
                     <tr>
-                      <th className="ps-3" style={{ fontSize: '0.7rem' }}>Zone Region</th>
-                      <th className="text-end pe-3" style={{ fontSize: '0.7rem' }}>Census Records Count</th>
+                      <th className="ps-3" style={{ fontSize: '0.7rem' }}>
+                        Zone Region
+                      </th>
+                      <th className="text-end pe-3" style={{ fontSize: '0.7rem' }}>
+                        Census Records Count
+                      </th>
                     </tr>
                   </thead>
                   <tbody>

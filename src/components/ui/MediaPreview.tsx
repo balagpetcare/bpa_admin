@@ -1,12 +1,7 @@
 'use client'
 
 import { Icon } from '@iconify/react'
-import {
-  getFileIcon,
-  getFileTypeLabel,
-  getMediaImageUrl,
-  getMediaPreviewType,
-} from '@/utils/media'
+import { getFileIcon, getFileTypeLabel, getMediaImageUrl, getMediaPreviewType } from '@/utils/media'
 
 interface MediaPreviewProps {
   /** A MediaFile, a CampaignMedia item (with `.mediaFile`), or any object with url/mimeType. */
@@ -32,19 +27,40 @@ interface MediaPreviewProps {
  * HEIC/HEIF images the browser can't decode. Never shows a raw "Load
  * Error" broken-image state.
  */
-export default function MediaPreview({
-  media,
-  alt,
-  fit = 'contain',
-  className,
-  style,
-  filename,
-  showActions = true,
-}: MediaPreviewProps) {
+export default function MediaPreview({ media, alt, fit = 'contain', className, style, filename, showActions = true }: MediaPreviewProps) {
   const previewType = getMediaPreviewType(media)
   const url = getMediaImageUrl(media)
-  const resolvedFilename =
-    filename ?? media?.mediaFile?.originalName ?? media?.originalName ?? media?.mediaFile?.filename ?? media?.filename
+  const resolvedFilename = filename ?? media?.mediaFile?.originalName ?? media?.originalName ?? media?.mediaFile?.filename ?? media?.filename
+  const isMissing = Boolean(media?.missing ?? media?.mediaFile?.missing)
+
+  // Genuinely-unavailable files (confirmed absent in storage, not just a
+  // slow/failed image load) get an explicit state rather than silently
+  // rendering a generic placeholder image that looks like real content.
+  if (isMissing) {
+    return (
+      <div
+        className={className ?? 'w-100 h-100'}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 6,
+          padding: 16,
+          textAlign: 'center',
+          background: '#fff5f5',
+          ...style,
+        }}>
+        <Icon icon="solar:gallery-remove-bold-duotone" style={{ fontSize: 40, opacity: 0.7 }} className="text-danger" />
+        <div className="small fw-semibold text-danger">File Missing</div>
+        {resolvedFilename && (
+          <div className="text-muted text-truncate" style={{ fontSize: 11, maxWidth: '100%' }}>
+            {resolvedFilename}
+          </div>
+        )}
+      </div>
+    )
+  }
 
   if (previewType === 'image' || previewType === 'svg') {
     return (
@@ -64,14 +80,7 @@ export default function MediaPreview({
   }
 
   if (previewType === 'video') {
-    return (
-      <video
-        src={url}
-        controls
-        className={className ?? `w-100 h-100 object-fit-${fit}`}
-        style={style}
-      />
-    )
+    return <video src={url} controls className={className ?? `w-100 h-100 object-fit-${fit}`} style={style} />
   }
 
   return (
@@ -87,8 +96,7 @@ export default function MediaPreview({
         textAlign: 'center',
         background: '#f8f9fa',
         ...style,
-      }}
-    >
+      }}>
       <Icon icon={getFileIcon(media)} style={{ fontSize: 40, opacity: 0.7 }} className="text-primary" />
       <div className="small fw-semibold text-dark">{getFileTypeLabel(media)}</div>
       {resolvedFilename && (

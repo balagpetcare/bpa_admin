@@ -6,7 +6,12 @@ import { Dropdown, DropdownHeader, DropdownItem, DropdownMenu, DropdownToggle } 
 
 const AdminAvatar = ({ name }: { name?: string | null }) => {
   const initials = name
-    ? name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
+    ? name
+        .split(' ')
+        .map((w) => w[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
     : 'AD'
   return (
     <span

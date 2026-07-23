@@ -12,12 +12,7 @@ interface TimelineItem {
   date: string
 }
 
-function buildTimeline(
-  news: NewsListItem[],
-  events: EventListItem[],
-  contacts: ContactSubmission[],
-  volunteers: Volunteer[],
-): TimelineItem[] {
+function buildTimeline(news: NewsListItem[], events: EventListItem[], contacts: ContactSubmission[], volunteers: Volunteer[]): TimelineItem[] {
   const items: TimelineItem[] = [
     ...news.slice(0, 3).map((n) => ({
       icon: 'solar:document-text-bold-duotone',
@@ -80,7 +75,9 @@ export default function ActivityTimeline({ news, events, contacts, volunteers }:
                     <Icon icon={item.icon} className={`text-${item.color} fs-16`} />
                     <span className="fw-semibold small">{item.title}</span>
                   </div>
-                  <p className="text-muted mb-0" style={{ fontSize: 12 }}>{item.subtitle}</p>
+                  <p className="text-muted mb-0" style={{ fontSize: 12 }}>
+                    {item.subtitle}
+                  </p>
                   <span className="text-muted" style={{ fontSize: 11 }}>
                     {new Date(item.date).toLocaleString()}
                   </span>

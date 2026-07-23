@@ -122,7 +122,11 @@ export default function MailInboxPage() {
       case 'sent_failed':
         return <Badge bg="danger">Failed</Badge>
       case 'draft':
-        return <Badge bg="warning" className="text-dark">Draft</Badge>
+        return (
+          <Badge bg="warning" className="text-dark">
+            Draft
+          </Badge>
+        )
       default:
         return null
     }
@@ -132,14 +136,26 @@ export default function MailInboxPage() {
     <>
       <PageHeader title="Official Webmail" breadcrumbs={[{ label: 'Mail' }, { label: 'Inbox' }]} />
 
-      {error && <Alert variant="danger" dismissible onClose={() => setError('')}>{error}</Alert>}
-      {success && <Alert variant="success" dismissible onClose={() => setSuccess('')}>{success}</Alert>}
+      {error && (
+        <Alert variant="danger" dismissible onClose={() => setError('')}>
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert variant="success" dismissible onClose={() => setSuccess('')}>
+          {success}
+        </Alert>
+      )}
 
       <Row>
         {/* LEFT COLUMN: Sidebar folders & filters */}
         <Col lg={3} md={4} className="mb-4">
           <div className="d-grid mb-3">
-            <Button as={Link as any} href="/mail/compose" variant="primary" className="d-flex align-items-center justify-content-center gap-2 py-2 fw-semibold shadow-sm">
+            <Button
+              as={Link as any}
+              href="/mail/compose"
+              variant="primary"
+              className="d-flex align-items-center justify-content-center gap-2 py-2 fw-semibold shadow-sm">
               <Icon icon="solar:pen-bold" width="18" /> Compose Mail
             </Button>
           </div>
@@ -153,9 +169,11 @@ export default function MailInboxPage() {
                 <li>
                   <button
                     type="button"
-                    onClick={() => { setSelectedStatus('received'); setPage(1); }}
-                    className={`w-100 border-0 text-start px-3 py-2 rounded d-flex align-items-center justify-content-between ${selectedStatus === 'received' ? 'bg-primary-subtle text-primary fw-semibold' : 'bg-transparent text-secondary'}`}
-                  >
+                    onClick={() => {
+                      setSelectedStatus('received')
+                      setPage(1)
+                    }}
+                    className={`w-100 border-0 text-start px-3 py-2 rounded d-flex align-items-center justify-content-between ${selectedStatus === 'received' ? 'bg-primary-subtle text-primary fw-semibold' : 'bg-transparent text-secondary'}`}>
                     <span className="d-flex align-items-center gap-2">
                       <Icon icon="solar:inbox-line-bold" width="18" /> Inbox
                     </span>
@@ -164,9 +182,11 @@ export default function MailInboxPage() {
                 <li>
                   <button
                     type="button"
-                    onClick={() => { setSelectedStatus('sent_success'); setPage(1); }}
-                    className={`w-100 border-0 text-start px-3 py-2 rounded d-flex align-items-center justify-content-between ${selectedStatus === 'sent_success' ? 'bg-primary-subtle text-primary fw-semibold' : 'bg-transparent text-secondary'}`}
-                  >
+                    onClick={() => {
+                      setSelectedStatus('sent_success')
+                      setPage(1)
+                    }}
+                    className={`w-100 border-0 text-start px-3 py-2 rounded d-flex align-items-center justify-content-between ${selectedStatus === 'sent_success' ? 'bg-primary-subtle text-primary fw-semibold' : 'bg-transparent text-secondary'}`}>
                     <span className="d-flex align-items-center gap-2">
                       <Icon icon="solar:square-share-line-bold" width="18" /> Sent Logs
                     </span>
@@ -175,9 +195,11 @@ export default function MailInboxPage() {
                 <li>
                   <button
                     type="button"
-                    onClick={() => { setSelectedStatus('sent_failed'); setPage(1); }}
-                    className={`w-100 border-0 text-start px-3 py-2 rounded d-flex align-items-center justify-content-between ${selectedStatus === 'sent_failed' ? 'bg-primary-subtle text-primary fw-semibold' : 'bg-transparent text-secondary'}`}
-                  >
+                    onClick={() => {
+                      setSelectedStatus('sent_failed')
+                      setPage(1)
+                    }}
+                    className={`w-100 border-0 text-start px-3 py-2 rounded d-flex align-items-center justify-content-between ${selectedStatus === 'sent_failed' ? 'bg-primary-subtle text-primary fw-semibold' : 'bg-transparent text-secondary'}`}>
                     <span className="d-flex align-items-center gap-2">
                       <Icon icon="solar:danger-bold" width="18" /> Failed Sent
                     </span>
@@ -192,22 +214,26 @@ export default function MailInboxPage() {
                 <li>
                   <button
                     type="button"
-                    onClick={() => { setSelectedMailboxId(''); setPage(1); }}
-                    className={`w-100 border-0 text-start px-3 py-2 rounded d-flex align-items-center justify-content-between ${selectedMailboxId === '' ? 'bg-primary-subtle text-primary fw-semibold' : 'bg-transparent text-secondary'}`}
-                  >
+                    onClick={() => {
+                      setSelectedMailboxId('')
+                      setPage(1)
+                    }}
+                    className={`w-100 border-0 text-start px-3 py-2 rounded d-flex align-items-center justify-content-between ${selectedMailboxId === '' ? 'bg-primary-subtle text-primary fw-semibold' : 'bg-transparent text-secondary'}`}>
                     <span className="d-flex align-items-center gap-2">
                       <Icon icon="solar:mailbox-bold" width="18" /> Unified Inbox
                     </span>
                   </button>
                 </li>
-                {accounts.map(acc => (
+                {accounts.map((acc) => (
                   <li key={acc.id} className="list-unstyled">
                     <button
                       type="button"
-                      onClick={() => { setSelectedMailboxId(acc.id); setPage(1); }}
+                      onClick={() => {
+                        setSelectedMailboxId(acc.id)
+                        setPage(1)
+                      }}
                       className={`w-100 border-0 text-start px-3 py-2 rounded d-flex align-items-center justify-content-between ${selectedMailboxId === acc.id ? 'bg-primary-subtle text-primary fw-semibold' : 'bg-transparent text-secondary'}`}
-                      style={{ fontSize: '13px' }}
-                    >
+                      style={{ fontSize: '13px' }}>
                       <span className="d-flex align-items-center gap-2 text-truncate" title={acc.emailAddress}>
                         <Icon icon="solar:user-bold" width="16" className="flex-shrink-0" />
                         <span className="text-truncate">{acc.emailAddress}</span>
@@ -222,14 +248,16 @@ export default function MailInboxPage() {
           <Card className="border-0 shadow-sm">
             <Card.Body className="p-3">
               <h6 className="fw-bold mb-3 small text-uppercase text-secondary">Advanced Filters</h6>
-              
+
               <Form.Group className="mb-3">
                 <Form.Label className="small fw-semibold">Read/Unread Status</Form.Label>
                 <Form.Select
                   size="sm"
                   value={isReadFilter}
-                  onChange={e => { setIsReadFilter(e.target.value as any); setPage(1); }}
-                >
+                  onChange={(e) => {
+                    setIsReadFilter(e.target.value as any)
+                    setPage(1)
+                  }}>
                   <option value="">All Message Status</option>
                   <option value="false">Unread</option>
                   <option value="true">Read</option>
@@ -242,7 +270,10 @@ export default function MailInboxPage() {
                   type="date"
                   size="sm"
                   value={startDate}
-                  onChange={e => { setStartDate(e.target.value); setPage(1); }}
+                  onChange={(e) => {
+                    setStartDate(e.target.value)
+                    setPage(1)
+                  }}
                 />
               </Form.Group>
 
@@ -252,7 +283,10 @@ export default function MailInboxPage() {
                   type="date"
                   size="sm"
                   value={endDate}
-                  onChange={e => { setEndDate(e.target.value); setPage(1); }}
+                  onChange={(e) => {
+                    setEndDate(e.target.value)
+                    setPage(1)
+                  }}
                 />
               </Form.Group>
 
@@ -280,17 +314,15 @@ export default function MailInboxPage() {
                       placeholder="Search by sender, subject, body content..."
                       className="bg-light border-start-0"
                       value={searchQuery}
-                      onChange={e => { setSearchQuery(e.target.value); setPage(1); }}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value)
+                        setPage(1)
+                      }}
                     />
                   </InputGroup>
                 </Col>
                 <Col md={5} className="d-flex justify-content-md-end justify-content-between align-items-center gap-2">
-                  <Button
-                    variant="outline-primary"
-                    onClick={handleSync}
-                    disabled={syncing}
-                    className="d-flex align-items-center gap-1"
-                  >
+                  <Button variant="outline-primary" onClick={handleSync} disabled={syncing} className="d-flex align-items-center gap-1">
                     <Icon icon="solar:refresh-linear" width="16" className={syncing ? 'spin-animation' : ''} />
                     {syncing ? 'Syncing...' : 'Sync Mailbox'}
                   </Button>
@@ -317,13 +349,12 @@ export default function MailInboxPage() {
                 </div>
               ) : (
                 <div className="list-group list-group-flush">
-                  {messages.map(msg => (
+                  {messages.map((msg) => (
                     <Link
                       key={msg.id}
                       href={`/mail/thread/${msg.threadId}`}
                       className={`list-group-item list-group-item-action border-bottom p-3 d-flex flex-column gap-1 ${!msg.isRead && msg.status === 'received' ? 'bg-light-subtle fw-semibold border-start border-primary border-4' : 'text-secondary'}`}
-                      style={{ cursor: 'pointer', borderLeftWidth: !msg.isRead && msg.status === 'received' ? '4px' : '1px' }}
-                    >
+                      style={{ cursor: 'pointer', borderLeftWidth: !msg.isRead && msg.status === 'received' ? '4px' : '1px' }}>
                       <div className="d-flex justify-content-between align-items-center">
                         <div className="d-flex align-items-center gap-2">
                           <span className={`text-dark ${!msg.isRead && msg.status === 'received' ? 'fw-bold' : ''}`}>
@@ -331,7 +362,10 @@ export default function MailInboxPage() {
                           </span>
                           {/* Mailbox identifier badge */}
                           {msg.mailbox && (
-                            <Badge bg="secondary-subtle" className="text-secondary border border-secondary font-weight-normal" style={{ fontSize: '11px' }}>
+                            <Badge
+                              bg="secondary-subtle"
+                              className="text-secondary border border-secondary font-weight-normal"
+                              style={{ fontSize: '11px' }}>
                               {msg.mailbox.emailAddress}
                             </Badge>
                           )}
@@ -339,7 +373,7 @@ export default function MailInboxPage() {
                         </div>
                         <span className="small text-muted">{formatDate(msg.date)}</span>
                       </div>
-                      
+
                       <div className="d-flex justify-content-between align-items-center mt-1">
                         <div className="text-truncate pe-3" style={{ maxWidth: '80%' }}>
                           <span className={!msg.isRead && msg.status === 'received' ? 'text-dark fw-semibold' : 'text-dark'}>
@@ -373,13 +407,13 @@ export default function MailInboxPage() {
                   Showing <b>{(page - 1) * limit + 1}</b> to <b>{Math.min(page * limit, total)}</b> of <b>{total}</b> emails
                 </span>
                 <Pagination className="mb-0">
-                  <Pagination.Prev disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))} />
+                  <Pagination.Prev disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))} />
                   {Array.from({ length: totalPages }).map((_, idx) => (
                     <Pagination.Item key={idx} active={idx + 1 === page} onClick={() => setPage(idx + 1)}>
                       {idx + 1}
                     </Pagination.Item>
                   ))}
-                  <Pagination.Next disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} />
+                  <Pagination.Next disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} />
                 </Pagination>
               </Card.Footer>
             )}
@@ -395,8 +429,12 @@ export default function MailInboxPage() {
           animation: spin 1s linear infinite;
         }
         @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
         }
       `}</style>
     </>

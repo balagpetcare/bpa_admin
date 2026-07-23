@@ -12,8 +12,8 @@ import ApiErrorAlert from './ApiErrorAlert'
 import { ApiError } from '@/lib/api'
 
 interface MediaPickerInputProps {
-  value: string | null | undefined       // selected mediaFile id
-  previewUrl?: string | null             // current preview url (from existing record)
+  value: string | null | undefined // selected mediaFile id
+  previewUrl?: string | null // current preview url (from existing record)
   previewMimeType?: string | null
   onChange: (fileId: string | null, file: MediaFile | null) => void
   label?: string
@@ -26,6 +26,8 @@ interface MediaPickerInputProps {
   enableUpload?: boolean
   maxFileSizeBytes?: number
   customTrigger?: React.ReactNode
+  /** Disables opening the picker and the Change/Remove actions (e.g. while the user lacks edit permission). Defaults to false — purely additive, existing callers are unaffected. */
+  disabled?: boolean
 }
 
 function formatBytes(bytes: string | number): string {
@@ -49,6 +51,7 @@ export default function MediaPickerInput({
   enableUpload = true,
   maxFileSizeBytes,
   customTrigger,
+  disabled = false,
 }: MediaPickerInputProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -122,7 +125,7 @@ export default function MediaPickerInput({
   if (customTrigger) {
     return (
       <div className="d-inline-block">
-        <div onClick={() => setOpen(true)} style={{ cursor: 'pointer' }}>
+        <div onClick={() => !disabled && setOpen(true)} style={{ cursor: disabled ? 'not-allowed' : 'pointer' }}>
           {customTrigger}
         </div>
         {/* Library picker modal (same as below) */}
@@ -133,11 +136,16 @@ export default function MediaPickerInput({
           <Modal.Body>
             <div className="d-flex flex-wrap gap-2 justify-content-between align-items-start mb-3">
               <InputGroup size="sm" style={{ maxWidth: 300 }}>
-                <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
+                <InputGroup.Text>
+                  <Icon icon="solar:magnifer-bold" />
+                </InputGroup.Text>
                 <Form.Control
                   placeholder="Search media..."
                   value={search}
-                  onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+                  onChange={(e) => {
+                    setSearch(e.target.value)
+                    setPage(1)
+                  }}
                 />
               </InputGroup>
 
@@ -175,8 +183,7 @@ export default function MediaPickerInput({
                       className={`border rounded overflow-hidden ${value === file.id ? 'border-primary border-2' : ''}`}
                       style={{ cursor: 'pointer', aspectRatio: '1' }}
                       onClick={() => handleSelect(file)}
-                      title={file.originalName}
-                    >
+                      title={file.originalName}>
                       <MediaPreview
                         media={file}
                         alt={file.altText ?? file.originalName}
@@ -204,20 +211,22 @@ export default function MediaPickerInput({
 
             {meta && meta.totalPages > 1 && (
               <div className="d-flex justify-content-center gap-2 mt-3">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage(p => p - 1)}>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
                   ‹ Prev
                 </Button>
                 <span className="align-self-center small text-muted">
                   Page {meta.page} / {meta.totalPages}
                 </span>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage(p => p + 1)}>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
                   Next ›
                 </Button>
               </div>
             )}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="light" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button variant="light" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
           </Modal.Footer>
         </Modal>
       </div>
@@ -243,11 +252,11 @@ export default function MediaPickerInput({
             </Alert>
           )}
           <div className="mt-2 d-flex gap-2">
-            <Button variant="outline-secondary" size="sm" onClick={() => setOpen(true)}>
+            <Button variant="outline-secondary" size="sm" disabled={disabled} onClick={() => setOpen(true)}>
               <Icon icon="solar:pen-bold" className="me-1" />
               Change
             </Button>
-            <Button variant="outline-danger" size="sm" onClick={handleClear}>
+            <Button variant="outline-danger" size="sm" disabled={disabled} onClick={handleClear}>
               <Icon icon="solar:close-circle-bold" className="me-1" />
               Remove
             </Button>
@@ -256,10 +265,9 @@ export default function MediaPickerInput({
       ) : (
         <div
           className="border rounded d-flex align-items-center justify-content-center bg-light"
-          style={{ height: 120, cursor: 'pointer' }}
-          onClick={() => setOpen(true)}
-          role="button"
-        >
+          style={{ height: 120, cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.6 : 1 }}
+          onClick={() => !disabled && setOpen(true)}
+          role="button">
           <div className="text-center text-muted">
             <Icon icon="solar:gallery-add-bold-duotone" style={{ fontSize: 32 }} />
             <p className="mb-0 small mt-1">{emptyLabel}</p>
@@ -268,11 +276,7 @@ export default function MediaPickerInput({
       )}
 
       {helpText && <Form.Text className="text-muted">{helpText}</Form.Text>}
-      {maxFileSizeBytes && (
-        <Form.Text className="d-block text-muted">
-          Maximum file size: {formatBytes(maxFileSizeBytes)}
-        </Form.Text>
-      )}
+      {maxFileSizeBytes && <Form.Text className="d-block text-muted">Maximum file size: {formatBytes(maxFileSizeBytes)}</Form.Text>}
 
       {/* Library picker modal */}
       <Modal show={open} onHide={() => setOpen(false)} size="xl" scrollable>
@@ -282,11 +286,16 @@ export default function MediaPickerInput({
         <Modal.Body>
           <div className="d-flex flex-wrap gap-2 justify-content-between align-items-start mb-3">
             <InputGroup size="sm" style={{ maxWidth: 300 }}>
-              <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
+              <InputGroup.Text>
+                <Icon icon="solar:magnifer-bold" />
+              </InputGroup.Text>
               <Form.Control
                 placeholder="Search media..."
                 value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+                onChange={(e) => {
+                  setSearch(e.target.value)
+                  setPage(1)
+                }}
               />
             </InputGroup>
 
@@ -324,8 +333,7 @@ export default function MediaPickerInput({
                     className={`border rounded overflow-hidden ${value === file.id ? 'border-primary border-2' : ''}`}
                     style={{ cursor: 'pointer', aspectRatio: '1' }}
                     onClick={() => handleSelect(file)}
-                    title={file.originalName}
-                  >
+                    title={file.originalName}>
                     <MediaPreview
                       media={file}
                       alt={file.altText ?? file.originalName}
@@ -353,20 +361,22 @@ export default function MediaPickerInput({
 
           {meta && meta.totalPages > 1 && (
             <div className="d-flex justify-content-center gap-2 mt-3">
-              <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage(p => p - 1)}>
+              <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
                 ‹ Prev
               </Button>
               <span className="align-self-center small text-muted">
                 Page {meta.page} / {meta.totalPages}
               </span>
-              <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage(p => p + 1)}>
+              <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
                 Next ›
               </Button>
             </div>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="light" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button variant="light" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

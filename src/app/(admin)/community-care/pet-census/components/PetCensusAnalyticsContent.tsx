@@ -20,11 +20,7 @@ export default function PetCensusAnalyticsContent() {
     <div className="container-fluid">
       <PageHeader
         title="Pet Census Analytics"
-        breadcrumbs={[
-          { label: 'Community Care Fund' },
-          { label: 'Pet Census', href: '/community-care/pet-census' },
-          { label: 'Analytics' },
-        ]}
+        breadcrumbs={[{ label: 'Community Care Fund' }, { label: 'Pet Census', href: '/community-care/pet-census' }, { label: 'Analytics' }]}
       />
       <ApiErrorAlert error={error as ApiError | null} />
       <LoadingOverlay loading={loading}>

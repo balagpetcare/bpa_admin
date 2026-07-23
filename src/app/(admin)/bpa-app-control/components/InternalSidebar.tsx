@@ -14,7 +14,9 @@ export default function InternalSidebar() {
     <Card className="border-0 shadow-sm h-100 bpa-app-control-nav">
       <Card.Header className="bg-transparent border-bottom py-3">
         <div className="d-flex align-items-center gap-2">
-          <div className="rounded-3 bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center" style={{ width: 36, height: 36 }}>
+          <div
+            className="rounded-3 bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center"
+            style={{ width: 36, height: 36 }}>
             <Icon icon="solar:smartphone-2-bold-duotone" width="20" />
           </div>
           <div>
@@ -26,7 +28,9 @@ export default function InternalSidebar() {
       <Card.Body className="p-2">
         {BPA_APP_CONTROL_SECTIONS.map((section) => (
           <div key={section.title} className="mb-3">
-            <div className="px-3 pt-2 pb-1 text-muted small text-uppercase fw-semibold" style={{ letterSpacing: '0.06em' }}>{section.title}</div>
+            <div className="px-3 pt-2 pb-1 text-muted small text-uppercase fw-semibold" style={{ letterSpacing: '0.06em' }}>
+              {section.title}
+            </div>
             <div className="list-group list-group-flush">
               {section.items.map((item) => {
                 const active = pathname === item.href
@@ -37,8 +41,7 @@ export default function InternalSidebar() {
                     className={clsx(
                       'list-group-item list-group-item-action border-0 rounded-3 mx-2 mb-1 d-flex align-items-center gap-2',
                       active ? 'bg-primary text-white' : 'bg-transparent text-secondary',
-                    )}
-                  >
+                    )}>
                     <Icon icon={item.icon} width="18" />
                     <span className="small fw-medium">{item.label}</span>
                   </Link>
@@ -51,4 +54,3 @@ export default function InternalSidebar() {
     </Card>
   )
 }
-

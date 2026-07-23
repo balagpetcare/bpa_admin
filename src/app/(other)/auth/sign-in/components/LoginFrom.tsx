@@ -19,35 +19,35 @@ const LoginFrom = () => {
         id="password-id"
         label={
           <>
-            <Link href="/auth/reset-pass" className="float-end text-muted text-unline-dashed ms-1">
+            <Link
+              href={`${process.env.NEXT_PUBLIC_AUTH_WEB_URL || 'https://auth.worldpetsassociation.com'}/auth/forgot-password`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="float-end text-muted text-unline-dashed ms-1">
               Forgot password?
             </Link>
-            <label className="form-label" htmlFor="example-password">
+            <label className="form-label" htmlFor="password-id">
               Password
             </label>
           </>
         }
       />
+
       <div className="mb-3">
         <FormCheck label="Remember me" id="sign-in" />
       </div>
+
       <div className="mb-1 text-center d-grid">
         <Button variant="primary" type="submit" disabled={loading}>
-          Sign In
+          {loading ? 'Signing in…' : 'Sign In'}
         </Button>
       </div>
 
-      <div className="d-flex align-items-center my-3">
-        <hr className="flex-grow-1" />
-        <span className="mx-2 text-muted" style={{ fontSize: 12 }}>
-          or
-        </span>
-        <hr className="flex-grow-1" />
-      </div>
+      <p className="mt-3 fw-semibold no-span">OR</p>
 
-      <div className="mb-1 text-center d-grid">
+      <div className="d-grid gap-2">
         <Button variant="outline-secondary" type="button" disabled={ssoLoading} onClick={loginWithCentralAuth}>
-          {ssoLoading ? 'Redirecting…' : 'Sign in with WPA Central Auth'}
+          {ssoLoading ? 'Redirecting…' : 'Continue with Central Authentication'}
         </Button>
       </div>
     </form>

@@ -44,16 +44,18 @@ export default function WaitlistManager({ campaignId }: { campaignId: string }) 
     <div className="container-fluid">
       <PageHeader
         title="Waitlist"
-        breadcrumbs={[
-          { label: 'Campaigns', href: '/campaigns' },
-          { label: 'Detail', href: `/campaigns/${campaignId}` },
-          { label: 'Waitlist' },
-        ]}
+        breadcrumbs={[{ label: 'Campaigns', href: '/campaigns' }, { label: 'Detail', href: `/campaigns/${campaignId}` }, { label: 'Waitlist' }]}
       />
       <ApiErrorAlert error={error as ApiError | null} />
       <Card className="mb-3">
         <Card.Body className="py-2">
-          <Form.Select style={{ maxWidth: 180 }} value={status} onChange={e => { setStatus(e.target.value); setPage(1) }}>
+          <Form.Select
+            style={{ maxWidth: 180 }}
+            value={status}
+            onChange={(e) => {
+              setStatus(e.target.value)
+              setPage(1)
+            }}>
             <option value="">All</option>
             <option value="waiting">Waiting</option>
             <option value="promoted">Promoted</option>
@@ -80,33 +82,49 @@ export default function WaitlistManager({ campaignId }: { campaignId: string }) 
               </thead>
               <tbody>
                 {items.length === 0 ? (
-                  <tr><td colSpan={8} className="text-center py-4 text-muted">No waitlist entries</td></tr>
-                ) : items.map(w => (
-                  <tr key={w.id}>
-                    <td><Badge bg="secondary">{w.position}</Badge></td>
-                    <td>
-                      <div className="fw-semibold">{w.owner.ownerName}</div>
-                      <small className="text-muted">{w.owner.mobile}</small>
-                    </td>
-                    <td>
-                      <div>{new Date(w.session.sessionDate).toLocaleDateString()}</div>
-                      <small className="text-muted">{w.session.startTime} · {w.session.venue?.name ?? '—'}</small>
-                    </td>
-                    <td>{w.petCount}</td>
-                    <td>
-                      <Badge bg={STATUS_COLORS[w.status]} className="text-capitalize">{w.status}</Badge>
-                    </td>
-                    <td><small>{new Date(w.createdAt).toLocaleDateString()}</small></td>
-                    <td><small>{w.expiresAt ? new Date(w.expiresAt).toLocaleString() : '—'}</small></td>
-                    <td>
-                      {w.status === 'waiting' && can('campaign_registrations:delete') && (
-                        <Button variant="soft-danger" size="sm" onClick={() => handleCancel(w.id)}>
-                          <Icon icon="solar:trash-bin-trash-bold" />
-                        </Button>
-                      )}
+                  <tr>
+                    <td colSpan={8} className="text-center py-4 text-muted">
+                      No waitlist entries
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  items.map((w) => (
+                    <tr key={w.id}>
+                      <td>
+                        <Badge bg="secondary">{w.position}</Badge>
+                      </td>
+                      <td>
+                        <div className="fw-semibold">{w.owner.ownerName}</div>
+                        <small className="text-muted">{w.owner.mobile}</small>
+                      </td>
+                      <td>
+                        <div>{new Date(w.session.sessionDate).toLocaleDateString()}</div>
+                        <small className="text-muted">
+                          {w.session.startTime} · {w.session.venue?.name ?? '—'}
+                        </small>
+                      </td>
+                      <td>{w.petCount}</td>
+                      <td>
+                        <Badge bg={STATUS_COLORS[w.status]} className="text-capitalize">
+                          {w.status}
+                        </Badge>
+                      </td>
+                      <td>
+                        <small>{new Date(w.createdAt).toLocaleDateString()}</small>
+                      </td>
+                      <td>
+                        <small>{w.expiresAt ? new Date(w.expiresAt).toLocaleString() : '—'}</small>
+                      </td>
+                      <td>
+                        {w.status === 'waiting' && can('campaign_registrations:delete') && (
+                          <Button variant="soft-danger" size="sm" onClick={() => handleCancel(w.id)}>
+                            <Icon icon="solar:trash-bin-trash-bold" />
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </Table>
           </LoadingOverlay>
@@ -114,10 +132,16 @@ export default function WaitlistManager({ campaignId }: { campaignId: string }) 
       </Card>
       {meta && meta.totalPages > 1 && (
         <div className="d-flex justify-content-between align-items-center mt-3">
-          <small className="text-muted">Page {page} of {meta.totalPages}</small>
+          <small className="text-muted">
+            Page {page} of {meta.totalPages}
+          </small>
           <div className="d-flex gap-1">
-            <Button size="sm" variant="outline-secondary" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>‹</Button>
-            <Button size="sm" variant="outline-secondary" disabled={page >= meta.totalPages} onClick={() => setPage(p => p + 1)}>›</Button>
+            <Button size="sm" variant="outline-secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+              ‹
+            </Button>
+            <Button size="sm" variant="outline-secondary" disabled={page >= meta.totalPages} onClick={() => setPage((p) => p + 1)}>
+              ›
+            </Button>
           </div>
         </div>
       )}

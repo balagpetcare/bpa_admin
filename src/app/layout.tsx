@@ -55,7 +55,9 @@ const BpaSplashLogo = () => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
     <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
       <circle cx="24" cy="24" r="24" fill="#1a6e38" />
-      <text x="24" y="32" textAnchor="middle" fill="white" fontSize="15" fontFamily="Arial,sans-serif" fontWeight="700">BPA</text>
+      <text x="24" y="32" textAnchor="middle" fill="white" fontSize="15" fontFamily="Arial,sans-serif" fontWeight="700">
+        BPA
+      </text>
     </svg>
     <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
       <span style={{ fontWeight: 700, fontSize: 18, color: '#1a3c4d' }}>Bangladesh Pet</span>

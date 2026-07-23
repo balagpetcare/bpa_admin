@@ -15,7 +15,7 @@ export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<ApiError | null>(null)
-  
+
   // Modal State
   const [showModal, setShowModal] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -149,9 +149,15 @@ export default function CategoriesPage() {
                   ) : (
                     categories.map((c) => (
                       <tr key={c.id}>
-                        <td><span className="fw-semibold text-dark">{c.nameEn}</span></td>
-                        <td><span className="text-secondary">{c.nameBn}</span></td>
-                        <td><code>{c.slug}</code></td>
+                        <td>
+                          <span className="fw-semibold text-dark">{c.nameEn}</span>
+                        </td>
+                        <td>
+                          <span className="text-secondary">{c.nameBn}</span>
+                        </td>
+                        <td>
+                          <code>{c.slug}</code>
+                        </td>
                         <td className="text-muted">{c.description || '—'}</td>
                         <td>
                           <div className="d-flex gap-1">
@@ -182,35 +188,17 @@ export default function CategoriesPage() {
           <Modal.Body className="space-y-3">
             <Form.Group className="mb-3">
               <Form.Label className="fw-semibold">Name (English)</Form.Label>
-              <Form.Control
-                type="text"
-                required
-                value={nameEn}
-                onChange={(e) => handleAutoSlug(e.target.value)}
-                placeholder="e.g. Pet Care Tips"
-              />
+              <Form.Control type="text" required value={nameEn} onChange={(e) => handleAutoSlug(e.target.value)} placeholder="e.g. Pet Care Tips" />
             </Form.Group>
-            
+
             <Form.Group className="mb-3">
               <Form.Label className="fw-semibold">Name (Bengali)</Form.Label>
-              <Form.Control
-                type="text"
-                required
-                value={nameBn}
-                onChange={(e) => setNameBn(e.target.value)}
-                placeholder="e.g. পোষা প্রাণীর যত্ন"
-              />
+              <Form.Control type="text" required value={nameBn} onChange={(e) => setNameBn(e.target.value)} placeholder="e.g. পোষা প্রাণীর যত্ন" />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label className="fw-semibold">Slug</Form.Label>
-              <Form.Control
-                type="text"
-                required
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                placeholder="e.g. pet-care-tips"
-              />
+              <Form.Control type="text" required value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="e.g. pet-care-tips" />
             </Form.Group>
 
             <Form.Group className="mb-3">

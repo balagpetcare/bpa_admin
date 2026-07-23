@@ -22,16 +22,72 @@ const PRESETS: Array<{
   source: 'manual' | 'automatic' | 'static'
 }> = [
   { key: 'hero', type: 'hero', title: 'Hero Slider', eyebrow: 'Homepage', subtitle: 'Primary CMS-managed hero area.', source: 'automatic' },
-  { key: 'stats', type: 'stats', title: 'Impact Metrics', eyebrow: 'Our Impact', subtitle: 'Membership, event, district, and community numbers.', source: 'manual' },
-  { key: 'campaigns', type: 'campaigns', title: 'Featured Campaigns', eyebrow: 'Campaigns', subtitle: 'Vaccination and health campaigns selected from campaign CMS.', source: 'automatic' },
-  { key: 'events', type: 'events', title: 'Upcoming Events', eyebrow: 'Events', subtitle: 'Upcoming public events from event CMS.', source: 'automatic' },
-  { key: 'membership', type: 'custom', title: 'Membership', eyebrow: 'Join BPA', subtitle: 'Membership value proposition and conversion CTA.', source: 'static' },
-  { key: 'volunteer', type: 'custom', title: 'Volunteer', eyebrow: 'Get Involved', subtitle: 'Volunteer recruitment content and CTA.', source: 'static' },
-  { key: 'partners', type: 'partners', title: 'Partners & Supporters', eyebrow: 'Partners', subtitle: 'Organizations shown from partner CMS.', source: 'automatic' },
-  { key: 'success_stories', type: 'custom', title: 'Success Stories', eyebrow: 'Stories', subtitle: 'Community proof and outcomes.', source: 'manual' },
+  {
+    key: 'stats',
+    type: 'stats',
+    title: 'Impact Metrics',
+    eyebrow: 'Our Impact',
+    subtitle: 'Membership, event, district, and community numbers.',
+    source: 'manual',
+  },
+  {
+    key: 'campaigns',
+    type: 'campaigns',
+    title: 'Featured Campaigns',
+    eyebrow: 'Campaigns',
+    subtitle: 'Vaccination and health campaigns selected from campaign CMS.',
+    source: 'automatic',
+  },
+  {
+    key: 'events',
+    type: 'events',
+    title: 'Upcoming Events',
+    eyebrow: 'Events',
+    subtitle: 'Upcoming public events from event CMS.',
+    source: 'automatic',
+  },
+  {
+    key: 'membership',
+    type: 'custom',
+    title: 'Membership',
+    eyebrow: 'Join BPA',
+    subtitle: 'Membership value proposition and conversion CTA.',
+    source: 'static',
+  },
+  {
+    key: 'volunteer',
+    type: 'custom',
+    title: 'Volunteer',
+    eyebrow: 'Get Involved',
+    subtitle: 'Volunteer recruitment content and CTA.',
+    source: 'static',
+  },
+  {
+    key: 'partners',
+    type: 'partners',
+    title: 'Partners & Supporters',
+    eyebrow: 'Partners',
+    subtitle: 'Organizations shown from partner CMS.',
+    source: 'automatic',
+  },
+  {
+    key: 'success_stories',
+    type: 'custom',
+    title: 'Success Stories',
+    eyebrow: 'Stories',
+    subtitle: 'Community proof and outcomes.',
+    source: 'manual',
+  },
   { key: 'news', type: 'news', title: 'Latest News', eyebrow: 'News', subtitle: 'Recent published news articles.', source: 'automatic' },
   { key: 'seo', type: 'custom', title: 'Homepage SEO', eyebrow: 'SEO', subtitle: 'Editorial metadata and schema notes.', source: 'static' },
-  { key: 'footer', type: 'custom', title: 'Footer', eyebrow: 'Site Footer', subtitle: 'Footer content is managed in the Footer tab.', source: 'static' },
+  {
+    key: 'footer',
+    type: 'custom',
+    title: 'Footer',
+    eyebrow: 'Site Footer',
+    subtitle: 'Footer content is managed in the Footer tab.',
+    source: 'static',
+  },
 ]
 
 const DEFAULT_FOOTER_GROUPS: FooterLinkGroup[] = [
@@ -160,12 +216,13 @@ export default function HomepageBuilderContent() {
   const saveHomepage = async () => {
     const homepage = homepageState.data
     await mutation.mutate(
-      () => homepageApi.update({
-        locale,
-        title: homepageDraft.title ?? homepage?.title ?? 'Bangladesh Pet Association',
-        description: homepageDraft.description ?? homepage?.description ?? 'Caring for pets, building a community.',
-        settings: homepage?.settings ?? {},
-      }),
+      () =>
+        homepageApi.update({
+          locale,
+          title: homepageDraft.title ?? homepage?.title ?? 'Bangladesh Pet Association',
+          description: homepageDraft.description ?? homepage?.description ?? 'Caring for pets, building a community.',
+          settings: homepage?.settings ?? {},
+        }),
       undefined,
     )
     setHomepageDraft({})
@@ -181,7 +238,10 @@ export default function HomepageBuilderContent() {
     const index = sections.findIndex((item) => item.id === section.id)
     const swap = sections[index + direction]
     if (!swap) return
-    const reordered = sections.map((item) => ({ id: item.id, sortOrder: item.id === section.id ? swap.sortOrder : item.id === swap.id ? section.sortOrder : item.sortOrder }))
+    const reordered = sections.map((item) => ({
+      id: item.id,
+      sortOrder: item.id === section.id ? swap.sortOrder : item.id === swap.id ? section.sortOrder : item.sortOrder,
+    }))
     await mutation.mutate(() => homepageApi.reorderSections(locale, reordered), undefined)
     refresh()
   }
@@ -226,7 +286,7 @@ export default function HomepageBuilderContent() {
       <PageHeader
         title="Homepage CMS"
         breadcrumbs={[{ label: 'Content' }, { label: 'Homepage CMS' }]}
-        action={(
+        action={
           <div className="d-flex gap-2">
             <Link href="/cms/hero-slider" className="btn btn-outline-primary">
               <Icon icon="solar:slider-horizontal-bold-duotone" className="me-1" />
@@ -239,16 +299,46 @@ export default function HomepageBuilderContent() {
               </Button>
             )}
           </div>
-        )}
+        }
       />
 
-      <ApiErrorAlert error={(sectionsState.error || homepageState.error || partnersState.error || footerState.error || mutation.error) as ApiError | null} />
+      <ApiErrorAlert
+        error={(sectionsState.error || homepageState.error || partnersState.error || footerState.error || mutation.error) as ApiError | null}
+      />
 
       <Row className="g-3 mb-3">
-        <Col md={3}><Card><Card.Body><div className="text-muted small">Sections</div><h4 className="mb-0">{sections.length}</h4></Card.Body></Card></Col>
-        <Col md={3}><Card><Card.Body><div className="text-muted small">Visible</div><h4 className="mb-0">{sections.filter((s) => s.isVisible).length}</h4></Card.Body></Card></Col>
-        <Col md={3}><Card><Card.Body><div className="text-muted small">Partners</div><h4 className="mb-0">{partners.length}</h4></Card.Body></Card></Col>
-        <Col md={3}><Card><Card.Body><div className="text-muted small">Status</div><h4 className="mb-0 text-capitalize">{homepageState.data?.status ?? 'draft'}</h4></Card.Body></Card></Col>
+        <Col md={3}>
+          <Card>
+            <Card.Body>
+              <div className="text-muted small">Sections</div>
+              <h4 className="mb-0">{sections.length}</h4>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={3}>
+          <Card>
+            <Card.Body>
+              <div className="text-muted small">Visible</div>
+              <h4 className="mb-0">{sections.filter((s) => s.isVisible).length}</h4>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={3}>
+          <Card>
+            <Card.Body>
+              <div className="text-muted small">Partners</div>
+              <h4 className="mb-0">{partners.length}</h4>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={3}>
+          <Card>
+            <Card.Body>
+              <div className="text-muted small">Status</div>
+              <h4 className="mb-0 text-capitalize">{homepageState.data?.status ?? 'draft'}</h4>
+            </Card.Body>
+          </Card>
+        </Col>
       </Row>
 
       <Tabs activeKey={activeTab} onSelect={(key) => setActiveTab(key ?? 'sections')} className="mb-3">
@@ -258,7 +348,9 @@ export default function HomepageBuilderContent() {
               <Card>
                 <Card.Header className="d-flex justify-content-between align-items-center">
                   <h6 className="mb-0">Homepage Order</h6>
-                  <Button size="sm" variant="outline-primary" onClick={createPresetSections}>Add Defaults</Button>
+                  <Button size="sm" variant="outline-primary" onClick={createPresetSections}>
+                    Add Defaults
+                  </Button>
                 </Card.Header>
                 <Card.Body className="p-0">
                   {sections.map((section) => (
@@ -266,8 +358,7 @@ export default function HomepageBuilderContent() {
                       key={section.id}
                       type="button"
                       className={`w-100 border-0 border-bottom bg-transparent text-start p-3 ${selectedSection?.id === section.id ? 'bg-light' : ''}`}
-                      onClick={() => setSelectedSectionId(section.id)}
-                    >
+                      onClick={() => setSelectedSectionId(section.id)}>
                       <div className="d-flex justify-content-between gap-2">
                         <div>
                           <div className="fw-semibold">{section.title ?? section.type}</div>
@@ -287,9 +378,16 @@ export default function HomepageBuilderContent() {
                   <Card.Header className="d-flex justify-content-between align-items-center">
                     <h6 className="mb-0">Edit Section</h6>
                     <div className="d-flex gap-1">
-                      <Button size="sm" variant="outline-secondary" onClick={() => moveSection(selectedSection, -1)}><Icon icon="solar:arrow-up-bold" /></Button>
-                      <Button size="sm" variant="outline-secondary" onClick={() => moveSection(selectedSection, 1)}><Icon icon="solar:arrow-down-bold" /></Button>
-                      <Button size="sm" variant={selectedSection.isVisible ? 'outline-warning' : 'outline-success'} onClick={() => saveSection(selectedSection, { isVisible: !selectedSection.isVisible })}>
+                      <Button size="sm" variant="outline-secondary" onClick={() => moveSection(selectedSection, -1)}>
+                        <Icon icon="solar:arrow-up-bold" />
+                      </Button>
+                      <Button size="sm" variant="outline-secondary" onClick={() => moveSection(selectedSection, 1)}>
+                        <Icon icon="solar:arrow-down-bold" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={selectedSection.isVisible ? 'outline-warning' : 'outline-success'}
+                        onClick={() => saveSection(selectedSection, { isVisible: !selectedSection.isVisible })}>
                         {selectedSection.isVisible ? 'Hide' : 'Show'}
                       </Button>
                     </div>
@@ -299,31 +397,49 @@ export default function HomepageBuilderContent() {
                       <Col md={4}>
                         <Form.Group>
                           <Form.Label>Eyebrow</Form.Label>
-                          <Form.Control value={selectedSection.eyebrow ?? ''} onChange={(e) => saveSection(selectedSection, { eyebrow: e.target.value })} />
+                          <Form.Control
+                            value={selectedSection.eyebrow ?? ''}
+                            onChange={(e) => saveSection(selectedSection, { eyebrow: e.target.value })}
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={8}>
                         <Form.Group>
                           <Form.Label>Title</Form.Label>
-                          <Form.Control value={selectedSection.title ?? ''} onChange={(e) => saveSection(selectedSection, { title: e.target.value })} />
+                          <Form.Control
+                            value={selectedSection.title ?? ''}
+                            onChange={(e) => saveSection(selectedSection, { title: e.target.value })}
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={12}>
                         <Form.Group>
                           <Form.Label>Subtitle</Form.Label>
-                          <Form.Control as="textarea" rows={2} value={selectedSection.subtitle ?? ''} onChange={(e) => saveSection(selectedSection, { subtitle: e.target.value })} />
+                          <Form.Control
+                            as="textarea"
+                            rows={2}
+                            value={selectedSection.subtitle ?? ''}
+                            onChange={(e) => saveSection(selectedSection, { subtitle: e.target.value })}
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={12}>
                         <Form.Group>
                           <Form.Label>Body / Editorial Notes</Form.Label>
-                          <Form.Control as="textarea" rows={4} value={selectedSection.body ?? ''} onChange={(e) => saveSection(selectedSection, { body: e.target.value })} />
+                          <Form.Control
+                            as="textarea"
+                            rows={4}
+                            value={selectedSection.body ?? ''}
+                            onChange={(e) => saveSection(selectedSection, { body: e.target.value })}
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={3}>
                         <Form.Group>
                           <Form.Label>Source</Form.Label>
-                          <Form.Select value={selectedSection.source} onChange={(e) => saveSection(selectedSection, { source: e.target.value as HomepageSectionDto['source'] })}>
+                          <Form.Select
+                            value={selectedSection.source}
+                            onChange={(e) => saveSection(selectedSection, { source: e.target.value as HomepageSectionDto['source'] })}>
                             <option value="static">Static</option>
                             <option value="automatic">Automatic</option>
                             <option value="manual">Manual</option>
@@ -333,26 +449,42 @@ export default function HomepageBuilderContent() {
                       <Col md={3}>
                         <Form.Group>
                           <Form.Label>Item Limit</Form.Label>
-                          <Form.Control type="number" min={0} max={24} value={selectedSection.itemLimit} onChange={(e) => saveSection(selectedSection, { itemLimit: Number(e.target.value) })} />
+                          <Form.Control
+                            type="number"
+                            min={0}
+                            max={24}
+                            value={selectedSection.itemLimit}
+                            onChange={(e) => saveSection(selectedSection, { itemLimit: Number(e.target.value) })}
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={3}>
                         <Form.Group>
                           <Form.Label>CTA Label</Form.Label>
-                          <Form.Control value={selectedSection.ctaLabel ?? ''} onChange={(e) => saveSection(selectedSection, { ctaType: e.target.value ? 'internal' : 'none', ctaLabel: e.target.value })} />
+                          <Form.Control
+                            value={selectedSection.ctaLabel ?? ''}
+                            onChange={(e) =>
+                              saveSection(selectedSection, { ctaType: e.target.value ? 'internal' : 'none', ctaLabel: e.target.value })
+                            }
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={3}>
                         <Form.Group>
                           <Form.Label>CTA Href</Form.Label>
-                          <Form.Control value={selectedSection.ctaHref ?? ''} onChange={(e) => saveSection(selectedSection, { ctaHref: e.target.value })} />
+                          <Form.Control
+                            value={selectedSection.ctaHref ?? ''}
+                            onChange={(e) => saveSection(selectedSection, { ctaHref: e.target.value })}
+                          />
                         </Form.Group>
                       </Col>
                     </Row>
                   </Card.Body>
                 </Card>
               ) : (
-                <Card><Card.Body className="text-center text-muted py-5">Add default sections to start editing the homepage.</Card.Body></Card>
+                <Card>
+                  <Card.Body className="text-center text-muted py-5">Add default sections to start editing the homepage.</Card.Body>
+                </Card>
               )}
             </Col>
           </Row>
@@ -394,12 +526,34 @@ export default function HomepageBuilderContent() {
           <Row className="g-3">
             <Col lg={5}>
               <Card>
-                <Card.Header><h6 className="mb-0">Add Partner</h6></Card.Header>
+                <Card.Header>
+                  <h6 className="mb-0">Add Partner</h6>
+                </Card.Header>
                 <Card.Body>
                   <Row className="g-3">
-                    <Col md={12}><Form.Control placeholder="Partner name" value={partnerDraft.name} onChange={(e) => setPartnerDraft((p) => ({ ...p, name: e.target.value }))} /></Col>
-                    <Col md={12}><Form.Control placeholder="Website URL" value={partnerDraft.url ?? ''} onChange={(e) => setPartnerDraft((p) => ({ ...p, url: e.target.value }))} /></Col>
-                    <Col md={12}><Form.Control as="textarea" rows={3} placeholder="Description" value={partnerDraft.description ?? ''} onChange={(e) => setPartnerDraft((p) => ({ ...p, description: e.target.value }))} /></Col>
+                    <Col md={12}>
+                      <Form.Control
+                        placeholder="Partner name"
+                        value={partnerDraft.name}
+                        onChange={(e) => setPartnerDraft((p) => ({ ...p, name: e.target.value }))}
+                      />
+                    </Col>
+                    <Col md={12}>
+                      <Form.Control
+                        placeholder="Website URL"
+                        value={partnerDraft.url ?? ''}
+                        onChange={(e) => setPartnerDraft((p) => ({ ...p, url: e.target.value }))}
+                      />
+                    </Col>
+                    <Col md={12}>
+                      <Form.Control
+                        as="textarea"
+                        rows={3}
+                        placeholder="Description"
+                        value={partnerDraft.description ?? ''}
+                        onChange={(e) => setPartnerDraft((p) => ({ ...p, description: e.target.value }))}
+                      />
+                    </Col>
                     <Col md={12}>
                       <MediaPickerInput
                         label="Logo"
@@ -408,14 +562,20 @@ export default function HomepageBuilderContent() {
                         emptyLabel="Select logo"
                       />
                     </Col>
-                    <Col md={12}><Button onClick={savePartner} disabled={!partnerDraft.name.trim()}>Save Partner</Button></Col>
+                    <Col md={12}>
+                      <Button onClick={savePartner} disabled={!partnerDraft.name.trim()}>
+                        Save Partner
+                      </Button>
+                    </Col>
                   </Row>
                 </Card.Body>
               </Card>
             </Col>
             <Col lg={7}>
               <Card>
-                <Card.Header><h6 className="mb-0">Partner Directory</h6></Card.Header>
+                <Card.Header>
+                  <h6 className="mb-0">Partner Directory</h6>
+                </Card.Header>
                 <Card.Body className="p-0">
                   {partners.map((partner) => (
                     <div key={partner.id} className="d-flex justify-content-between align-items-center border-bottom p-3">
@@ -439,19 +599,44 @@ export default function HomepageBuilderContent() {
             <Card.Header className="d-flex justify-content-between align-items-center">
               <h6 className="mb-0">Footer Settings</h6>
               <div className="d-flex gap-2">
-                <Button variant="outline-secondary" onClick={loadFooter}>Load Current</Button>
+                <Button variant="outline-secondary" onClick={loadFooter}>
+                  Load Current
+                </Button>
                 <Button onClick={saveFooter}>Save Footer</Button>
               </div>
             </Card.Header>
             <Card.Body>
               <Row className="g-3">
-                <Col md={6}><Form.Control placeholder="Brand name" value={footerDraft.brandName ?? ''} onChange={(e) => setFooterDraft((f) => ({ ...f, brandName: e.target.value }))} /></Col>
-                <Col md={6}><Form.Control placeholder="Email" value={footerDraft.email ?? ''} onChange={(e) => setFooterDraft((f) => ({ ...f, email: e.target.value }))} /></Col>
-                <Col md={12}><Form.Control as="textarea" rows={3} placeholder="Brand text" value={footerDraft.brandText ?? ''} onChange={(e) => setFooterDraft((f) => ({ ...f, brandText: e.target.value }))} /></Col>
+                <Col md={6}>
+                  <Form.Control
+                    placeholder="Brand name"
+                    value={footerDraft.brandName ?? ''}
+                    onChange={(e) => setFooterDraft((f) => ({ ...f, brandName: e.target.value }))}
+                  />
+                </Col>
+                <Col md={6}>
+                  <Form.Control
+                    placeholder="Email"
+                    value={footerDraft.email ?? ''}
+                    onChange={(e) => setFooterDraft((f) => ({ ...f, email: e.target.value }))}
+                  />
+                </Col>
+                <Col md={12}>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    placeholder="Brand text"
+                    value={footerDraft.brandText ?? ''}
+                    onChange={(e) => setFooterDraft((f) => ({ ...f, brandText: e.target.value }))}
+                  />
+                </Col>
                 <Col md={12}>
                   <InputGroup>
                     <InputGroup.Text>Copyright</InputGroup.Text>
-                    <Form.Control value={footerDraft.copyrightText ?? ''} onChange={(e) => setFooterDraft((f) => ({ ...f, copyrightText: e.target.value }))} />
+                    <Form.Control
+                      value={footerDraft.copyrightText ?? ''}
+                      onChange={(e) => setFooterDraft((f) => ({ ...f, copyrightText: e.target.value }))}
+                    />
                   </InputGroup>
                 </Col>
               </Row>

@@ -84,12 +84,12 @@ export default function HeroSliderListContent() {
       <PageHeader
         title="Hero Slider Management"
         breadcrumbs={[{ label: 'Content' }, { label: 'Hero Slider' }]}
-        action={(
+        action={
           <Link href="/cms/hero-slider/create" className="btn btn-primary">
             <Icon icon="solar:add-circle-bold" className="me-1" />
             New Slide
           </Link>
-        )}
+        }
       />
 
       <ApiErrorAlert error={error as ApiError | null} />
@@ -99,16 +99,28 @@ export default function HeroSliderListContent() {
           <Row className="g-2 mb-3">
             <Col md={5}>
               <InputGroup>
-                <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
+                <InputGroup.Text>
+                  <Icon icon="solar:magnifer-bold" />
+                </InputGroup.Text>
                 <Form.Control
                   placeholder="Search slides..."
                   value={search}
-                  onChange={(e) => { setSearch(e.target.value); setPage(1); setLocalData(null) }}
+                  onChange={(e) => {
+                    setSearch(e.target.value)
+                    setPage(1)
+                    setLocalData(null)
+                  }}
                 />
               </InputGroup>
             </Col>
             <Col md={3}>
-              <Form.Select value={status} onChange={(e) => { setStatus(e.target.value as HeroSlideStatus | ''); setPage(1); setLocalData(null) }}>
+              <Form.Select
+                value={status}
+                onChange={(e) => {
+                  setStatus(e.target.value as HeroSlideStatus | '')
+                  setPage(1)
+                  setLocalData(null)
+                }}>
                 <option value="">All statuses</option>
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
@@ -116,7 +128,13 @@ export default function HeroSliderListContent() {
               </Form.Select>
             </Col>
             <Col md={2}>
-              <Form.Select value={locale} onChange={(e) => { setLocale(e.target.value as 'en' | 'bn' | ''); setPage(1); setLocalData(null) }}>
+              <Form.Select
+                value={locale}
+                onChange={(e) => {
+                  setLocale(e.target.value as 'en' | 'bn' | '')
+                  setPage(1)
+                  setLocalData(null)
+                }}>
                 <option value="">All locales</option>
                 <option value="en">English</option>
                 <option value="bn">Bangla</option>
@@ -138,8 +156,12 @@ export default function HeroSliderListContent() {
                 {meta.total} slide{meta.total !== 1 ? 's' : ''} · Page {meta.page} of {meta.totalPages}
               </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>&lsaquo;</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>&rsaquo;</Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                  &lsaquo;
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  &rsaquo;
+                </Button>
               </div>
             </div>
           )}

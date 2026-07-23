@@ -30,9 +30,7 @@ export default function NewsTable({ data, loading, onDeleted }: NewsTableProps) 
         cell: ({ row }) => (
           <div>
             <div className="fw-semibold">{row.original.title}</div>
-            {row.original.isFeatured && (
-              <span className="badge bg-warning-subtle text-warning small">Featured</span>
-            )}
+            {row.original.isFeatured && <span className="badge bg-warning-subtle text-warning small">Featured</span>}
           </div>
         ),
       },
@@ -80,9 +78,11 @@ export default function NewsTable({ data, loading, onDeleted }: NewsTableProps) 
                 size="sm"
                 onClick={async () => {
                   const ok = await confirmDelete(row.original.title)
-                  if (ok) { await newsApi.remove(row.original.id); onDeleted() }
-                }}
-              >
+                  if (ok) {
+                    await newsApi.remove(row.original.id)
+                    onDeleted()
+                  }
+                }}>
                 <Icon icon="solar:trash-bin-trash-bold" />
               </Button>
             )}

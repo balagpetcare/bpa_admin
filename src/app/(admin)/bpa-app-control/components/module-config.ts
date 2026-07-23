@@ -25,7 +25,7 @@ export const BPA_APP_CONTROL_SECTIONS = [
   {
     title: 'Engagement',
     items: [
-      { label: 'Push Notifications', href: '/bpa-app-control/push-notifications', icon: 'solar:bell-bing-bold-duotone' },
+      { label: 'Push Notifications', href: '/bpa-app-control/push-notifications/dashboard', icon: 'solar:bell-bing-bold-duotone' },
       { label: 'Popup / Notice', href: '/bpa-app-control/popup-notice', icon: 'solar:window-frame-bold-duotone' },
     ],
   },
@@ -38,4 +38,3 @@ export const BPA_APP_CONTROL_SECTIONS = [
     ],
   },
 ] as const
-

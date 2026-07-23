@@ -6,10 +6,10 @@ import type { AnalyticsSummary } from '@/types/bpa.types'
 
 export default function AnalyticsKpiCards({ summary }: { summary: AnalyticsSummary }) {
   const cards = [
-    { icon: 'solar:users-group-two-rounded-bold-duotone', label: 'Total Users',      value: summary.totalUsers ?? 0,     variant: 'primary' },
-    { icon: 'solar:calendar-bold-duotone',                label: 'Total Events',     value: summary.totalEvents,          variant: 'success' },
-    { icon: 'solar:document-text-bold-duotone',           label: 'Published News',   value: summary.totalNews,            variant: 'info' },
-    { icon: 'solar:wallet-bold-duotone',                  label: 'Total Payments',   value: summary.totalPayments,        variant: 'warning' },
+    { icon: 'solar:users-group-two-rounded-bold-duotone', label: 'Total Users', value: summary.totalUsers ?? 0, variant: 'primary' },
+    { icon: 'solar:calendar-bold-duotone', label: 'Total Events', value: summary.totalEvents, variant: 'success' },
+    { icon: 'solar:document-text-bold-duotone', label: 'Published News', value: summary.totalNews, variant: 'info' },
+    { icon: 'solar:wallet-bold-duotone', label: 'Total Payments', value: summary.totalPayments, variant: 'warning' },
   ]
 
   return (

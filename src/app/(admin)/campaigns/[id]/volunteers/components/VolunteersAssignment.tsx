@@ -32,7 +32,9 @@ export default function VolunteersAssignment({ campaignId }: { campaignId: strin
   async function handleAssign() {
     if (!userId) return
     await mutate(() => campaignsApi.assignVolunteer(campaignId, { userId }), undefined)
-    setShowModal(false); setUserId(''); refetch()
+    setShowModal(false)
+    setUserId('')
+    refetch()
   }
 
   async function handleRemove(uId: string) {
@@ -49,7 +51,8 @@ export default function VolunteersAssignment({ campaignId }: { campaignId: strin
         action={
           can('campaigns:assign') ? (
             <Button variant="primary" onClick={() => setShowModal(true)}>
-              <Icon icon="solar:add-circle-bold" className="me-1" />Assign Volunteer
+              <Icon icon="solar:add-circle-bold" className="me-1" />
+              Assign Volunteer
             </Button>
           ) : undefined
         }
@@ -60,24 +63,34 @@ export default function VolunteersAssignment({ campaignId }: { campaignId: strin
           <LoadingOverlay loading={loading}>
             <Table hover className="table-centered align-middle mb-0">
               <thead className="table-light">
-                <tr><th>Volunteer</th><th>Email</th><th className="text-end">Actions</th></tr>
+                <tr>
+                  <th>Volunteer</th>
+                  <th>Email</th>
+                  <th className="text-end">Actions</th>
+                </tr>
               </thead>
               <tbody>
                 {(assigned ?? []).length === 0 ? (
-                  <tr><td colSpan={3} className="text-center py-4 text-muted">No volunteers assigned yet</td></tr>
-                ) : (assigned ?? []).map((a: CampaignVolunteer) => (
-                  <tr key={a.id}>
-                    <td className="fw-semibold">{a.user.name}</td>
-                    <td>{a.user.email}</td>
-                    <td className="text-end">
-                      {can('campaigns:assign') && (
-                        <Button variant="soft-danger" size="sm" onClick={() => handleRemove(a.userId)}>
-                          <Icon icon="solar:trash-bin-trash-bold" />
-                        </Button>
-                      )}
+                  <tr>
+                    <td colSpan={3} className="text-center py-4 text-muted">
+                      No volunteers assigned yet
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  (assigned ?? []).map((a: CampaignVolunteer) => (
+                    <tr key={a.id}>
+                      <td className="fw-semibold">{a.user.name}</td>
+                      <td>{a.user.email}</td>
+                      <td className="text-end">
+                        {can('campaigns:assign') && (
+                          <Button variant="soft-danger" size="sm" onClick={() => handleRemove(a.userId)}>
+                            <Icon icon="solar:trash-bin-trash-bold" />
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </Table>
           </LoadingOverlay>
@@ -85,21 +98,29 @@ export default function VolunteersAssignment({ campaignId }: { campaignId: strin
       </Card>
 
       <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton><Modal.Title>Assign Volunteer</Modal.Title></Modal.Header>
+        <Modal.Header closeButton>
+          <Modal.Title>Assign Volunteer</Modal.Title>
+        </Modal.Header>
         <Modal.Body>
           <Form.Group>
             <Form.Label>Select User</Form.Label>
             <Form.Select value={userId} onChange={(e) => setUserId(e.target.value)}>
               <option value="">Choose user…</option>
               {availableUsers.map((u: AdminUser) => (
-                <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
+                <option key={u.id} value={u.id}>
+                  {u.name} ({u.email})
+                </option>
               ))}
             </Form.Select>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleAssign} disabled={saving || !userId}>{saving ? 'Saving…' : 'Assign'}</Button>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleAssign} disabled={saving || !userId}>
+            {saving ? 'Saving…' : 'Assign'}
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

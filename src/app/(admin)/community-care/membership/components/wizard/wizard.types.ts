@@ -2,7 +2,10 @@ import * as yup from 'yup'
 import { MembershipCampaign } from '@/lib/api/membership-campaign.api'
 
 export const wizardSchema = yup.object({
-  slug: yup.string().default('').matches(/^[a-z0-9-]*$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
+  slug: yup
+    .string()
+    .default('')
+    .matches(/^[a-z0-9-]*$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
   titleEn: yup.string().default(''),
   titleBn: yup.string().default(''),
   shortDescriptionEn: yup.string().max(300, 'Maximum 300 characters allowed').nullable().default(''),
@@ -18,19 +21,30 @@ export const wizardSchema = yup.object({
   thumbnailUrl: yup.string().nullable().default(''),
   thumbnailMimeType: yup.string().nullable().default(''),
   thumbnailSizeBytes: yup.number().nullable().default(null),
-  status: yup.string().oneOf(['draft', 'scheduled', 'application_open', 'application_closed', 'published', 'archived', 'cancelled']).required('Status is required'),
+  status: yup
+    .string()
+    .oneOf(['draft', 'scheduled', 'application_open', 'application_closed', 'published', 'archived', 'cancelled'])
+    .required('Status is required'),
   offerStartAt: yup.string().nullable().default(''),
-  offerEndAt: yup.string().nullable().default('').test('is-after-offer-start', 'Offer end must be after offer start', function (value) {
-    const { offerStartAt } = this.parent
-    if (!value || !offerStartAt) return true
-    return new Date(value) > new Date(offerStartAt)
-  }),
+  offerEndAt: yup
+    .string()
+    .nullable()
+    .default('')
+    .test('is-after-offer-start', 'Offer end must be after offer start', function (value) {
+      const { offerStartAt } = this.parent
+      if (!value || !offerStartAt) return true
+      return new Date(value) > new Date(offerStartAt)
+    }),
   applicationStartAt: yup.string().nullable().default(''),
-  applicationEndAt: yup.string().nullable().default('').test('is-after-application-start', 'Application end must be after application start', function (value) {
-    const { applicationStartAt } = this.parent
-    if (!value || !applicationStartAt) return true
-    return new Date(value) > new Date(applicationStartAt)
-  }),
+  applicationEndAt: yup
+    .string()
+    .nullable()
+    .default('')
+    .test('is-after-application-start', 'Application end must be after application start', function (value) {
+      const { applicationStartAt } = this.parent
+      if (!value || !applicationStartAt) return true
+      return new Date(value) > new Date(applicationStartAt)
+    }),
   publishedAt: yup.string().nullable().default(''),
   eligibilityContentEn: yup.string().nullable().default(''),
   eligibilityContentBn: yup.string().nullable().default(''),
@@ -52,7 +66,10 @@ export type CampaignWizardFormValues = yup.InferType<typeof wizardSchema>
 
 // Validation schema for publishing (requires all identity fields)
 export const publishValidationSchema = yup.object({
-  slug: yup.string().required('Slug is required').matches(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
+  slug: yup
+    .string()
+    .required('Slug is required')
+    .matches(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
   titleEn: yup.string().required('English title is required'),
   titleBn: yup.string().required('Bangla title is required'),
   heroImageUrl: yup.string().required('Hero image is required'),
@@ -65,13 +82,30 @@ export const WIZARD_STEPS = [
   { id: 'content', title: 'Description & Content', fields: ['shortDescriptionEn', 'shortDescriptionBn', 'descriptionEn', 'descriptionBn'] as const },
   { id: 'schedule', title: 'Offer & Schedule', fields: ['offerStartAt', 'offerEndAt', 'applicationStartAt', 'applicationEndAt'] as const },
   { id: 'media', title: 'Media', fields: ['heroImageUrl', 'mobileImageUrl', 'thumbnailUrl'] as const },
-  { id: 'policy', title: 'Policy & Eligibility', fields: ['eligibilityContentEn', 'eligibilityContentBn', 'howItWorksContentEn', 'howItWorksContentBn', 'termsContentEn', 'termsContentBn', 'refundPolicyEn', 'refundPolicyBn'] as const },
-  { id: 'support', title: 'Organizer & Support', fields: ['organizerNameEn', 'organizerNameBn', 'supportPhone', 'supportEmail', 'supportWhatsapp', 'supportAddress'] as const },
+  {
+    id: 'policy',
+    title: 'Policy & Eligibility',
+    fields: [
+      'eligibilityContentEn',
+      'eligibilityContentBn',
+      'howItWorksContentEn',
+      'howItWorksContentBn',
+      'termsContentEn',
+      'termsContentBn',
+      'refundPolicyEn',
+      'refundPolicyBn',
+    ] as const,
+  },
+  {
+    id: 'support',
+    title: 'Organizer & Support',
+    fields: ['organizerNameEn', 'organizerNameBn', 'supportPhone', 'supportEmail', 'supportWhatsapp', 'supportAddress'] as const,
+  },
   { id: 'plans', title: 'Plans & Pricing', fields: [] as const },
   { id: 'review', title: 'Review & Publish', fields: [] as const },
 ] as const
 
-export type WizardStepId = typeof WIZARD_STEPS[number]['id']
+export type WizardStepId = (typeof WIZARD_STEPS)[number]['id']
 
 export function asInputDateTime(value?: string | null) {
   if (!value) return ''
@@ -90,15 +124,15 @@ export function campaignToWizardValues(campaign?: MembershipCampaign | null): Ca
     shortDescriptionBn: campaign?.shortDescriptionBn ?? '',
     descriptionEn: campaign?.descriptionEn ?? '',
     descriptionBn: campaign?.descriptionBn ?? '',
-  heroImageUrl: campaign?.heroImageUrl ?? '',
-  heroImageMimeType: '',
-  heroImageSizeBytes: null,
-  mobileImageUrl: campaign?.mobileImageUrl ?? '',
-  mobileImageMimeType: '',
-  mobileImageSizeBytes: null,
-  thumbnailUrl: campaign?.thumbnailUrl ?? '',
-  thumbnailMimeType: '',
-  thumbnailSizeBytes: null,
+    heroImageUrl: campaign?.heroImageUrl ?? '',
+    heroImageMimeType: '',
+    heroImageSizeBytes: null,
+    mobileImageUrl: campaign?.mobileImageUrl ?? '',
+    mobileImageMimeType: '',
+    mobileImageSizeBytes: null,
+    thumbnailUrl: campaign?.thumbnailUrl ?? '',
+    thumbnailMimeType: '',
+    thumbnailSizeBytes: null,
     status: campaign?.status ?? 'draft',
     offerStartAt: asInputDateTime(campaign?.offerStartAt),
     offerEndAt: asInputDateTime(campaign?.offerEndAt),

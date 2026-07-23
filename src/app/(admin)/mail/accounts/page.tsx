@@ -153,45 +153,45 @@ export default function MailAccountsPage() {
   }
 
   const handleTestSmtp = async (id: string) => {
-    setTestingSmtp(prev => ({ ...prev, [id]: 'loading' }))
+    setTestingSmtp((prev) => ({ ...prev, [id]: 'loading' }))
     setError('')
     setSuccess('')
     try {
       const res = await mailApi.testSmtp(id)
       if (res.success) {
-        setTestingSmtp(prev => ({ ...prev, [id]: 'success' }))
-        setTestResults(prev => ({ ...prev, [`smtp-${id}`]: 'SMTP Connected Successfully!' }))
+        setTestingSmtp((prev) => ({ ...prev, [id]: 'success' }))
+        setTestResults((prev) => ({ ...prev, [`smtp-${id}`]: 'SMTP Connected Successfully!' }))
         setSuccess('SMTP server handshake succeeded! Connection is working.')
       } else {
-        setTestingSmtp(prev => ({ ...prev, [id]: 'failed' }))
-        setTestResults(prev => ({ ...prev, [`smtp-${id}`]: res.message || 'SMTP Connection Failed.' }))
+        setTestingSmtp((prev) => ({ ...prev, [id]: 'failed' }))
+        setTestResults((prev) => ({ ...prev, [`smtp-${id}`]: res.message || 'SMTP Connection Failed.' }))
         setError(`SMTP connection check failed: ${res.message || 'Verification rejected.'}`)
       }
     } catch (err: any) {
-      setTestingSmtp(prev => ({ ...prev, [id]: 'failed' }))
-      setTestResults(prev => ({ ...prev, [`smtp-${id}`]: err?.message || 'SMTP connection check encountered an error.' }))
+      setTestingSmtp((prev) => ({ ...prev, [id]: 'failed' }))
+      setTestResults((prev) => ({ ...prev, [`smtp-${id}`]: err?.message || 'SMTP connection check encountered an error.' }))
       setError(`SMTP error: ${err?.message || 'Network timeout.'}`)
     }
   }
 
   const handleTestImap = async (id: string) => {
-    setTestingImap(prev => ({ ...prev, [id]: 'loading' }))
+    setTestingImap((prev) => ({ ...prev, [id]: 'loading' }))
     setError('')
     setSuccess('')
     try {
       const res = await mailApi.testImap(id)
       if (res.success) {
-        setTestingImap(prev => ({ ...prev, [id]: 'success' }))
-        setTestResults(prev => ({ ...prev, [`imap-${id}`]: 'IMAP Connected Successfully!' }))
+        setTestingImap((prev) => ({ ...prev, [id]: 'success' }))
+        setTestResults((prev) => ({ ...prev, [`imap-${id}`]: 'IMAP Connected Successfully!' }))
         setSuccess('IMAP server handshake succeeded! Connection is working.')
       } else {
-        setTestingImap(prev => ({ ...prev, [id]: 'failed' }))
-        setTestResults(prev => ({ ...prev, [`imap-${id}`]: res.message || 'IMAP Connection Failed.' }))
+        setTestingImap((prev) => ({ ...prev, [id]: 'failed' }))
+        setTestResults((prev) => ({ ...prev, [`imap-${id}`]: res.message || 'IMAP Connection Failed.' }))
         setError(`IMAP connection check failed: ${res.message || 'Verification rejected.'}`)
       }
     } catch (err: any) {
-      setTestingImap(prev => ({ ...prev, [id]: 'failed' }))
-      setTestResults(prev => ({ ...prev, [`imap-${id}`]: err?.message || 'IMAP connection check encountered an error.' }))
+      setTestingImap((prev) => ({ ...prev, [id]: 'failed' }))
+      setTestResults((prev) => ({ ...prev, [`imap-${id}`]: err?.message || 'IMAP connection check encountered an error.' }))
       setError(`IMAP error: ${err?.message || 'Network timeout.'}`)
     }
   }
@@ -200,8 +200,16 @@ export default function MailAccountsPage() {
     <>
       <PageHeader title="Mail Accounts" breadcrumbs={[{ label: 'Mail' }, { label: 'Accounts' }]} />
 
-      {error && <Alert variant="danger" dismissible onClose={() => setError('')}>{error}</Alert>}
-      {success && <Alert variant="success" dismissible onClose={() => setSuccess('')}>{success}</Alert>}
+      {error && (
+        <Alert variant="danger" dismissible onClose={() => setError('')}>
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert variant="success" dismissible onClose={() => setSuccess('')}>
+          {success}
+        </Alert>
+      )}
 
       <Card className="border-0 shadow-sm mb-4">
         <Card.Header className="bg-transparent border-0 d-flex justify-content-between align-items-center pt-3 pb-0">
@@ -236,19 +244,29 @@ export default function MailAccountsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {accounts.map(acc => (
+                  {accounts.map((acc) => (
                     <tr key={acc.id}>
                       <td>
                         <div>
                           <span className="fw-semibold text-dark">{acc.displayName}</span>{' '}
-                          {acc.isDefault && <Badge bg="success" className="ms-1">Default</Badge>}
+                          {acc.isDefault && (
+                            <Badge bg="success" className="ms-1">
+                              Default
+                            </Badge>
+                          )}
                         </div>
                         <div className="small text-muted">{acc.emailAddress}</div>
-                        <div className="small text-muted" style={{ fontSize: '11px' }}>Sender name: &ldquo;{acc.fromName}&rdquo;</div>
+                        <div className="small text-muted" style={{ fontSize: '11px' }}>
+                          Sender name: &ldquo;{acc.fromName}&rdquo;
+                        </div>
                       </td>
                       <td>
                         {!acc.smtpHost ? (
-                          <Badge bg="light" className="text-primary border border-primary-subtle d-inline-flex align-items-center gap-1" style={{ fontSize: '10px' }} title="Using default server from environment">
+                          <Badge
+                            bg="light"
+                            className="text-primary border border-primary-subtle d-inline-flex align-items-center gap-1"
+                            style={{ fontSize: '10px' }}
+                            title="Using default server from environment">
                             <Icon icon="solar:server-bold-duotone" /> Default SMTP
                           </Badge>
                         ) : (
@@ -264,7 +282,11 @@ export default function MailAccountsPage() {
                       </td>
                       <td>
                         {!acc.imapHost ? (
-                          <Badge bg="light" className="text-primary border border-primary-subtle d-inline-flex align-items-center gap-1" style={{ fontSize: '10px' }} title="Using default server from environment">
+                          <Badge
+                            bg="light"
+                            className="text-primary border border-primary-subtle d-inline-flex align-items-center gap-1"
+                            style={{ fontSize: '10px' }}
+                            title="Using default server from environment">
                             <Icon icon="solar:server-bold-duotone" /> Default IMAP
                           </Badge>
                         ) : (
@@ -279,9 +301,7 @@ export default function MailAccountsPage() {
                         )}
                       </td>
                       <td>
-                        <Badge bg={acc.status === 'active' ? 'success' : 'secondary'}>
-                          {acc.status}
-                        </Badge>
+                        <Badge bg={acc.status === 'active' ? 'success' : 'secondary'}>{acc.status}</Badge>
                       </td>
                       <td>
                         <div className="d-flex flex-column gap-2 py-1" style={{ maxWidth: '280px' }}>
@@ -291,17 +311,22 @@ export default function MailAccountsPage() {
                               size="sm"
                               onClick={() => handleTestSmtp(acc.id)}
                               disabled={testingSmtp[acc.id] === 'loading'}
-                              style={{ padding: '2px 8px', fontSize: '11px' }}
-                            >
+                              style={{ padding: '2px 8px', fontSize: '11px' }}>
                               {testingSmtp[acc.id] === 'loading' ? 'Testing SMTP...' : 'Test SMTP'}
                             </Button>
                             {testingSmtp[acc.id] === 'success' && (
-                              <Badge bg="success-subtle" className="text-success border border-success d-flex align-items-center gap-1" style={{ fontSize: '10px' }}>
+                              <Badge
+                                bg="success-subtle"
+                                className="text-success border border-success d-flex align-items-center gap-1"
+                                style={{ fontSize: '10px' }}>
                                 <Icon icon="solar:check-circle-bold" /> OK
                               </Badge>
                             )}
                             {testingSmtp[acc.id] === 'failed' && (
-                              <Badge bg="danger-subtle" className="text-danger border border-danger d-flex align-items-center gap-1" style={{ fontSize: '10px' }}>
+                              <Badge
+                                bg="danger-subtle"
+                                className="text-danger border border-danger d-flex align-items-center gap-1"
+                                style={{ fontSize: '10px' }}>
                                 <Icon icon="solar:danger-bold" /> Failed
                               </Badge>
                             )}
@@ -318,17 +343,22 @@ export default function MailAccountsPage() {
                               size="sm"
                               onClick={() => handleTestImap(acc.id)}
                               disabled={testingImap[acc.id] === 'loading'}
-                              style={{ padding: '2px 8px', fontSize: '11px' }}
-                            >
+                              style={{ padding: '2px 8px', fontSize: '11px' }}>
                               {testingImap[acc.id] === 'loading' ? 'Testing IMAP...' : 'Test IMAP'}
                             </Button>
                             {testingImap[acc.id] === 'success' && (
-                              <Badge bg="success-subtle" className="text-success border border-success d-flex align-items-center gap-1" style={{ fontSize: '10px' }}>
+                              <Badge
+                                bg="success-subtle"
+                                className="text-success border border-success d-flex align-items-center gap-1"
+                                style={{ fontSize: '10px' }}>
                                 <Icon icon="solar:check-circle-bold" /> OK
                               </Badge>
                             )}
                             {testingImap[acc.id] === 'failed' && (
-                              <Badge bg="danger-subtle" className="text-danger border border-danger d-flex align-items-center gap-1" style={{ fontSize: '10px' }}>
+                              <Badge
+                                bg="danger-subtle"
+                                className="text-danger border border-danger d-flex align-items-center gap-1"
+                                style={{ fontSize: '10px' }}>
                                 <Icon icon="solar:danger-bold" /> Failed
                               </Badge>
                             )}
@@ -361,9 +391,7 @@ export default function MailAccountsPage() {
       <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" backdrop="static">
         <Form onSubmit={handleSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title className="fw-bold">
-              {modalType === 'create' ? 'Add Mail Account' : 'Edit Mail Account'}
-            </Modal.Title>
+            <Modal.Title className="fw-bold">{modalType === 'create' ? 'Add Mail Account' : 'Edit Mail Account'}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <h6 className="fw-bold mb-3 text-primary pb-1 border-bottom">1. Mailbox Identity</h6>
@@ -376,7 +404,7 @@ export default function MailAccountsPage() {
                     required
                     placeholder="e.g. BPA Support, Office Info"
                     value={form.displayName}
-                    onChange={e => setForm(prev => ({ ...prev, displayName: e.target.value }))}
+                    onChange={(e) => setForm((prev) => ({ ...prev, displayName: e.target.value }))}
                   />
                 </Form.Group>
               </Col>
@@ -388,7 +416,7 @@ export default function MailAccountsPage() {
                     required
                     placeholder="e.g. support@bangladeshpetassociation.com"
                     value={form.emailAddress}
-                    onChange={e => setForm(prev => ({ ...prev, emailAddress: e.target.value }))}
+                    onChange={(e) => setForm((prev) => ({ ...prev, emailAddress: e.target.value }))}
                   />
                 </Form.Group>
               </Col>
@@ -400,7 +428,7 @@ export default function MailAccountsPage() {
                     required
                     placeholder="e.g. BPA Support"
                     value={form.fromName}
-                    onChange={e => setForm(prev => ({ ...prev, fromName: e.target.value }))}
+                    onChange={(e) => setForm((prev) => ({ ...prev, fromName: e.target.value }))}
                   />
                   <Form.Text className="text-muted">This is what recipients see as the sender.</Form.Text>
                 </Form.Group>
@@ -417,21 +445,19 @@ export default function MailAccountsPage() {
                     required
                     placeholder="Usually same as email address"
                     value={form.username}
-                    onChange={e => setForm(prev => ({ ...prev, username: e.target.value }))}
+                    onChange={(e) => setForm((prev) => ({ ...prev, username: e.target.value }))}
                   />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label className="fw-semibold">
-                    Password {modalType === 'create' ? '*' : '(Leave empty to keep current)'}
-                  </Form.Label>
+                  <Form.Label className="fw-semibold">Password {modalType === 'create' ? '*' : '(Leave empty to keep current)'}</Form.Label>
                   <Form.Control
                     type="password"
                     required={modalType === 'create'}
                     placeholder="Enter cPanel account password"
                     value={form.password}
-                    onChange={e => setForm(prev => ({ ...prev, password: e.target.value }))}
+                    onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
                   />
                 </Form.Group>
               </Col>
@@ -439,12 +465,11 @@ export default function MailAccountsPage() {
 
             <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom mt-3">
               <h6 className="fw-bold mb-0 text-primary">3. Connection Configurations Override</h6>
-              <Button 
-                variant="link" 
-                size="sm" 
+              <Button
+                variant="link"
+                size="sm"
                 className="text-decoration-none p-0 d-flex align-items-center gap-1"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-              >
+                onClick={() => setShowAdvanced(!showAdvanced)}>
                 <Icon icon={showAdvanced ? 'solar:alt-arrow-up-bold-duotone' : 'solar:alt-arrow-down-bold-duotone'} />
                 {showAdvanced ? 'Hide override configurations' : 'Configure custom host overrides'}
               </Button>
@@ -454,14 +479,16 @@ export default function MailAccountsPage() {
               <Row>
                 <Col md={6}>
                   <Card className="p-3 bg-light border-0 mb-3">
-                    <h6 className="fw-bold text-secondary mb-3" style={{ fontSize: '14px' }}>Outgoing SMTP Server</h6>
+                    <h6 className="fw-bold text-secondary mb-3" style={{ fontSize: '14px' }}>
+                      Outgoing SMTP Server
+                    </h6>
                     <Form.Group className="mb-2">
                       <Form.Label className="small fw-semibold">SMTP Host</Form.Label>
                       <Form.Control
                         type="text"
                         placeholder="Leave empty for env default"
                         value={form.smtpHost}
-                        onChange={e => setForm(prev => ({ ...prev, smtpHost: e.target.value }))}
+                        onChange={(e) => setForm((prev) => ({ ...prev, smtpHost: e.target.value }))}
                       />
                     </Form.Group>
                     <Row>
@@ -472,7 +499,7 @@ export default function MailAccountsPage() {
                             type="number"
                             placeholder="e.g. 465"
                             value={form.smtpPort}
-                            onChange={e => setForm(prev => ({ ...prev, smtpPort: e.target.value }))}
+                            onChange={(e) => setForm((prev) => ({ ...prev, smtpPort: e.target.value }))}
                           />
                         </Form.Group>
                       </Col>
@@ -482,7 +509,7 @@ export default function MailAccountsPage() {
                             type="checkbox"
                             label="Use SSL/TLS"
                             checked={form.smtpSecure}
-                            onChange={e => setForm(prev => ({ ...prev, smtpSecure: !!e.target.checked }))}
+                            onChange={(e) => setForm((prev) => ({ ...prev, smtpSecure: !!e.target.checked }))}
                           />
                         </Form.Group>
                       </Col>
@@ -491,14 +518,16 @@ export default function MailAccountsPage() {
                 </Col>
                 <Col md={6}>
                   <Card className="p-3 bg-light border-0 mb-3">
-                    <h6 className="fw-bold text-secondary mb-3" style={{ fontSize: '14px' }}>Incoming IMAP Server</h6>
+                    <h6 className="fw-bold text-secondary mb-3" style={{ fontSize: '14px' }}>
+                      Incoming IMAP Server
+                    </h6>
                     <Form.Group className="mb-2">
                       <Form.Label className="small fw-semibold">IMAP Host</Form.Label>
                       <Form.Control
                         type="text"
                         placeholder="Leave empty for env default"
                         value={form.imapHost}
-                        onChange={e => setForm(prev => ({ ...prev, imapHost: e.target.value }))}
+                        onChange={(e) => setForm((prev) => ({ ...prev, imapHost: e.target.value }))}
                       />
                     </Form.Group>
                     <Row>
@@ -509,7 +538,7 @@ export default function MailAccountsPage() {
                             type="number"
                             placeholder="e.g. 993"
                             value={form.imapPort}
-                            onChange={e => setForm(prev => ({ ...prev, imapPort: e.target.value }))}
+                            onChange={(e) => setForm((prev) => ({ ...prev, imapPort: e.target.value }))}
                           />
                         </Form.Group>
                       </Col>
@@ -519,7 +548,7 @@ export default function MailAccountsPage() {
                             type="checkbox"
                             label="Use SSL/TLS"
                             checked={form.imapSecure}
-                            onChange={e => setForm(prev => ({ ...prev, imapSecure: !!e.target.checked }))}
+                            onChange={(e) => setForm((prev) => ({ ...prev, imapSecure: !!e.target.checked }))}
                           />
                         </Form.Group>
                       </Col>
@@ -540,8 +569,7 @@ export default function MailAccountsPage() {
                   <Form.Label className="fw-semibold">Status</Form.Label>
                   <Form.Select
                     value={form.status}
-                    onChange={e => setForm(prev => ({ ...prev, status: e.target.value as 'active' | 'inactive' }))}
-                  >
+                    onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value as 'active' | 'inactive' }))}>
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                   </Form.Select>
@@ -554,7 +582,7 @@ export default function MailAccountsPage() {
                     id="isDefaultAccount"
                     label="Make Default Mail Account"
                     checked={form.isDefault}
-                    onChange={e => setForm(prev => ({ ...prev, isDefault: !!e.target.checked }))}
+                    onChange={(e) => setForm((prev) => ({ ...prev, isDefault: !!e.target.checked }))}
                   />
                   <Form.Text className="text-muted d-block" style={{ fontSize: '11px' }}>
                     This account will be pre-selected on the compose screen.

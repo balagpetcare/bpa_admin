@@ -41,7 +41,12 @@ export default function RegistrationDetail({ campaignId, registrationId }: { cam
     router.push(`/campaigns/${campaignId}/registrations`)
   }
 
-  if (loading) return <LoadingOverlay loading><div style={{ minHeight: 200 }} /></LoadingOverlay>
+  if (loading)
+    return (
+      <LoadingOverlay loading>
+        <div style={{ minHeight: 200 }} />
+      </LoadingOverlay>
+    )
   if (error) return <ApiErrorAlert error={error as ApiError} />
   if (!reg) return null
 
@@ -61,17 +66,38 @@ export default function RegistrationDetail({ campaignId, registrationId }: { cam
       <Row className="g-3 mb-4">
         <Col md={6}>
           <Card>
-            <Card.Header><h6 className="mb-0">Registration Info</h6></Card.Header>
+            <Card.Header>
+              <h6 className="mb-0">Registration Info</h6>
+            </Card.Header>
             <Card.Body>
               <Row className="g-2">
-                <Col xs={6}><small className="text-muted d-block">Booking #</small><code>{reg.bookingNumber}</code></Col>
-                <Col xs={6}><small className="text-muted d-block">Status</small>
-                  <Badge bg={STATUS_COLORS[reg.status]} className="text-capitalize">{reg.status.replace(/_/g, ' ')}</Badge>
+                <Col xs={6}>
+                  <small className="text-muted d-block">Booking #</small>
+                  <code>{reg.bookingNumber}</code>
                 </Col>
-                <Col xs={6}><small className="text-muted d-block">Amount</small>৳{reg.totalAmountBdt}</Col>
-                <Col xs={6}><small className="text-muted d-block">Guest</small>{reg.isGuest ? 'Yes' : 'No'}</Col>
-                <Col xs={12}><small className="text-muted d-block">Created</small>{new Date(reg.createdAt).toLocaleString()}</Col>
-                {reg.notes && <Col xs={12}><small className="text-muted d-block">Notes</small>{reg.notes}</Col>}
+                <Col xs={6}>
+                  <small className="text-muted d-block">Status</small>
+                  <Badge bg={STATUS_COLORS[reg.status]} className="text-capitalize">
+                    {reg.status.replace(/_/g, ' ')}
+                  </Badge>
+                </Col>
+                <Col xs={6}>
+                  <small className="text-muted d-block">Amount</small>৳{reg.totalAmountBdt}
+                </Col>
+                <Col xs={6}>
+                  <small className="text-muted d-block">Guest</small>
+                  {reg.isGuest ? 'Yes' : 'No'}
+                </Col>
+                <Col xs={12}>
+                  <small className="text-muted d-block">Created</small>
+                  {new Date(reg.createdAt).toLocaleString()}
+                </Col>
+                {reg.notes && (
+                  <Col xs={12}>
+                    <small className="text-muted d-block">Notes</small>
+                    {reg.notes}
+                  </Col>
+                )}
                 <Col xs={12} className="pt-2 d-flex gap-2 flex-wrap">
                   {reg.status === 'pending_payment' && (
                     <Button size="sm" variant="success" onClick={handleConfirmPayment} disabled={acting}>
@@ -90,7 +116,9 @@ export default function RegistrationDetail({ campaignId, registrationId }: { cam
         </Col>
         <Col md={6}>
           <Card>
-            <Card.Header><h6 className="mb-0">Owner</h6></Card.Header>
+            <Card.Header>
+              <h6 className="mb-0">Owner</h6>
+            </Card.Header>
             <Card.Body>
               <div className="fw-semibold">{reg.owner.ownerName}</div>
               <div>{reg.owner.mobile}</div>
@@ -100,10 +128,14 @@ export default function RegistrationDetail({ campaignId, registrationId }: { cam
         </Col>
         <Col md={6}>
           <Card>
-            <Card.Header><h6 className="mb-0">Session</h6></Card.Header>
+            <Card.Header>
+              <h6 className="mb-0">Session</h6>
+            </Card.Header>
             <Card.Body>
               <div>{new Date(reg.session.sessionDate).toLocaleDateString()}</div>
-              <div>{reg.session.startTime} – {reg.session.endTime}</div>
+              <div>
+                {reg.session.startTime} – {reg.session.endTime}
+              </div>
               <div className="text-muted">{reg.session.venue?.name ?? '—'}</div>
             </Card.Body>
           </Card>
@@ -111,12 +143,24 @@ export default function RegistrationDetail({ campaignId, registrationId }: { cam
         {reg.payment && (
           <Col md={6}>
             <Card>
-              <Card.Header><h6 className="mb-0">Payment</h6></Card.Header>
+              <Card.Header>
+                <h6 className="mb-0">Payment</h6>
+              </Card.Header>
               <Card.Body>
                 <Row className="g-2">
-                  <Col xs={6}><small className="text-muted d-block">Status</small>{reg.payment.status}</Col>
-                  <Col xs={6}><small className="text-muted d-block">Amount</small>৳{reg.payment.amount}</Col>
-                  {reg.payment.merchantTxnId && <Col xs={12}><small className="text-muted d-block">Txn ID</small><code>{reg.payment.merchantTxnId}</code></Col>}
+                  <Col xs={6}>
+                    <small className="text-muted d-block">Status</small>
+                    {reg.payment.status}
+                  </Col>
+                  <Col xs={6}>
+                    <small className="text-muted d-block">Amount</small>৳{reg.payment.amount}
+                  </Col>
+                  {reg.payment.merchantTxnId && (
+                    <Col xs={12}>
+                      <small className="text-muted d-block">Txn ID</small>
+                      <code>{reg.payment.merchantTxnId}</code>
+                    </Col>
+                  )}
                 </Row>
               </Card.Body>
             </Card>
@@ -125,22 +169,37 @@ export default function RegistrationDetail({ campaignId, registrationId }: { cam
       </Row>
 
       <Card>
-        <Card.Header><h6 className="mb-0">Pet Bookings ({reg.petBookings.length})</h6></Card.Header>
+        <Card.Header>
+          <h6 className="mb-0">Pet Bookings ({reg.petBookings.length})</h6>
+        </Card.Header>
         <Card.Body className="p-0">
           <Table hover className="mb-0">
             <thead className="table-light">
-              <tr><th>Pet</th><th>Status</th><th>Services</th><th>Checked In</th><th>Vaccinated</th></tr>
+              <tr>
+                <th>Pet</th>
+                <th>Status</th>
+                <th>Services</th>
+                <th>Checked In</th>
+                <th>Vaccinated</th>
+              </tr>
             </thead>
             <tbody>
-              {reg.petBookings.map(pb => (
+              {reg.petBookings.map((pb) => (
                 <tr key={pb.id}>
                   <td>
                     <div className="fw-semibold">{pb.pet.name}</div>
-                    <small className="text-muted text-capitalize">{pb.pet.petType}{pb.pet.breed ? ` · ${pb.pet.breed}` : ''}</small>
+                    <small className="text-muted text-capitalize">
+                      {pb.pet.petType}
+                      {pb.pet.breed ? ` · ${pb.pet.breed}` : ''}
+                    </small>
                   </td>
-                  <td><Badge bg={STATUS_COLORS[pb.status]} className="text-capitalize">{pb.status.replace(/_/g, ' ')}</Badge></td>
                   <td>
-                    {pb.services.map(s => (
+                    <Badge bg={STATUS_COLORS[pb.status]} className="text-capitalize">
+                      {pb.status.replace(/_/g, ' ')}
+                    </Badge>
+                  </td>
+                  <td>
+                    {pb.services.map((s) => (
                       <Badge key={s.id} bg={s.administered ? 'success' : 'secondary'} className="me-1">
                         {s.campaignService.name}
                       </Badge>

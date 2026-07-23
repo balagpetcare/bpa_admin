@@ -81,7 +81,9 @@ export default function ContactDetailsModal({ contact, isOpen, onClose, onStatus
 
         <div className="border rounded p-3 bg-light mb-3">
           <div className="text-muted small mb-1">Message</div>
-          <p className="mb-0" style={{ whiteSpace: 'pre-wrap' }}>{contact.message}</p>
+          <p className="mb-0" style={{ whiteSpace: 'pre-wrap' }}>
+            {contact.message}
+          </p>
         </div>
 
         <ContactReplyPanel status={contact.status} repliedAt={contact.repliedAt} />
@@ -89,15 +91,19 @@ export default function ContactDetailsModal({ contact, isOpen, onClose, onStatus
       <Modal.Footer>
         {contact.status === 'unread' && (
           <Button variant="outline-secondary" size="sm" disabled={updating} onClick={() => handleMarkStatus('read')}>
-            <Icon icon="solar:eye-bold" className="me-1" />Mark as Read
+            <Icon icon="solar:eye-bold" className="me-1" />
+            Mark as Read
           </Button>
         )}
         {contact.status !== 'replied' && (
           <Button variant="success" size="sm" disabled={updating} onClick={() => handleMarkStatus('replied')}>
-            <Icon icon="solar:check-circle-bold" className="me-1" />Mark as Replied
+            <Icon icon="solar:check-circle-bold" className="me-1" />
+            Mark as Replied
           </Button>
         )}
-        <Button variant="secondary" size="sm" onClick={onClose}>Close</Button>
+        <Button variant="secondary" size="sm" onClick={onClose}>
+          Close
+        </Button>
       </Modal.Footer>
     </Modal>
   )

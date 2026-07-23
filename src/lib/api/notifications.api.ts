@@ -30,18 +30,13 @@ export interface MarkAllReadBody {
 }
 
 export const notificationsApi = {
-  list: (params?: Record<string, string | undefined>) =>
-    api.getPaginated<AdminNotification>('/admin/notifications', params as any),
+  list: (params?: Record<string, string | undefined>) => api.getPaginated<AdminNotification>('/admin/notifications', params as any),
 
-  unreadCount: () =>
-    api.get<UnreadCountResponse>('/admin/notifications/unread-count'),
+  unreadCount: () => api.get<UnreadCountResponse>('/admin/notifications/unread-count'),
 
-  markRead: (id: string) =>
-    api.patch<{ id: string; status: string }>(`/admin/notifications/${id}/read`),
+  markRead: (id: string) => api.patch<{ id: string; status: string }>(`/admin/notifications/${id}/read`),
 
-  dismiss: (id: string) =>
-    api.patch<{ id: string; status: string }>(`/admin/notifications/${id}/dismiss`),
+  dismiss: (id: string) => api.patch<{ id: string; status: string }>(`/admin/notifications/${id}/dismiss`),
 
-  markAllRead: (body?: MarkAllReadBody) =>
-    api.patch<{ updated: number }>('/admin/notifications/mark-all-read', body),
+  markAllRead: (body?: MarkAllReadBody) => api.patch<{ updated: number }>('/admin/notifications/mark-all-read', body),
 }

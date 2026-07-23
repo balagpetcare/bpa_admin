@@ -46,15 +46,8 @@ export default function MediaCard({ file, onView, onDeleted, onDeleteError }: Me
   }
 
   return (
-    <Card
-      className="h-100 border media-card"
-      style={{ cursor: 'pointer', overflow: 'hidden' }}
-      onClick={() => onView(file)}
-    >
-      <div
-        className="d-flex align-items-center justify-content-center bg-light"
-        style={{ height: 140, overflow: 'hidden' }}
-      >
+    <Card className="h-100 border media-card" style={{ cursor: 'pointer', overflow: 'hidden' }} onClick={() => onView(file)}>
+      <div className="d-flex align-items-center justify-content-center bg-light" style={{ height: 140, overflow: 'hidden' }}>
         <MediaPreview
           media={file}
           alt={file.altText ?? file.originalName}
@@ -78,8 +71,7 @@ export default function MediaCard({ file, onView, onDeleted, onDeleteError }: Me
           style={{ opacity: 0, transition: 'opacity 0.15s', fontSize: '0.75rem' }}
           onClick={handleDelete}
           title="Delete"
-          disabled={deleting}
-        >
+          disabled={deleting}>
           <Icon icon={deleting ? 'svg-spinners:3-dots-fade' : 'solar:trash-bin-trash-bold'} />
         </button>
       )}

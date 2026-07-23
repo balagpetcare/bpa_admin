@@ -21,11 +21,7 @@ const TOOLBAR_MODULES = {
   ],
 }
 
-const FORMATS = [
-  'header', 'bold', 'italic', 'underline', 'strike',
-  'list', 'indent', 'blockquote', 'code-block',
-  'link', 'image', 'align',
-]
+const FORMATS = ['header', 'bold', 'italic', 'underline', 'strike', 'list', 'indent', 'blockquote', 'code-block', 'link', 'image', 'align']
 
 interface NewsBodyEditorProps {
   value: string
@@ -39,14 +35,7 @@ export default function NewsBodyEditor({ value, onChange, error, label = 'Body' 
     <Form.Group className="mb-3">
       <Form.Label className="fw-semibold">{label}</Form.Label>
       <div className={error ? 'is-invalid' : ''}>
-        <ReactQuill
-          theme="snow"
-          value={value}
-          onChange={onChange}
-          modules={TOOLBAR_MODULES}
-          formats={FORMATS}
-          style={{ minHeight: 320 }}
-        />
+        <ReactQuill theme="snow" value={value} onChange={onChange} modules={TOOLBAR_MODULES} formats={FORMATS} style={{ minHeight: 320 }} />
       </div>
       {error && <div className="invalid-feedback d-block">{error}</div>}
     </Form.Group>

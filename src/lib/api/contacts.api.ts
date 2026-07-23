@@ -10,13 +10,9 @@ export interface ContactListParams {
 
 export const contactsApi = {
   list: (params?: ContactListParams) =>
-    api.get<PaginatedResult<ContactSubmission>>(
-      '/contacts',
-      params as Record<string, string | number | boolean | undefined>,
-    ),
+    api.get<PaginatedResult<ContactSubmission>>('/contacts', params as Record<string, string | number | boolean | undefined>),
 
   getById: (id: string) => api.get<ContactSubmission>(`/contacts/${id}`),
 
-  updateStatus: (id: string, status: ContactStatus) =>
-    api.patch<ContactSubmission>(`/contacts/${id}/status`, { status }),
+  updateStatus: (id: string, status: ContactStatus) => api.patch<ContactSubmission>(`/contacts/${id}/status`, { status }),
 }

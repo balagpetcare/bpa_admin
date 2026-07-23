@@ -61,7 +61,10 @@ export default function ContactInquiriesPage() {
   const inquiries: InquiryListItem[] = data?.data ?? []
   const meta = data?.meta ?? null
 
-  const handleSearch = (v: string) => { setSearch(v); setPage(1) }
+  const handleSearch = (v: string) => {
+    setSearch(v)
+    setPage(1)
+  }
 
   return (
     <div className="container-fluid">
@@ -97,12 +100,10 @@ export default function ContactInquiriesPage() {
           {/* Filters */}
           <div className="d-flex gap-2 mb-3 flex-wrap">
             <InputGroup style={{ maxWidth: 320 }}>
-              <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
-              <Form.Control
-                placeholder="Search by name, email, ticket…"
-                value={search}
-                onChange={(e) => handleSearch(e.target.value)}
-              />
+              <InputGroup.Text>
+                <Icon icon="solar:magnifer-bold" />
+              </InputGroup.Text>
+              <Form.Control placeholder="Search by name, email, ticket…" value={search} onChange={(e) => handleSearch(e.target.value)} />
               {search && (
                 <Button variant="outline-secondary" onClick={() => handleSearch('')}>
                   <Icon icon="solar:close-circle-bold" />
@@ -110,14 +111,28 @@ export default function ContactInquiriesPage() {
               )}
             </InputGroup>
 
-            <Form.Select style={{ maxWidth: 160 }} value={status} onChange={(e) => { setStatus(e.target.value as any); setPage(1) }}>
+            <Form.Select
+              style={{ maxWidth: 160 }}
+              value={status}
+              onChange={(e) => {
+                setStatus(e.target.value as any)
+                setPage(1)
+              }}>
               <option value="">All statuses</option>
               {(Object.keys(STATUS_LABELS) as InquiryStatus[]).map((s) => (
-                <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                <option key={s} value={s}>
+                  {STATUS_LABELS[s]}
+                </option>
               ))}
             </Form.Select>
 
-            <Form.Select style={{ maxWidth: 140 }} value={priority} onChange={(e) => { setPriority(e.target.value as any); setPage(1) }}>
+            <Form.Select
+              style={{ maxWidth: 140 }}
+              value={priority}
+              onChange={(e) => {
+                setPriority(e.target.value as any)
+                setPage(1)
+              }}>
               <option value="">All priorities</option>
               <option value="normal">Normal</option>
               <option value="high">High</option>
@@ -154,8 +169,7 @@ export default function ContactInquiriesPage() {
                       key={inq.id}
                       className={inq.status === 'new' ? 'fw-semibold' : ''}
                       style={{ cursor: 'pointer' }}
-                      onClick={() => router.push(`/contact-inquiries/${inq.id}`)}
-                    >
+                      onClick={() => router.push(`/contact-inquiries/${inq.id}`)}>
                       <td>
                         <code className="small text-muted">{inq.ticketNumber}</code>
                       </td>
@@ -164,11 +178,17 @@ export default function ContactInquiriesPage() {
                         <small className="text-muted">{inq.email}</small>
                       </td>
                       <td>
-                        {inq.contactType && <div><small className="text-muted">{inq.contactType.labelEn}</small></div>}
+                        {inq.contactType && (
+                          <div>
+                            <small className="text-muted">{inq.contactType.labelEn}</small>
+                          </div>
+                        )}
                         {inq.category && <small className="text-muted">{inq.category.labelEn}</small>}
                       </td>
                       <td>
-                        <div className="text-truncate" style={{ maxWidth: 220 }}>{inq.subject}</div>
+                        <div className="text-truncate" style={{ maxWidth: 220 }}>
+                          {inq.subject}
+                        </div>
                       </td>
                       <td>
                         <Badge bg={PRIORITY_VARIANT[inq.priority]} text={inq.priority === 'high' ? 'dark' : undefined}>
@@ -176,9 +196,7 @@ export default function ContactInquiriesPage() {
                         </Badge>
                       </td>
                       <td>
-                        <Badge bg={STATUS_VARIANT[inq.status]}>
-                          {STATUS_LABELS[inq.status]}
-                        </Badge>
+                        <Badge bg={STATUS_VARIANT[inq.status]}>{STATUS_LABELS[inq.status]}</Badge>
                       </td>
                       <td>
                         <small className="text-muted">{new Date(inq.createdAt).toLocaleDateString()}</small>
@@ -187,8 +205,10 @@ export default function ContactInquiriesPage() {
                         <Button
                           size="sm"
                           variant="outline-primary"
-                          onClick={(e) => { e.stopPropagation(); router.push(`/contact-inquiries/${inq.id}`) }}
-                        >
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            router.push(`/contact-inquiries/${inq.id}`)
+                          }}>
                           <Icon icon="solar:eye-bold" />
                         </Button>
                       </td>
@@ -206,8 +226,12 @@ export default function ContactInquiriesPage() {
                 {meta.total} inquir{meta.total !== 1 ? 'ies' : 'y'} · Page {meta.page} of {meta.totalPages}
               </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>‹</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>›</Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                  ‹
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  ›
+                </Button>
               </div>
             </div>
           )}

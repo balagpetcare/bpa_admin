@@ -13,5 +13,9 @@ const MAP: Record<CarePartnerBenefitCategory, { bg: string; label: string }> = {
 
 export default function CarePartnerBenefitCategoryBadge({ category }: { category: CarePartnerBenefitCategory }) {
   const { bg, label } = MAP[category] ?? { bg: 'secondary', label: category }
-  return <Badge bg={`${bg}-subtle`} text={bg}>{label}</Badge>
+  return (
+    <Badge bg={`${bg}-subtle`} text={bg}>
+      {label}
+    </Badge>
+  )
 }

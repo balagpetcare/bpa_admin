@@ -13,10 +13,7 @@ interface UseApiState<T> {
 // Client-side data fetching hook with loading/error state.
 // fn is a stable function reference (or deps array causes re-fetch).
 // Waits for NextAuth session to initialize before running query to ensure auth token is available.
-export function useApi<T>(
-  fn: (() => Promise<T>) | null,
-  deps: unknown[] = [],
-): UseApiState<T> & { refetch: () => void } {
+export function useApi<T>(fn: (() => Promise<T>) | null, deps: unknown[] = []): UseApiState<T> & { refetch: () => void } {
   const { status } = useSession()
   const isSessionReady = status !== 'loading'
 

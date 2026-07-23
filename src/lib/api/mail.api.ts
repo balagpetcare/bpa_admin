@@ -154,7 +154,8 @@ export const mailApi = {
   listAccounts: () => apiClient<MailAccount[]>('/admin/mail/accounts'),
   getAccount: (id: string) => apiClient<MailAccount>(`/admin/mail/accounts/${id}`),
   createAccount: (dto: CreateMailAccountDto) => apiClient<MailAccount>('/admin/mail/accounts', { method: 'POST', body: dto }),
-  updateAccount: (id: string, dto: Partial<CreateMailAccountDto>) => apiClient<MailAccount>(`/admin/mail/accounts/${id}`, { method: 'PATCH', body: dto }),
+  updateAccount: (id: string, dto: Partial<CreateMailAccountDto>) =>
+    apiClient<MailAccount>(`/admin/mail/accounts/${id}`, { method: 'PATCH', body: dto }),
   deleteAccount: (id: string) => apiClient<void>(`/admin/mail/accounts/${id}`, { method: 'DELETE' }),
 
   // Connection tests
@@ -167,13 +168,14 @@ export const mailApi = {
       method: 'GET',
       params: params as Record<string, string | number | boolean | undefined>,
     }),
-  
+
   getMessage: (id: string) => apiClient<MailMessage>(`/admin/mail/messages/${id}`),
-  
-  getThreadDetails: (id: string) => apiClient<{ thread: MailThread & { internalNotes?: MailInternalNote[] }; messages: MailMessage[] }>(`/admin/mail/threads/${id}`),
-  
+
+  getThreadDetails: (id: string) =>
+    apiClient<{ thread: MailThread & { internalNotes?: MailInternalNote[] }; messages: MailMessage[] }>(`/admin/mail/threads/${id}`),
+
   getContactHistory: (email: string) => apiClient<MailMessage[]>('/admin/mail/history', { params: { email } }),
-  
+
   syncMailbox: (mailboxId?: string) => apiClient<{ success: boolean; message: string }>('/admin/mail/sync', { method: 'POST', body: { mailboxId } }),
 
   // Composers

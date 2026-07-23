@@ -62,18 +62,13 @@ export interface RetryFailedResult {
 
 export const smsLogsApi = {
   list: (params?: SmsLogListParams) =>
-    api.get<PaginatedResult<SmsLog>>(
-      '/admin/sms-logs',
-      params as Record<string, string | number | boolean | undefined>,
-    ),
+    api.get<PaginatedResult<SmsLog>>('/admin/sms-logs', params as Record<string, string | number | boolean | undefined>),
 
   getById: (id: string) => api.get<SmsLog>(`/admin/sms-logs/${id}`),
 
   getStats: () => api.get<SmsStats>('/admin/sms-logs/stats'),
 
-  resend: (id: string, opts?: { force?: boolean }) =>
-    api.post<ResendResult>(`/admin/sms-logs/${id}/resend`, opts ?? {}),
+  resend: (id: string, opts?: { force?: boolean }) => api.post<ResendResult>(`/admin/sms-logs/${id}/resend`, opts ?? {}),
 
-  retryFailed: (params?: RetryFailedParams) =>
-    api.post<RetryFailedResult>('/admin/sms-logs/retry-failed', params ?? {}),
+  retryFailed: (params?: RetryFailedParams) => api.post<RetryFailedResult>('/admin/sms-logs/retry-failed', params ?? {}),
 }

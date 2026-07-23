@@ -8,7 +8,9 @@ const Orders = () => {
       <Card>
         <CardBody>
           <div className="d-flex align-items-center justify-content-between mb-3">
-            <CardTitle as={'h4'} className="mb-0">Recent Payments</CardTitle>
+            <CardTitle as={'h4'} className="mb-0">
+              Recent Payments
+            </CardTitle>
             <Link href="/payments" className="btn btn-soft-primary btn-sm">
               View All
             </Link>

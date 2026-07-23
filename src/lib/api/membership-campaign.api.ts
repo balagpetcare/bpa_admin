@@ -614,23 +614,20 @@ export const membershipCampaignApi = {
   updateCampaign: (id: string, data: Partial<MembershipCampaign>) => api.put<MembershipCampaign>(`${base}/campaigns/${id}`, data),
   deleteCampaign: (id: string) => api.delete<void>(`${base}/campaigns/${id}`),
 
-  listPlans: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<MembershipPlan>(`${base}/plans`, params),
+  listPlans: (params?: Record<string, string | number | boolean | undefined>) => api.getPaginated<MembershipPlan>(`${base}/plans`, params),
   getPlanHistory: (id: string) => api.get<MembershipPlanHistoryEntry[]>(`${base}/plans/${id}/history`),
   createPlan: (data: Partial<MembershipPlan>) => api.post<MembershipPlan>(`${base}/plans`, data),
   updatePlan: (id: string, data: Partial<MembershipPlan>) => api.put<MembershipPlan>(`${base}/plans/${id}`, data),
   deletePlan: (id: string) => api.delete<void>(`${base}/plans/${id}`),
   syncPlans: (campaignId: string) => api.post<{ syncedCount: number; totalPlans: number }>(`${base}/campaigns/${campaignId}/plans/sync`),
 
-  listBenefits: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<MembershipBenefit>(`${base}/benefits`, params),
+  listBenefits: (params?: Record<string, string | number | boolean | undefined>) => api.getPaginated<MembershipBenefit>(`${base}/benefits`, params),
   createBenefit: (data: Partial<MembershipBenefit> & { planIds?: string[] }) => api.post<MembershipBenefit>(`${base}/benefits`, data),
   updateBenefit: (id: string, data: Partial<MembershipBenefit> & { planIds?: string[] }) =>
     api.put<MembershipBenefit>(`${base}/benefits/${id}`, data),
   deleteBenefit: (id: string) => api.delete<void>(`${base}/benefits/${id}`),
 
-  listMedia: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<MembershipMediaItem>(`${base}/media`, params),
+  listMedia: (params?: Record<string, string | number | boolean | undefined>) => api.getPaginated<MembershipMediaItem>(`${base}/media`, params),
   createMedia: (data: Partial<MembershipMediaItem>) => api.post<MembershipMediaItem>(`${base}/media`, data),
   updateMedia: (id: string, data: Partial<MembershipMediaItem>) => api.put<MembershipMediaItem>(`${base}/media/${id}`, data),
   deleteMedia: (id: string) => api.delete<void>(`${base}/media/${id}`),
@@ -641,8 +638,7 @@ export const membershipCampaignApi = {
   updateDocument: (id: string, data: Partial<MembershipDocumentItem>) => api.put<MembershipDocumentItem>(`${base}/documents/${id}`, data),
   deleteDocument: (id: string) => api.delete<void>(`${base}/documents/${id}`),
 
-  listFaqs: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<MembershipFaqItem>(`${base}/faqs`, params),
+  listFaqs: (params?: Record<string, string | number | boolean | undefined>) => api.getPaginated<MembershipFaqItem>(`${base}/faqs`, params),
   createFaq: (data: Partial<MembershipFaqItem>) => api.post<MembershipFaqItem>(`${base}/faqs`, data),
   updateFaq: (id: string, data: Partial<MembershipFaqItem>) => api.put<MembershipFaqItem>(`${base}/faqs/${id}`, data),
   deleteFaq: (id: string) => api.delete<void>(`${base}/faqs/${id}`),
@@ -655,8 +651,7 @@ export const membershipCampaignApi = {
   activateMembership: (id: string, data?: { validFrom?: string; activatedAt?: string; reviewNotes?: string | null }) =>
     api.post<MembershipDetail>(`${base}/applications/${id}/activate`, data ?? {}),
 
-  listMemberships: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<any>(`${base}/memberships`, params),
+  listMemberships: (params?: Record<string, string | number | boolean | undefined>) => api.getPaginated<any>(`${base}/memberships`, params),
   getMembership: (id: string) => api.get<MembershipDetail>(`${base}/memberships/${id}`),
   updateMembershipStatus: (id: string, data: { status: MembershipRecordStatus; notes?: string | null }) =>
     api.patch<MembershipDetail>(`${base}/memberships/${id}/status`, data),
@@ -674,8 +669,7 @@ export const membershipCampaignApi = {
   completeReplacement: (id: string, data: { newPetId: string; reviewNotes?: string | null }) =>
     api.post<MembershipReplacement>(`${base}/membership-pet-replacements/${id}/complete`, data),
 
-  listUpgrades: (params?: Record<string, string | number | boolean | undefined>) =>
-    api.getPaginated<MembershipUpgrade>(`${base}/upgrades`, params),
+  listUpgrades: (params?: Record<string, string | number | boolean | undefined>) => api.getPaginated<MembershipUpgrade>(`${base}/upgrades`, params),
   getUpgrade: (id: string) => api.get<MembershipUpgrade>(`${base}/upgrades/${id}`),
   reviewUpgrade: (id: string, data: { status: 'completed' | 'cancelled'; reviewNotes?: string | null }) =>
     api.post<MembershipUpgrade>(`${base}/upgrades/${id}/review`, data),

@@ -4,7 +4,10 @@ import { Card, Row, Col, Alert } from 'react-bootstrap'
 import { Icon } from '@iconify/react'
 import type { SmsStats } from '@/lib/api/sms-logs.api'
 
-interface Props { stats: SmsStats | null; loading: boolean }
+interface Props {
+  stats: SmsStats | null
+  loading: boolean
+}
 
 export default function SmsStatsCards({ stats, loading }: Props) {
   if (loading || !stats) {
@@ -14,8 +17,12 @@ export default function SmsStatsCards({ stats, loading }: Props) {
           <Col key={i} xs={6} sm={4} md={2}>
             <Card className="text-center">
               <Card.Body className="py-3">
-                <div className="placeholder-glow"><span className="placeholder col-6" /></div>
-                <div className="placeholder-glow mt-1"><span className="placeholder col-4" /></div>
+                <div className="placeholder-glow">
+                  <span className="placeholder col-6" />
+                </div>
+                <div className="placeholder-glow mt-1">
+                  <span className="placeholder col-4" />
+                </div>
               </Card.Body>
             </Card>
           </Col>
@@ -38,7 +45,8 @@ export default function SmsStatsCards({ stats, loading }: Props) {
       {stats.possibleGatewayIssue && (
         <Alert variant="warning" className="d-flex align-items-center gap-2 mb-3">
           <Icon icon="solar:danger-bold-duotone" width={20} />
-          <strong>Gateway issue detected:</strong> {stats.recentFailuresLast60min} failures in the last 60 minutes may indicate low SMS gateway balance or connectivity issue. Please check your gateway account and retry failed messages after recharge.
+          <strong>Gateway issue detected:</strong> {stats.recentFailuresLast60min} failures in the last 60 minutes may indicate low SMS gateway
+          balance or connectivity issue. Please check your gateway account and retry failed messages after recharge.
         </Alert>
       )}
       <Row className="g-3 mb-4">

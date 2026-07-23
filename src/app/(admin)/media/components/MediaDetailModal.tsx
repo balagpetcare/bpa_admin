@@ -55,21 +55,30 @@ export default function MediaDetailModal({ file, isOpen, onClose, onUpdated }: M
         <Row>
           <Col md={7} className="mb-3 mb-md-0">
             <div className="bg-light rounded d-flex align-items-center justify-content-center" style={{ height: 260 }}>
-              <MediaPreview
-                media={file}
-                alt={file.altText ?? file.originalName}
-                fit="contain"
-                filename={file.originalName}
-              />
+              <MediaPreview media={file} alt={file.altText ?? file.originalName} fit="contain" filename={file.originalName} />
             </div>
           </Col>
           <Col md={5}>
             <table className="table table-sm table-borderless small mb-3">
               <tbody>
-                <tr><td className="text-muted fw-semibold" style={{ width: 80 }}>File</td><td className="text-break">{file.filename}</td></tr>
-                <tr><td className="text-muted fw-semibold">Type</td><td>{file.mimeType}</td></tr>
-                <tr><td className="text-muted fw-semibold">Size</td><td>{formatBytes(file.sizeBytes)}</td></tr>
-                <tr><td className="text-muted fw-semibold">Uploaded</td><td>{new Date(file.createdAt).toLocaleDateString()}</td></tr>
+                <tr>
+                  <td className="text-muted fw-semibold" style={{ width: 80 }}>
+                    File
+                  </td>
+                  <td className="text-break">{file.filename}</td>
+                </tr>
+                <tr>
+                  <td className="text-muted fw-semibold">Type</td>
+                  <td>{file.mimeType}</td>
+                </tr>
+                <tr>
+                  <td className="text-muted fw-semibold">Size</td>
+                  <td>{formatBytes(file.sizeBytes)}</td>
+                </tr>
+                <tr>
+                  <td className="text-muted fw-semibold">Uploaded</td>
+                  <td>{new Date(file.createdAt).toLocaleDateString()}</td>
+                </tr>
               </tbody>
             </table>
 
@@ -99,8 +108,12 @@ export default function MediaDetailModal({ file, isOpen, onClose, onUpdated }: M
       </Modal.Body>
       {can('media:update') && (
         <Modal.Footer>
-          <Button variant="light" onClick={onClose}>Close</Button>
-          <Button variant="primary" onClick={handleSave} disabled={loading}>{loading ? 'Saving...' : 'Save Alt Text'}</Button>
+          <Button variant="light" onClick={onClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleSave} disabled={loading}>
+            {loading ? 'Saving...' : 'Save Alt Text'}
+          </Button>
         </Modal.Footer>
       )}
     </Modal>

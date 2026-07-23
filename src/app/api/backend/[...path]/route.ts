@@ -8,13 +8,7 @@ const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
 function hasUnsafePathSegment(path: string[]): boolean {
   return path.some((segment) => {
     const normalized = segment.trim()
-    return (
-      !normalized ||
-      normalized === '.' ||
-      normalized === '..' ||
-      normalized.includes('/') ||
-      normalized.includes('\\')
-    )
+    return !normalized || normalized === '.' || normalized === '..' || normalized.includes('/') || normalized.includes('\\')
   })
 }
 
@@ -30,15 +24,25 @@ async function handle(request: NextRequest, context: { params: Promise<{ path: s
   const isPublic = path[0] === 'public'
   const session = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
   const accessToken = session?.accessToken as string | undefined
-  if (!accessToken && !isPublic) return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Unauthorized.' } }, { status: 401 })
+  if (!accessToken && !isPublic)
+    return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Unauthorized.' } }, { status: 401 })
   const target = new URL(`${API_BASE.replace(/\/$/, '')}/${path.join('/')}`)
   request.nextUrl.searchParams.forEach((value, key) => target.searchParams.append(key, value))
   const headers = new Headers(accessToken ? { Authorization: `Bearer ${accessToken}` } : {})
   const contentType = request.headers.get('content-type')
   if (contentType) headers.set('content-type', contentType)
   try {
-    const upstream = await fetch(target, { method: request.method, headers, body: request.method === 'GET' || request.method === 'HEAD' ? undefined : await request.arrayBuffer(), cache: 'no-store', redirect: 'manual' })
-    return new NextResponse(upstream.body, { status: upstream.status, headers: { 'content-type': upstream.headers.get('content-type') || 'application/json', 'cache-control': 'no-store' } })
+    const upstream = await fetch(target, {
+      method: request.method,
+      headers,
+      body: request.method === 'GET' || request.method === 'HEAD' ? undefined : await request.arrayBuffer(),
+      cache: 'no-store',
+      redirect: 'manual',
+    })
+    return new NextResponse(upstream.body, {
+      status: upstream.status,
+      headers: { 'content-type': upstream.headers.get('content-type') || 'application/json', 'cache-control': 'no-store' },
+    })
   } catch {
     return NextResponse.json({ success: false, error: { code: 'UPSTREAM_UNAVAILABLE', message: 'Backend unavailable.' } }, { status: 502 })
   }

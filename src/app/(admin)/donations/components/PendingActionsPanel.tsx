@@ -50,10 +50,14 @@ export default function PendingActionsPanel({ pendingReviewCount, failedCount, r
           ) : (
             <ListGroup variant="flush" className="border-0">
               {recentPendingReview.slice(0, 3).map((d) => (
-                <ListGroup.Item key={d.id} className="px-0 py-2 bg-transparent border-bottom border-light d-flex align-items-center justify-content-between">
+                <ListGroup.Item
+                  key={d.id}
+                  className="px-0 py-2 bg-transparent border-bottom border-light d-flex align-items-center justify-content-between">
                   <div className="overflow-hidden me-2">
                     <div className="fw-semibold text-dark fs-13 text-truncate">{d.donorName}</div>
-                    <div className="text-muted fs-11 font-monospace">{d.referenceNo} • ৳{Number(d.amount).toLocaleString()}</div>
+                    <div className="text-muted fs-11 font-monospace">
+                      {d.referenceNo} • ৳{Number(d.amount).toLocaleString()}
+                    </div>
                   </div>
                   <Link href={`/donations/list?search=${d.referenceNo}`} passHref legacyBehavior>
                     <Button variant="soft-warning" size="sm" className="px-3 fs-11 py-1">

@@ -91,14 +91,22 @@ function getInitialForm(record?: AppControlRecord | null): FormState {
 
 function destinationValueLabel(type: AppControlDestinationType) {
   switch (type) {
-    case 'CAMPAIGN': return 'Campaign'
-    case 'INTERNAL_PAGE': return 'App Page'
-    case 'EXTERNAL_URL': return 'External URL'
-    case 'MEMBERSHIP': return 'Membership Target'
-    case 'DONATION': return 'Donation Target'
-    case 'PET_CENSUS': return 'Pet Census Target'
-    case 'SERVICE': return 'Service Target'
-    default: return 'Destination'
+    case 'CAMPAIGN':
+      return 'Campaign'
+    case 'INTERNAL_PAGE':
+      return 'App Page'
+    case 'EXTERNAL_URL':
+      return 'External URL'
+    case 'MEMBERSHIP':
+      return 'Membership Target'
+    case 'DONATION':
+      return 'Donation Target'
+    case 'PET_CENSUS':
+      return 'Pet Census Target'
+    case 'SERVICE':
+      return 'Service Target'
+    default:
+      return 'Destination'
   }
 }
 
@@ -137,31 +145,19 @@ export default function HomePageBuilderContent() {
     campaignsApi
       .list({ page: 1, limit: 100 })
       .then((response: any) => {
-        const rows = Array.isArray(response) ? response : response?.data ?? []
+        const rows = Array.isArray(response) ? response : (response?.data ?? [])
         setCampaignOptions(rows.map((row: any) => ({ id: row.id, title: row.title ?? row.name ?? row.slug ?? row.id, slug: row.slug })))
       })
       .catch(() => {})
   }, [])
 
-  const sectionCards = useMemo(
-    () => records.slice().sort((a, b) => a.sortOrder - b.sortOrder),
-    [records],
-  )
+  const sectionCards = useMemo(() => records.slice().sort((a, b) => a.sortOrder - b.sortOrder), [records])
 
-  const usedSectionTypes = useMemo(
-    () => new Set(sectionCards.map((record) => record.title).filter(Boolean)),
-    [sectionCards],
-  )
+  const usedSectionTypes = useMemo(() => new Set(sectionCards.map((record) => record.title).filter(Boolean)), [sectionCards])
 
-  const availableSectionTypes = useMemo(
-    () => APP_HOME_SECTION_OPTIONS.filter((option) => !usedSectionTypes.has(option.value)),
-    [usedSectionTypes],
-  )
+  const availableSectionTypes = useMemo(() => APP_HOME_SECTION_OPTIONS.filter((option) => !usedSectionTypes.has(option.value)), [usedSectionTypes])
 
-  const activePreviewSections = useMemo(
-    () => sectionCards.filter((record) => record.isActive && record.status !== 'archived'),
-    [sectionCards],
-  )
+  const activePreviewSections = useMemo(() => sectionCards.filter((record) => record.isActive && record.status !== 'archived'), [sectionCards])
 
   const openCreate = () => {
     setEditing(null)
@@ -314,7 +310,8 @@ export default function HomePageBuilderContent() {
       />
 
       <p className="text-muted mb-4">
-        Configure the order and visibility of mobile home sections. This builder persists through the App Control API and does not hardcode layout content in the app.
+        Configure the order and visibility of mobile home sections. This builder persists through the App Control API and does not hardcode layout
+        content in the app.
       </p>
 
       <ApiErrorAlert error={error} onDismiss={() => setError(null)} />
@@ -329,11 +326,13 @@ export default function HomePageBuilderContent() {
                     icon="solar:widget-5-bold-duotone"
                     title="No homepage sections configured"
                     description="Add the first section to start building the app home screen order."
-                    action={canManage ? (
-                      <Button variant="primary" onClick={openCreate}>
-                        Create First Section
-                      </Button>
-                    ) : undefined}
+                    action={
+                      canManage ? (
+                        <Button variant="primary" onClick={openCreate}>
+                          Create First Section
+                        </Button>
+                      ) : undefined
+                    }
                   />
                 ) : (
                   <div className="d-flex flex-column gap-3">
@@ -344,14 +343,18 @@ export default function HomePageBuilderContent() {
                           <Card.Body>
                             <div className="d-flex flex-column flex-lg-row gap-3 justify-content-between">
                               <div className="d-flex gap-3">
-                                <div className="rounded-circle bg-light d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 48, height: 48 }}>
+                                <div
+                                  className="rounded-circle bg-light d-flex align-items-center justify-content-center flex-shrink-0"
+                                  style={{ width: 48, height: 48 }}>
                                   <Icon icon="solar:widget-2-bold-duotone" width={22} />
                                 </div>
                                 <div>
                                   <div className="d-flex flex-wrap gap-2 align-items-center mb-1">
                                     <h5 className="mb-0">{meta?.label ?? record.title ?? 'Untitled Section'}</h5>
                                     <StatusBadge status={record.isActive ? 'active' : 'inactive'} label={record.isActive ? 'Active' : 'Inactive'} />
-                                    <Badge bg="light" text="dark">Order #{record.sortOrder}</Badge>
+                                    <Badge bg="light" text="dark">
+                                      Order #{record.sortOrder}
+                                    </Badge>
                                   </div>
                                   <div className="text-muted small mb-2">{meta?.summary ?? 'Homepage section block.'}</div>
                                   <div className="small text-body-secondary mb-2">
@@ -378,17 +381,28 @@ export default function HomePageBuilderContent() {
                               <div className="d-flex flex-wrap gap-2 align-items-start justify-content-lg-end">
                                 {canManage && (
                                   <>
-                                    <Button variant="outline-secondary" size="sm" onClick={() => handleMove(record.id, -1)} disabled={index === 0 || saving}>
+                                    <Button
+                                      variant="outline-secondary"
+                                      size="sm"
+                                      onClick={() => handleMove(record.id, -1)}
+                                      disabled={index === 0 || saving}>
                                       <Icon icon="solar:alt-arrow-up-bold" />
                                     </Button>
-                                    <Button variant="outline-secondary" size="sm" onClick={() => handleMove(record.id, 1)} disabled={index === sectionCards.length - 1 || saving}>
+                                    <Button
+                                      variant="outline-secondary"
+                                      size="sm"
+                                      onClick={() => handleMove(record.id, 1)}
+                                      disabled={index === sectionCards.length - 1 || saving}>
                                       <Icon icon="solar:alt-arrow-down-bold" />
                                     </Button>
                                     <Button variant="outline-primary" size="sm" onClick={() => openEdit(record)}>
                                       <Icon icon="solar:pen-bold-duotone" className="me-1" />
                                       Edit
                                     </Button>
-                                    <Button variant={record.isActive ? 'outline-warning' : 'outline-success'} size="sm" onClick={() => handleToggle(record)}>
+                                    <Button
+                                      variant={record.isActive ? 'outline-warning' : 'outline-success'}
+                                      size="sm"
+                                      onClick={() => handleToggle(record)}>
                                       <Icon icon={record.isActive ? 'solar:eye-closed-bold' : 'solar:eye-bold'} className="me-1" />
                                       {record.isActive ? 'Disable' : 'Enable'}
                                     </Button>
@@ -433,11 +447,11 @@ export default function HomePageBuilderContent() {
                           <div key={record.id} className="rounded-3 border p-3 bg-light">
                             <div className="d-flex justify-content-between align-items-center mb-1">
                               <strong className="small">{meta?.label ?? record.title}</strong>
-                              <Badge bg="light" text="dark">#{record.sortOrder}</Badge>
+                              <Badge bg="light" text="dark">
+                                #{record.sortOrder}
+                              </Badge>
                             </div>
-                            <div className="small text-muted">
-                              {record.description?.trim() || meta?.summary || 'Section preview summary'}
-                            </div>
+                            <div className="small text-muted">{record.description?.trim() || meta?.summary || 'Section preview summary'}</div>
                           </div>
                         )
                       })
@@ -463,8 +477,7 @@ export default function HomePageBuilderContent() {
               <Form.Select
                 value={form.sectionType}
                 onChange={(event) => setForm((current) => ({ ...current, sectionType: event.target.value as AppHomeSectionType }))}
-                disabled={Boolean(editing)}
-              >
+                disabled={Boolean(editing)}>
                 <option value="">Select a section</option>
                 {(editing ? APP_HOME_SECTION_OPTIONS : availableSectionTypes).map((option) => (
                   <option key={option.value} value={option.value}>
@@ -478,8 +491,7 @@ export default function HomePageBuilderContent() {
               <Form.Label>Target Audience</Form.Label>
               <Form.Select
                 value={form.targetAudience}
-                onChange={(event) => setForm((current) => ({ ...current, targetAudience: event.target.value as AppControlTargetAudience }))}
-              >
+                onChange={(event) => setForm((current) => ({ ...current, targetAudience: event.target.value as AppControlTargetAudience }))}>
                 {TARGET_AUDIENCE_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -555,8 +567,7 @@ export default function HomePageBuilderContent() {
                     destinationType: event.target.value as AppControlDestinationType,
                     destinationValue: event.target.value === 'NONE' ? '' : current.destinationValue,
                   }))
-                }
-              >
+                }>
                 {DESTINATION_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -570,8 +581,7 @@ export default function HomePageBuilderContent() {
                 <Form.Label>Campaign</Form.Label>
                 <Form.Select
                   value={form.destinationValue}
-                  onChange={(event) => setForm((current) => ({ ...current, destinationValue: event.target.value }))}
-                >
+                  onChange={(event) => setForm((current) => ({ ...current, destinationValue: event.target.value }))}>
                   <option value="">Select a campaign</option>
                   {campaignOptions.map((campaign) => (
                     <option key={campaign.id} value={campaign.slug || campaign.id}>
@@ -587,8 +597,7 @@ export default function HomePageBuilderContent() {
                 <Form.Label>App Page</Form.Label>
                 <Form.Select
                   value={form.destinationValue}
-                  onChange={(event) => setForm((current) => ({ ...current, destinationValue: event.target.value }))}
-                >
+                  onChange={(event) => setForm((current) => ({ ...current, destinationValue: event.target.value }))}>
                   <option value="">Select an app page</option>
                   {APP_CONTROL_PAGE_OPTIONS.map((page) => (
                     <option key={page.value} value={page.value}>
@@ -627,7 +636,9 @@ export default function HomePageBuilderContent() {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="light" onClick={closeModal} disabled={saving}>Cancel</Button>
+          <Button variant="light" onClick={closeModal} disabled={saving}>
+            Cancel
+          </Button>
           {canManage && (
             <Button variant="primary" onClick={handleSubmit} disabled={saving}>
               {saving ? 'Saving...' : editing ? 'Save Changes' : 'Add Section'}

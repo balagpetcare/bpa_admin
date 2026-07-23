@@ -42,8 +42,8 @@ export default function SocialImpactProgramForm({ programId, initialValues }: So
     isActive: initialValues?.isActive ?? true,
   })
 
-  function set<K extends keyof typeof form>(key: K, value: typeof form[K]) {
-    setForm(f => ({ ...f, [key]: value }))
+  function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
+    setForm((f) => ({ ...f, [key]: value }))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -59,9 +59,7 @@ export default function SocialImpactProgramForm({ programId, initialValues }: So
       isActive: form.isActive,
     }
     const result = await mutate(
-      () => isEdit
-        ? socialImpactProgramsApi.update(programId, payload)
-        : socialImpactProgramsApi.create(payload),
+      () => (isEdit ? socialImpactProgramsApi.update(programId, payload) : socialImpactProgramsApi.create(payload)),
       undefined,
     )
     if (result) router.push('/community-care/social-impact-programs')
@@ -82,58 +80,108 @@ export default function SocialImpactProgramForm({ programId, initialValues }: So
         <Card.Body>
           <Form onSubmit={handleSubmit}>
             <Row className="g-3">
-              <Col xs={12}><h6 className="text-muted text-uppercase fw-semibold mb-0" style={{ fontSize: '0.7rem', letterSpacing: '0.08em' }}>English Content</h6></Col>
+              <Col xs={12}>
+                <h6 className="text-muted text-uppercase fw-semibold mb-0" style={{ fontSize: '0.7rem', letterSpacing: '0.08em' }}>
+                  English Content
+                </h6>
+              </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Title (English) <span className="text-danger">*</span></Form.Label>
-                  <Form.Control value={form.titleEn} onChange={e => set('titleEn', e.target.value)} required placeholder="e.g. Stray Dog Rescue Program" />
+                  <Form.Label>
+                    Title (English) <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Control
+                    value={form.titleEn}
+                    onChange={(e) => set('titleEn', e.target.value)}
+                    required
+                    placeholder="e.g. Stray Dog Rescue Program"
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
                   <Form.Label>Description (English)</Form.Label>
-                  <Form.Control as="textarea" rows={2} value={form.descriptionEn} onChange={e => set('descriptionEn', e.target.value)} placeholder="Optional description in English" />
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={form.descriptionEn}
+                    onChange={(e) => set('descriptionEn', e.target.value)}
+                    placeholder="Optional description in English"
+                  />
                 </Form.Group>
               </Col>
 
-              <Col xs={12}><hr className="my-1" /><h6 className="text-muted text-uppercase fw-semibold mb-0" style={{ fontSize: '0.7rem', letterSpacing: '0.08em' }}>বাংলা কন্টেন্ট</h6></Col>
+              <Col xs={12}>
+                <hr className="my-1" />
+                <h6 className="text-muted text-uppercase fw-semibold mb-0" style={{ fontSize: '0.7rem', letterSpacing: '0.08em' }}>
+                  বাংলা কন্টেন্ট
+                </h6>
+              </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>শিরোনাম (বাংলা) <span className="text-danger">*</span></Form.Label>
-                  <Form.Control value={form.titleBn} onChange={e => set('titleBn', e.target.value)} required placeholder="যেমন: পথকুকুর উদ্ধার কার্যক্রম" />
+                  <Form.Label>
+                    শিরোনাম (বাংলা) <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Control
+                    value={form.titleBn}
+                    onChange={(e) => set('titleBn', e.target.value)}
+                    required
+                    placeholder="যেমন: পথকুকুর উদ্ধার কার্যক্রম"
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
                   <Form.Label>বিবরণ (বাংলা)</Form.Label>
-                  <Form.Control as="textarea" rows={2} value={form.descriptionBn} onChange={e => set('descriptionBn', e.target.value)} placeholder="ঐচ্ছিক বিবরণ বাংলায়" />
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={form.descriptionBn}
+                    onChange={(e) => set('descriptionBn', e.target.value)}
+                    placeholder="ঐচ্ছিক বিবরণ বাংলায়"
+                  />
                 </Form.Group>
               </Col>
 
-              <Col xs={12}><hr className="my-1" /></Col>
+              <Col xs={12}>
+                <hr className="my-1" />
+              </Col>
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>Impact Type <span className="text-danger">*</span></Form.Label>
-                  <Form.Select value={form.impactType} onChange={e => set('impactType', e.target.value as SocialImpactProgramType)}>
-                    {IMPACT_TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  <Form.Label>
+                    Impact Type <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Select value={form.impactType} onChange={(e) => set('impactType', e.target.value as SocialImpactProgramType)}>
+                    {IMPACT_TYPE_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group>
                   <Form.Label>Icon</Form.Label>
-                  <Form.Control value={form.icon} onChange={e => set('icon', e.target.value)} placeholder="e.g. solar:cat-bold" />
+                  <Form.Control value={form.icon} onChange={(e) => set('icon', e.target.value)} placeholder="e.g. solar:cat-bold" />
                   <Form.Text className="text-muted">Iconify icon key (optional)</Form.Text>
                 </Form.Group>
               </Col>
               <Col md={2}>
                 <Form.Group>
                   <Form.Label>Sort Order</Form.Label>
-                  <Form.Control type="number" min={0} value={form.sortOrder} onChange={e => set('sortOrder', e.target.value)} />
+                  <Form.Control type="number" min={0} value={form.sortOrder} onChange={(e) => set('sortOrder', e.target.value)} />
                 </Form.Group>
               </Col>
               <Col md={2} className="d-flex align-items-end">
-                <Form.Check type="switch" id="program-isActive" label="Active" checked={form.isActive} onChange={e => set('isActive', e.target.checked)} className="mb-1" />
+                <Form.Check
+                  type="switch"
+                  id="program-isActive"
+                  label="Active"
+                  checked={form.isActive}
+                  onChange={(e) => set('isActive', e.target.checked)}
+                  className="mb-1"
+                />
               </Col>
             </Row>
 
@@ -143,7 +191,9 @@ export default function SocialImpactProgramForm({ programId, initialValues }: So
                 <Icon icon="solar:check-circle-bold" className="me-1" />
                 {isEdit ? 'Save Changes' : 'Create Program'}
               </Button>
-              <Button variant="outline-secondary" onClick={() => router.push('/community-care/social-impact-programs')}>Cancel</Button>
+              <Button variant="outline-secondary" onClick={() => router.push('/community-care/social-impact-programs')}>
+                Cancel
+              </Button>
             </div>
           </Form>
         </Card.Body>

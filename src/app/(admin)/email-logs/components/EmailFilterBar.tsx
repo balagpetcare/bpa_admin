@@ -16,19 +16,23 @@ interface EmailFilterBarProps {
 }
 
 export default function EmailFilterBar({
-  search, status, dateFrom, dateTo,
-  onSearchChange, onStatusChange, onDateFromChange, onDateToChange,
+  search,
+  status,
+  dateFrom,
+  dateTo,
+  onSearchChange,
+  onStatusChange,
+  onDateFromChange,
+  onDateToChange,
 }: EmailFilterBarProps) {
   return (
     <Row className="g-2 mb-3">
       <Col xs={12} md={4}>
         <InputGroup>
-          <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
-          <Form.Control
-            placeholder="Search by recipient or subject…"
-            value={search}
-            onChange={(e) => onSearchChange(e.target.value)}
-          />
+          <InputGroup.Text>
+            <Icon icon="solar:magnifer-bold" />
+          </InputGroup.Text>
+          <Form.Control placeholder="Search by recipient or subject…" value={search} onChange={(e) => onSearchChange(e.target.value)} />
           {search && (
             <Button variant="outline-secondary" onClick={() => onSearchChange('')}>
               <Icon icon="solar:close-circle-bold" />
@@ -50,21 +54,11 @@ export default function EmailFilterBar({
       </Col>
 
       <Col xs={6} md={3}>
-        <Form.Control
-          type="date"
-          title="From date"
-          value={dateFrom}
-          onChange={(e) => onDateFromChange(e.target.value)}
-        />
+        <Form.Control type="date" title="From date" value={dateFrom} onChange={(e) => onDateFromChange(e.target.value)} />
       </Col>
 
       <Col xs={6} md={3}>
-        <Form.Control
-          type="date"
-          title="To date"
-          value={dateTo}
-          onChange={(e) => onDateToChange(e.target.value)}
-        />
+        <Form.Control type="date" title="To date" value={dateTo} onChange={(e) => onDateToChange(e.target.value)} />
       </Col>
     </Row>
   )

@@ -25,8 +25,7 @@ export const petCensusApi = {
   // Submissions (Admin)
   list: (params?: PaginationQuery) => api.getPaginated<PetCensusSubmission>('/admin/pet-census', params),
   getById: (id: string) => api.get<PetCensusSubmission>(`/admin/pet-census/${requireValidId(id, 'Submission')}`),
-  update: (id: string, data: any) =>
-    api.patch<PetCensusSubmission>(`/admin/pet-census/${requireValidId(id, 'Submission')}`, data),
+  update: (id: string, data: any) => api.patch<PetCensusSubmission>(`/admin/pet-census/${requireValidId(id, 'Submission')}`, data),
   updateStatus: (id: string, status: string) =>
     api.patch<PetCensusSubmission>(`/admin/pet-census/${requireValidId(id, 'Submission')}/status`, { status }),
   remove: (id: string) => api.delete<void>(`/admin/pet-census/${requireValidId(id, 'Submission')}`),
@@ -49,8 +48,7 @@ export const petCensusApi = {
   listCampaigns: () => api.get<PetCensusCampaign[]>('/admin/pet-census/campaigns'),
   getCampaign: (id: string) => api.get<PetCensusCampaign>(`/admin/pet-census/campaigns/${requireValidId(id, 'Campaign')}`),
   createCampaign: (data: any) => api.post<PetCensusCampaign>('/admin/pet-census/campaigns', data),
-  updateCampaign: (id: string, data: any) =>
-    api.patch<PetCensusCampaign>(`/admin/pet-census/campaigns/${requireValidId(id, 'Campaign')}`, data),
+  updateCampaign: (id: string, data: any) => api.patch<PetCensusCampaign>(`/admin/pet-census/campaigns/${requireValidId(id, 'Campaign')}`, data),
 
   // Public API
   submitPublic: (data: any) => api.post<PetCensusPublicSubmitResult>('/public/pet-census', data),

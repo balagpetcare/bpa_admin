@@ -41,12 +41,15 @@ export default function DonationCampaignForm({ campaignId, initial }: Props) {
 
   const [form, setForm] = useState<Partial<DonationCampaign>>({ ...EMPTY, ...initial })
 
-  function set<K extends keyof typeof form>(key: K, value: typeof form[K]) {
+  function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((f) => ({ ...f, [key]: value }))
   }
 
   function slugify(v: string) {
-    return v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+    return v
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -58,9 +61,7 @@ export default function DonationCampaignForm({ campaignId, initial }: Props) {
       startDate: form.startDate ? new Date(form.startDate).toISOString() : undefined,
       endDate: form.endDate ? new Date(form.endDate).toISOString() : undefined,
     }
-    const result = isEdit
-      ? await mutate(() => updateCampaign(campaignId, dto), undefined)
-      : await mutate(() => createCampaign(dto), undefined)
+    const result = isEdit ? await mutate(() => updateCampaign(campaignId, dto), undefined) : await mutate(() => createCampaign(dto), undefined)
 
     if (result) router.push('/donations/campaigns')
   }
@@ -82,10 +83,14 @@ export default function DonationCampaignForm({ campaignId, initial }: Props) {
           {/* Main content */}
           <Col lg={8}>
             <Card className="mb-4">
-              <Card.Header><h6 className="mb-0">Campaign Content</h6></Card.Header>
+              <Card.Header>
+                <h6 className="mb-0">Campaign Content</h6>
+              </Card.Header>
               <Card.Body className="d-flex flex-column gap-3">
                 <Form.Group>
-                  <Form.Label>Title (English) <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Title (English) <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     value={form.titleEn ?? ''}
                     onChange={(e) => {
@@ -101,13 +106,10 @@ export default function DonationCampaignForm({ campaignId, initial }: Props) {
                 </Form.Group>
                 <Form.Group>
                   <Form.Label>Slug (URL)</Form.Label>
-                  <Form.Control
-                    className="font-monospace"
-                    value={form.slug ?? ''}
-                    onChange={(e) => set('slug', slugify(e.target.value))}
-                    required
-                  />
-                  <Form.Text className="text-muted">bpa.org.bd/donations/campaigns/<strong>{form.slug || '…'}</strong></Form.Text>
+                  <Form.Control className="font-monospace" value={form.slug ?? ''} onChange={(e) => set('slug', slugify(e.target.value))} required />
+                  <Form.Text className="text-muted">
+                    bpa.org.bd/donations/campaigns/<strong>{form.slug || '…'}</strong>
+                  </Form.Text>
                 </Form.Group>
                 <Form.Group>
                   <Form.Label>Description (English)</Form.Label>
@@ -121,7 +123,9 @@ export default function DonationCampaignForm({ campaignId, initial }: Props) {
             </Card>
 
             <Card>
-              <Card.Header><h6 className="mb-0">Media</h6></Card.Header>
+              <Card.Header>
+                <h6 className="mb-0">Media</h6>
+              </Card.Header>
               <Card.Body className="d-flex flex-column gap-3">
                 <Form.Group>
                   <Form.Label>Featured Image URL</Form.Label>
@@ -133,7 +137,12 @@ export default function DonationCampaignForm({ campaignId, initial }: Props) {
                   />
                   {form.featuredImageUrl && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={form.featuredImageUrl} alt="preview" className="mt-2 rounded" style={{ maxHeight: 200, objectFit: 'cover', width: '100%' }} />
+                    <img
+                      src={form.featuredImageUrl}
+                      alt="preview"
+                      className="mt-2 rounded"
+                      style={{ maxHeight: 200, objectFit: 'cover', width: '100%' }}
+                    />
                   )}
                 </Form.Group>
                 <Form.Group>
@@ -152,7 +161,9 @@ export default function DonationCampaignForm({ campaignId, initial }: Props) {
           {/* Sidebar */}
           <Col lg={4}>
             <Card className="mb-4">
-              <Card.Header><h6 className="mb-0">Publish</h6></Card.Header>
+              <Card.Header>
+                <h6 className="mb-0">Publish</h6>
+              </Card.Header>
               <Card.Body className="d-flex flex-column gap-3">
                 <Form.Group>
                   <Form.Label>Status</Form.Label>
@@ -164,44 +175,60 @@ export default function DonationCampaignForm({ campaignId, initial }: Props) {
                   </Form.Select>
                 </Form.Group>
                 <Form.Check type="switch" label="Active" checked={form.isActive ?? true} onChange={(e) => set('isActive', e.target.checked)} />
-                <Form.Check type="switch" label="Featured on donate page" checked={form.isFeatured ?? false} onChange={(e) => set('isFeatured', e.target.checked)} />
+                <Form.Check
+                  type="switch"
+                  label="Featured on donate page"
+                  checked={form.isFeatured ?? false}
+                  onChange={(e) => set('isFeatured', e.target.checked)}
+                />
                 <div className="d-flex gap-2">
                   <Button type="submit" variant="primary" disabled={loading} className="flex-1">
-                    {loading ? <><span className="spinner-border spinner-border-sm me-1" />Saving…</> : isEdit ? 'Update Campaign' : 'Create Campaign'}
+                    {loading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-1" />
+                        Saving…
+                      </>
+                    ) : isEdit ? (
+                      'Update Campaign'
+                    ) : (
+                      'Create Campaign'
+                    )}
                   </Button>
-                  <Button type="button" variant="outline-secondary" onClick={() => router.push('/donations/campaigns')}>Cancel</Button>
+                  <Button type="button" variant="outline-secondary" onClick={() => router.push('/donations/campaigns')}>
+                    Cancel
+                  </Button>
                 </div>
               </Card.Body>
             </Card>
 
             <Card className="mb-4">
-              <Card.Header><h6 className="mb-0">Goal & Amounts</h6></Card.Header>
+              <Card.Header>
+                <h6 className="mb-0">Goal & Amounts</h6>
+              </Card.Header>
               <Card.Body className="d-flex flex-column gap-3">
                 <Form.Group>
-                  <Form.Label>Goal Amount (BDT) <span className="text-danger">*</span></Form.Label>
-                  <Form.Control
-                    type="number"
-                    min={0}
-                    value={form.goalAmount ?? '0'}
-                    onChange={(e) => set('goalAmount', e.target.value)}
-                    required
-                  />
+                  <Form.Label>
+                    Goal Amount (BDT) <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Control type="number" min={0} value={form.goalAmount ?? '0'} onChange={(e) => set('goalAmount', e.target.value)} required />
                 </Form.Group>
                 <Form.Group>
                   <Form.Label>Default Donation Amount</Form.Label>
-                  <Form.Control
-                    type="number"
-                    min={0}
-                    value={form.defaultAmount ?? ''}
-                    onChange={(e) => set('defaultAmount', e.target.value)}
-                  />
+                  <Form.Control type="number" min={0} value={form.defaultAmount ?? ''} onChange={(e) => set('defaultAmount', e.target.value)} />
                 </Form.Group>
-                <Form.Check type="switch" label="Allow custom amount" checked={form.allowCustomAmount ?? true} onChange={(e) => set('allowCustomAmount', e.target.checked)} />
+                <Form.Check
+                  type="switch"
+                  label="Allow custom amount"
+                  checked={form.allowCustomAmount ?? true}
+                  onChange={(e) => set('allowCustomAmount', e.target.checked)}
+                />
               </Card.Body>
             </Card>
 
             <Card className="mb-4">
-              <Card.Header><h6 className="mb-0">Dates</h6></Card.Header>
+              <Card.Header>
+                <h6 className="mb-0">Dates</h6>
+              </Card.Header>
               <Card.Body className="d-flex flex-column gap-3">
                 <Form.Group>
                   <Form.Label>Start Date</Form.Label>
@@ -223,14 +250,11 @@ export default function DonationCampaignForm({ campaignId, initial }: Props) {
             </Card>
 
             <Card>
-              <Card.Header><h6 className="mb-0">Sort Order</h6></Card.Header>
+              <Card.Header>
+                <h6 className="mb-0">Sort Order</h6>
+              </Card.Header>
               <Card.Body>
-                <Form.Control
-                  type="number"
-                  min={0}
-                  value={form.sortOrder ?? 0}
-                  onChange={(e) => set('sortOrder', Number(e.target.value))}
-                />
+                <Form.Control type="number" min={0} value={form.sortOrder ?? 0} onChange={(e) => set('sortOrder', Number(e.target.value))} />
               </Card.Body>
             </Card>
           </Col>

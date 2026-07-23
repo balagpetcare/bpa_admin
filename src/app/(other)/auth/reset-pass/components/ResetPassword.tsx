@@ -58,13 +58,12 @@ const ResetPassword = () => {
                     </Link>
                   </div>
                   <h2 className="fw-bold fs-24">Forgot Password</h2>
-                  <p className="text-muted mt-1 mb-4">
-                    Enter your email address and we&apos;ll send you instructions to reset your password.
-                  </p>
+                  <p className="text-muted mt-1 mb-4">Enter your email address and we&apos;ll send you instructions to reset your password.</p>
 
                   {success ? (
                     <Alert variant="success">
-                      <strong>Email sent!</strong> If an account exists for that email, you will receive a reset link shortly. Please check your inbox.
+                      <strong>Email sent!</strong> If an account exists for that email, you will receive a reset link shortly. Please check your
+                      inbox.
                     </Alert>
                   ) : (
                     <div>

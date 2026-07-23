@@ -9,7 +9,9 @@ export default function RecentVolunteersWidget({ items }: { items: Volunteer[] }
     <Card className="h-100">
       <Card.Header className="d-flex justify-content-between align-items-center">
         <h5 className="mb-0">Pending Volunteers</h5>
-        <Link href="/volunteers?status=pending" className="text-muted small">View all →</Link>
+        <Link href="/volunteers?status=pending" className="text-muted small">
+          View all →
+        </Link>
       </Card.Header>
       <Card.Body className="p-0">
         {items.length === 0 ? (
@@ -26,7 +28,9 @@ export default function RecentVolunteersWidget({ items }: { items: Volunteer[] }
                     </span>
                   </div>
                   <div className="text-end flex-shrink-0">
-                    <Badge bg="warning" text="dark">{v.status}</Badge>
+                    <Badge bg="warning" text="dark">
+                      {v.status}
+                    </Badge>
                     <div className="text-muted" style={{ fontSize: 11 }}>
                       {new Date(v.createdAt).toLocaleDateString()}
                     </div>

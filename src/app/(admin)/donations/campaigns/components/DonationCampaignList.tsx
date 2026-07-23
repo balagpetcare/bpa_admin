@@ -21,7 +21,10 @@ const STATUS_OPTS = [
 ]
 
 const STATUS_VARIANT: Record<string, string> = {
-  draft: 'secondary', published: 'success', completed: 'info', cancelled: 'danger',
+  draft: 'secondary',
+  published: 'success',
+  completed: 'info',
+  cancelled: 'danger',
 }
 
 export default function DonationCampaignList() {
@@ -30,10 +33,7 @@ export default function DonationCampaignList() {
   const [status, setStatus] = useState('')
   const { mutate } = useApiMutation<unknown, unknown>()
 
-  const fetchFn = useCallback(
-    () => listCampaigns({ search: search || undefined, status: status || undefined }),
-    [search, status],
-  )
+  const fetchFn = useCallback(() => listCampaigns({ search: search || undefined, status: status || undefined }), [search, status])
   const { data: campaigns, loading, error, refetch } = useApi(fetchFn, [search, status])
 
   async function handleDelete(id: string, title: string) {
@@ -49,7 +49,8 @@ export default function DonationCampaignList() {
         breadcrumbs={[{ label: 'Donations' }, { label: 'Campaigns' }]}
         action={
           <Link href="/donations/campaigns/create" className="btn btn-primary btn-sm">
-            <Icon icon="solar:add-circle-bold" className="me-1" />New Campaign
+            <Icon icon="solar:add-circle-bold" className="me-1" />
+            New Campaign
           </Link>
         }
       />
@@ -60,13 +61,19 @@ export default function DonationCampaignList() {
           <Row className="g-2 mb-3">
             <Col md={5}>
               <InputGroup size="sm">
-                <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
+                <InputGroup.Text>
+                  <Icon icon="solar:magnifer-bold" />
+                </InputGroup.Text>
                 <Form.Control placeholder="Search campaigns..." value={search} onChange={(e) => setSearch(e.target.value)} />
               </InputGroup>
             </Col>
             <Col md={3}>
               <Form.Select size="sm" value={status} onChange={(e) => setStatus(e.target.value)}>
-                {STATUS_OPTS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                {STATUS_OPTS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
               </Form.Select>
             </Col>
           </Row>
@@ -85,7 +92,11 @@ export default function DonationCampaignList() {
               </thead>
               <tbody>
                 {(campaigns ?? []).length === 0 ? (
-                  <tr><td colSpan={6} className="text-center py-4 text-muted">No campaigns found.</td></tr>
+                  <tr>
+                    <td colSpan={6} className="text-center py-4 text-muted">
+                      No campaigns found.
+                    </td>
+                  </tr>
                 ) : (
                   (campaigns ?? []).map((c: DonationCampaign) => {
                     const goal = Number(c.goalAmount)
@@ -98,25 +109,32 @@ export default function DonationCampaignList() {
                           <div className="text-muted small">{c.slug}</div>
                         </td>
                         <td>
-                          {c.purpose
-                            ? <Badge bg="success-subtle" text="success">{c.purpose.titleEn}</Badge>
-                            : <span className="text-muted small">—</span>}
+                          {c.purpose ? (
+                            <Badge bg="success-subtle" text="success">
+                              {c.purpose.titleEn}
+                            </Badge>
+                          ) : (
+                            <span className="text-muted small">—</span>
+                          )}
                         </td>
                         <td>
                           <div className="d-flex align-items-center gap-2">
                             <ProgressBar now={pct} style={{ height: 6, flex: 1 }} variant="success" />
                             <small className="text-muted">{pct}%</small>
                           </div>
-                          <div className="text-muted" style={{ fontSize: '11px' }}>৳{raised.toLocaleString()} / ৳{goal.toLocaleString()}</div>
+                          <div className="text-muted" style={{ fontSize: '11px' }}>
+                            ৳{raised.toLocaleString()} / ৳{goal.toLocaleString()}
+                          </div>
                         </td>
                         <td onClick={(e) => e.stopPropagation()}>
-                          <Badge bg={`${STATUS_VARIANT[c.status] ?? 'secondary'}-subtle`} text={STATUS_VARIANT[c.status] ?? 'secondary'} className="text-capitalize">
+                          <Badge
+                            bg={`${STATUS_VARIANT[c.status] ?? 'secondary'}-subtle`}
+                            text={STATUS_VARIANT[c.status] ?? 'secondary'}
+                            className="text-capitalize">
                             {c.status}
                           </Badge>
                         </td>
-                        <td>
-                          {c.isFeatured ? <Icon icon="solar:star-bold" className="text-warning" /> : null}
-                        </td>
+                        <td>{c.isFeatured ? <Icon icon="solar:star-bold" className="text-warning" /> : null}</td>
                         <td className="text-end" onClick={(e) => e.stopPropagation()}>
                           <div className="d-flex gap-1 justify-content-end">
                             <Link href={`/donations/campaigns/${c.id}`} className="btn btn-soft-primary btn-sm" title="Edit">

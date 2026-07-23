@@ -32,8 +32,8 @@ export default function PlanForm({ planId, initialValues }: PlanFormProps) {
     sortOrder: String(initialValues?.sortOrder ?? '0'),
   })
 
-  function set<K extends keyof typeof form>(key: K, value: typeof form[K]) {
-    setForm(f => ({ ...f, [key]: value }))
+  function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
+    setForm((f) => ({ ...f, [key]: value }))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -44,14 +44,16 @@ export default function PlanForm({ planId, initialValues }: PlanFormProps) {
       amountBdt: Number(form.amountBdt),
       description: form.description || undefined,
       legalDisclaimerText: form.legalDisclaimerText || undefined,
-      benefitsSummaryJson: form.benefitsText ? form.benefitsText.split('\n').map(s => s.trim()).filter(Boolean) : undefined,
+      benefitsSummaryJson: form.benefitsText
+        ? form.benefitsText
+            .split('\n')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : undefined,
       isActive: form.isActive,
       sortOrder: Number(form.sortOrder),
     }
-    const result = await mutate(
-      () => isEdit ? contributionPlansApi.update(planId, payload) : contributionPlansApi.create(payload),
-      undefined,
-    )
+    const result = await mutate(() => (isEdit ? contributionPlansApi.update(planId, payload) : contributionPlansApi.create(payload)), undefined)
     if (result) router.push('/community-care/plans')
   }
 
@@ -65,7 +67,8 @@ export default function PlanForm({ planId, initialValues }: PlanFormProps) {
 
       <Alert variant="info" className="mb-3">
         <Icon icon="solar:info-circle-bold" className="me-2" />
-        <strong>Legal Note:</strong> Plans must not imply ownership, profit-sharing, financial return, or guaranteed discounts on products or medicines.
+        <strong>Legal Note:</strong> Plans must not imply ownership, profit-sharing, financial return, or guaranteed discounts on products or
+        medicines.
       </Alert>
 
       <Card>
@@ -74,20 +77,33 @@ export default function PlanForm({ planId, initialValues }: PlanFormProps) {
             <Row className="g-3">
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Title <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Title <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control value={form.title} onChange={(e) => set('title', e.target.value)} required />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Slug <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Slug <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control value={form.slug} onChange={(e) => set('slug', e.target.value)} required placeholder="e.g. care-partner-annual" />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Amount (BDT) <span className="text-danger">*</span></Form.Label>
-                  <Form.Control type="number" min={1} step="0.01" value={form.amountBdt} onChange={(e) => set('amountBdt', e.target.value)} required />
+                  <Form.Label>
+                    Amount (BDT) <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Control
+                    type="number"
+                    min={1}
+                    step="0.01"
+                    value={form.amountBdt}
+                    onChange={(e) => set('amountBdt', e.target.value)}
+                    required
+                  />
                 </Form.Group>
               </Col>
               <Col md={3}>
@@ -114,7 +130,9 @@ export default function PlanForm({ planId, initialValues }: PlanFormProps) {
               </Col>
               <Col md={12}>
                 <Form.Group>
-                  <Form.Label>Benefits Summary <span className="text-muted small">(one per line)</span></Form.Label>
+                  <Form.Label>
+                    Benefits Summary <span className="text-muted small">(one per line)</span>
+                  </Form.Label>
                   <Form.Control
                     as="textarea"
                     rows={4}
@@ -144,7 +162,9 @@ export default function PlanForm({ planId, initialValues }: PlanFormProps) {
                 <Icon icon="solar:check-circle-bold" className="me-1" />
                 {isEdit ? 'Save Changes' : 'Create Plan'}
               </Button>
-              <Button variant="outline-secondary" onClick={() => router.push('/community-care/plans')}>Cancel</Button>
+              <Button variant="outline-secondary" onClick={() => router.push('/community-care/plans')}>
+                Cancel
+              </Button>
             </div>
           </Form>
         </Card.Body>

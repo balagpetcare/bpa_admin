@@ -46,9 +46,18 @@ export default function LiveControlTab({ liveData, loading }: LiveControlTabProp
                 animation: pulse-animation 1.5s infinite;
               }
               @keyframes pulse-animation {
-                0% { transform: scale(0.9); opacity: 0.8; }
-                50% { transform: scale(1.2); opacity: 1; }
-                100% { transform: scale(0.9); opacity: 0.8; }
+                0% {
+                  transform: scale(0.9);
+                  opacity: 0.8;
+                }
+                50% {
+                  transform: scale(1.2);
+                  opacity: 1;
+                }
+                100% {
+                  transform: scale(0.9);
+                  opacity: 0.8;
+                }
               }
             `}</style>
           </Card>
@@ -89,16 +98,21 @@ export default function LiveControlTab({ liveData, loading }: LiveControlTabProp
 
                   return (
                     <div key={ev.id} className="d-flex align-items-center gap-3 p-3 border-bottom border-light">
-                      <div className={`flex-shrink-0 rounded-circle text-${color} bg-soft-${color} flex-centered`} style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div
+                        className={`flex-shrink-0 rounded-circle text-${color} bg-soft-${color} flex-centered`}
+                        style={{ width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Icon icon={icon} width={18} />
                       </div>
                       <div className="flex-grow-1 min-width-0">
-                        <span className="small fw-semibold text-dark text-truncate d-block">
-                          {ev.title || `${ev.module} · ${ev.action}`}
+                        <span className="small fw-semibold text-dark text-truncate d-block">{ev.title || `${ev.module} · ${ev.action}`}</span>
+                        <span className="text-muted" style={{ fontSize: '0.7rem' }}>
+                          {timeAgo(ev.createdAt)}
                         </span>
-                        <span className="text-muted" style={{ fontSize: '0.7rem' }}>{timeAgo(ev.createdAt)}</span>
                       </div>
-                      <Badge bg={`${color}-subtle`} className={`text-${color} border border-${color}-subtle text-uppercase`} style={{ fontSize: '0.6rem' }}>
+                      <Badge
+                        bg={`${color}-subtle`}
+                        className={`text-${color} border border-${color}-subtle text-uppercase`}
+                        style={{ fontSize: '0.6rem' }}>
                         {ev.type}
                       </Badge>
                     </div>
@@ -123,9 +137,7 @@ export default function LiveControlTab({ liveData, loading }: LiveControlTabProp
                     const variant = p.status === 'success' ? 'success' : p.status === 'pending' ? 'warning' : 'danger'
                     return (
                       <tr key={p.id} className="border-bottom border-light">
-                        <td className="ps-3 py-2 small fw-bold text-dark">
-                          ৳{Number(p.amount).toLocaleString()}
-                        </td>
+                        <td className="ps-3 py-2 small fw-bold text-dark">৳{Number(p.amount).toLocaleString()}</td>
                         <td className="py-2 text-center">
                           <Badge bg={`${variant}-subtle`} className={`text-${variant} border border-${variant}-subtle`}>
                             {p.status}

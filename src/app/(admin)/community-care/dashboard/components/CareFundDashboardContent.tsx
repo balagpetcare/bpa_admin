@@ -18,10 +18,7 @@ export default function CareFundDashboardContent() {
 
   return (
     <div className="container-fluid">
-      <PageHeader
-        title="Community Care Fund"
-        breadcrumbs={[{ label: 'Community Care Fund' }, { label: 'Dashboard' }]}
-      />
+      <PageHeader title="Community Care Fund" breadcrumbs={[{ label: 'Community Care Fund' }, { label: 'Dashboard' }]} />
       <ApiErrorAlert error={error as ApiError | null} />
       <LoadingOverlay loading={loading}>
         {data && (

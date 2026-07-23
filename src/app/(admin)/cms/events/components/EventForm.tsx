@@ -39,9 +39,17 @@ const schema = yup.object({
   coverImageId: yup.string().nullable().optional(),
   startsAt: yup.string().required('Start date is required'),
   endsAt: yup.string().nullable().optional(),
-  capacity: yup.number().nullable().optional().transform((value) => normalizeOptionalNumber(value)),
+  capacity: yup
+    .number()
+    .nullable()
+    .optional()
+    .transform((value) => normalizeOptionalNumber(value)),
   isPaid: yup.boolean().default(false),
-  fee: yup.number().nullable().optional().transform((value) => normalizeOptionalNumber(value)),
+  fee: yup
+    .number()
+    .nullable()
+    .optional()
+    .transform((value) => normalizeOptionalNumber(value)),
   status: yup.string().oneOf(['draft', 'published', 'cancelled']).default('draft') as unknown as yup.StringSchema<EventStatus>,
 })
 
@@ -66,7 +74,13 @@ export default function EventForm({ existing }: EventFormProps) {
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(existing?.coverImageUrl ?? null)
   const [activeTab, setActiveTab] = useState('details')
 
-  const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormValues>({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<FormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: yupResolver(schema as any),
     defaultValues: {
@@ -141,8 +155,21 @@ export default function EventForm({ existing }: EventFormProps) {
               <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k ?? 'details')} className="mb-3">
                 <Tab eventKey="details" title="Details">
                   <TextFormInput name="title" label="Title" placeholder="Event title" containerClassName="mb-3" control={control} />
-                  <TextFormInput name="location" label="Location (optional)" placeholder="Venue or online link" containerClassName="mb-3" control={control} />
-                  <TextAreaFormInput name="description" label="Description" placeholder="Event description…" rows={5} containerClassName="mb-3" control={control} />
+                  <TextFormInput
+                    name="location"
+                    label="Location (optional)"
+                    placeholder="Venue or online link"
+                    containerClassName="mb-3"
+                    control={control}
+                  />
+                  <TextAreaFormInput
+                    name="description"
+                    label="Description"
+                    placeholder="Event description…"
+                    rows={5}
+                    containerClassName="mb-3"
+                    control={control}
+                  />
 
                   <Row>
                     <Col md={6}>
@@ -189,7 +216,9 @@ export default function EventForm({ existing }: EventFormProps) {
           />
 
           <Card className="mb-3">
-            <Card.Header className="py-2"><h6 className="mb-0">Cover Image</h6></Card.Header>
+            <Card.Header className="py-2">
+              <h6 className="mb-0">Cover Image</h6>
+            </Card.Header>
             <Card.Body>
               <MediaPickerInput
                 value={watch('coverImageId')}

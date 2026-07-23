@@ -15,7 +15,7 @@ export default function ReportsPage() {
   const [reports, setReports] = useState<ContentReport[]>()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<ApiError | null>(null)
-  
+
   // Filters
   const [status, setStatus] = useState<string>('pending')
   const [page, setPage] = useState(1)
@@ -28,12 +28,12 @@ export default function ReportsPage() {
       const res = await contentApi.listReports({
         status: status || undefined,
         page,
-        limit: 20
+        limit: 20,
       })
       if (Array.isArray(res)) {
         setReports(res)
       } else {
-        const responseData = (res as any)
+        const responseData = res as any
         setReports(responseData.data || responseData.items || [])
         setMeta(responseData.meta || null)
       }
@@ -96,10 +96,7 @@ export default function ReportsPage() {
 
   return (
     <div className="container-fluid py-4">
-      <PageHeader
-        title="Content Reports Review"
-        breadcrumbs={[{ label: 'Content Hub' }, { label: 'Reports' }]}
-      />
+      <PageHeader title="Content Reports Review" breadcrumbs={[{ label: 'Content Hub' }, { label: 'Reports' }]} />
 
       <ApiErrorAlert error={error} onDismiss={() => setError(null)} />
 
@@ -108,7 +105,12 @@ export default function ReportsPage() {
           <Row className="g-2 items-center">
             <Col md={3}>
               <Form.Label className="fw-semibold small">Status Filter</Form.Label>
-              <Form.Select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1) }}>
+              <Form.Select
+                value={status}
+                onChange={(e) => {
+                  setStatus(e.target.value)
+                  setPage(1)
+                }}>
                 <option value="">All Reports</option>
                 <option value="pending">Pending</option>
                 <option value="reviewed">Reviewed</option>
@@ -178,9 +180,7 @@ export default function ReportsPage() {
                           )}
                         </td>
                         <td>
-                          <p className="mb-0 text-danger font-semibold text-sm max-w-xs leading-relaxed">
-                            {r.reason}
-                          </p>
+                          <p className="mb-0 text-danger font-semibold text-sm max-w-xs leading-relaxed">{r.reason}</p>
                         </td>
                         <td>{renderStatusBadge(r.status)}</td>
                         <td>
@@ -195,7 +195,7 @@ export default function ReportsPage() {
                                 <Icon icon="solar:check-circle-bold" />
                               </Button>
                             )}
-                            
+
                             {r.status !== 'resolved' && (
                               <Button variant="soft-success" size="sm" onClick={() => handleResolve(r.id, 'resolved')} title="Resolve Report">
                                 <Icon icon="solar:shield-check-bold" />
@@ -215,7 +215,11 @@ export default function ReportsPage() {
                             )}
 
                             {r.commentId && (
-                              <Button variant="soft-danger" size="sm" onClick={() => handleDeleteComment(r.commentId!)} title="Delete Offending Comment">
+                              <Button
+                                variant="soft-danger"
+                                size="sm"
+                                onClick={() => handleDeleteComment(r.commentId!)}
+                                title="Delete Offending Comment">
                                 <Icon icon="solar:trash-bin-trash-bold" /> Comment
                               </Button>
                             )}
@@ -234,8 +238,12 @@ export default function ReportsPage() {
                   {meta.total} report{meta.total !== 1 ? 's' : ''} · Page {meta.page} of {meta.totalPages}
                 </small>
                 <div className="d-flex gap-1">
-                  <Button size="sm" variant="outline-secondary" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>‹</Button>
-                  <Button size="sm" variant="outline-secondary" disabled={page >= meta.totalPages} onClick={() => setPage(p => p + 1)}>›</Button>
+                  <Button size="sm" variant="outline-secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+                    ‹
+                  </Button>
+                  <Button size="sm" variant="outline-secondary" disabled={page >= meta.totalPages} onClick={() => setPage((p) => p + 1)}>
+                    ›
+                  </Button>
                 </div>
               </div>
             )}

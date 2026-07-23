@@ -63,7 +63,9 @@ export default function MyAssignedCampaignsPage() {
         <Row className="g-3">
           {campaigns.map((campaign: any) => {
             const assignments = campaign.myAssignments ?? []
-            const activeDuties: StaffDutyRole[] = [...new Set(assignments.filter((a: any) => a.isActive).map((a: any) => a.dutyRole))] as StaffDutyRole[]
+            const activeDuties: StaffDutyRole[] = [
+              ...new Set(assignments.filter((a: any) => a.isActive).map((a: any) => a.dutyRole)),
+            ] as StaffDutyRole[]
 
             return (
               <Col key={campaign.id} xs={12} md={6} lg={4}>
@@ -71,7 +73,8 @@ export default function MyAssignedCampaignsPage() {
                   <Card.Body>
                     <div className="d-flex justify-content-between align-items-start mb-2">
                       <h6 className="fw-bold mb-0">{campaign.title}</h6>
-                      <span className={`badge bg-${campaign.status === 'registration_open' ? 'success' : campaign.status === 'completed' ? 'secondary' : 'primary'}-subtle text-${campaign.status === 'registration_open' ? 'success' : campaign.status === 'completed' ? 'secondary' : 'primary'} small`}>
+                      <span
+                        className={`badge bg-${campaign.status === 'registration_open' ? 'success' : campaign.status === 'completed' ? 'secondary' : 'primary'}-subtle text-${campaign.status === 'registration_open' ? 'success' : campaign.status === 'completed' ? 'secondary' : 'primary'} small`}>
                         {campaign.status?.replace(/_/g, ' ')}
                       </span>
                     </div>
@@ -88,7 +91,9 @@ export default function MyAssignedCampaignsPage() {
                         <span className="text-muted small">No active duty assignments</span>
                       ) : (
                         <div className="d-flex flex-wrap gap-1">
-                          {activeDuties.map((d) => <DutyChip key={d} duty={d} />)}
+                          {activeDuties.map((d) => (
+                            <DutyChip key={d} duty={d} />
+                          ))}
                         </div>
                       )}
                     </div>
@@ -97,24 +102,28 @@ export default function MyAssignedCampaignsPage() {
                     {assignments.filter((a: any) => a.sessionId && a.session).length > 0 && (
                       <div className="mb-3">
                         <div className="small text-muted fw-semibold mb-1">Your sessions:</div>
-                        {assignments.filter((a: any) => a.sessionId && a.session).map((a: any) => (
-                          <div key={a.id} className="small text-muted">
-                            <Icon icon="solar:calendar-date-bold" className="me-1" />
-                            {dayjs(a.session.sessionDate).format('DD MMM YYYY')} · {a.session.startTime}
-                            {a.session.venue?.name && <span> · {a.session.venue.name}</span>}
-                          </div>
-                        ))}
+                        {assignments
+                          .filter((a: any) => a.sessionId && a.session)
+                          .map((a: any) => (
+                            <div key={a.id} className="small text-muted">
+                              <Icon icon="solar:calendar-date-bold" className="me-1" />
+                              {dayjs(a.session.sessionDate).format('DD MMM YYYY')} · {a.session.startTime}
+                              {a.session.venue?.name && <span> · {a.session.venue.name}</span>}
+                            </div>
+                          ))}
                       </div>
                     )}
 
                     {/* Quick action links based on duty */}
                     <div className="d-flex flex-wrap gap-2 mt-2">
                       <Link href={`/campaigns/${campaign.id}/field-ops`} className="btn btn-primary btn-sm">
-                        <Icon icon="solar:play-bold" className="me-1" />Field Ops
+                        <Icon icon="solar:play-bold" className="me-1" />
+                        Field Ops
                       </Link>
                       {activeDuties.includes('SESSION_MANAGER') && (
                         <Link href={`/campaigns/${campaign.id}`} className="btn btn-outline-secondary btn-sm">
-                          <Icon icon="solar:eye-bold" className="me-1" />Campaign Detail
+                          <Icon icon="solar:eye-bold" className="me-1" />
+                          Campaign Detail
                         </Link>
                       )}
                     </div>

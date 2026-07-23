@@ -7,36 +7,52 @@ import { useWizardContext } from '../useCampaignWizard'
 import BilingualRichText from '../../BilingualRichText'
 
 export default function CampaignContentStep() {
-  const { form: { control, formState: { errors } }, form } = useWizardContext()
+  const {
+    form: {
+      control,
+      formState: { errors },
+    },
+    form,
+  } = useWizardContext()
 
   return (
     <Card>
-      <Card.Header><h5 className="mb-0">Content Details</h5></Card.Header>
+      <Card.Header>
+        <h5 className="mb-0">Content Details</h5>
+      </Card.Header>
       <Card.Body>
         <Row className="g-3">
           <Col md={6}>
             <Form.Label>Short Description (EN)</Form.Label>
-            <Controller name="shortDescriptionEn" control={control} render={({ field }) => (
-              <>
-                <Form.Control as="textarea" rows={2} {...field} value={field.value ?? ''} isInvalid={!!errors.shortDescriptionEn} />
-                <div className="d-flex justify-content-between">
-                  <Form.Control.Feedback type="invalid">{errors.shortDescriptionEn?.message}</Form.Control.Feedback>
-                  <small className="text-muted ms-auto">{(field.value ?? '').length} / 300</small>
-                </div>
-              </>
-            )} />
+            <Controller
+              name="shortDescriptionEn"
+              control={control}
+              render={({ field }) => (
+                <>
+                  <Form.Control as="textarea" rows={2} {...field} value={field.value ?? ''} isInvalid={!!errors.shortDescriptionEn} />
+                  <div className="d-flex justify-content-between">
+                    <Form.Control.Feedback type="invalid">{errors.shortDescriptionEn?.message}</Form.Control.Feedback>
+                    <small className="text-muted ms-auto">{(field.value ?? '').length} / 300</small>
+                  </div>
+                </>
+              )}
+            />
           </Col>
           <Col md={6}>
             <Form.Label>Short Description (BN)</Form.Label>
-            <Controller name="shortDescriptionBn" control={control} render={({ field }) => (
-              <>
-                <Form.Control as="textarea" rows={2} {...field} value={field.value ?? ''} isInvalid={!!errors.shortDescriptionBn} />
-                <div className="d-flex justify-content-between">
-                  <Form.Control.Feedback type="invalid">{errors.shortDescriptionBn?.message}</Form.Control.Feedback>
-                  <small className="text-muted ms-auto">{(field.value ?? '').length} / 300</small>
-                </div>
-              </>
-            )} />
+            <Controller
+              name="shortDescriptionBn"
+              control={control}
+              render={({ field }) => (
+                <>
+                  <Form.Control as="textarea" rows={2} {...field} value={field.value ?? ''} isInvalid={!!errors.shortDescriptionBn} />
+                  <div className="d-flex justify-content-between">
+                    <Form.Control.Feedback type="invalid">{errors.shortDescriptionBn?.message}</Form.Control.Feedback>
+                    <small className="text-muted ms-auto">{(field.value ?? '').length} / 300</small>
+                  </div>
+                </>
+              )}
+            />
           </Col>
         </Row>
         <hr className="my-4" />

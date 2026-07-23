@@ -96,13 +96,9 @@ export async function listHeroSlides(options: ListSlidesOptions = {}) {
     if (options.status && slide.status !== options.status) return false
     if (!search) return true
 
-    return [
-      slide.title,
-      slide.headline,
-      slide.eyebrow ?? '',
-      slide.body ?? '',
-      slide.ctaLabel ?? '',
-    ].some((value) => value.toLowerCase().includes(search))
+    return [slide.title, slide.headline, slide.eyebrow ?? '', slide.body ?? '', slide.ctaLabel ?? ''].some((value) =>
+      value.toLowerCase().includes(search),
+    )
   })
 
   return sortSlides(filtered).map(toListItem)

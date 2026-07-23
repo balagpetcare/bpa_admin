@@ -32,7 +32,11 @@ function SlideAction({
   const className = variant === 'primary' ? 'hero-slide__cta hero-slide__cta--primary' : 'hero-slide__cta hero-slide__cta--secondary'
 
   if (href.startsWith('/')) {
-    return <Link href={href} className={className}>{label}</Link>
+    return (
+      <Link href={href} className={className}>
+        {label}
+      </Link>
+    )
   }
 
   return (
@@ -80,8 +84,7 @@ function SlideMedia({ slide, priority }: { slide: HeroSlideListItem; priority: b
                 loop
                 playsInline
                 preload={priority ? 'metadata' : 'none'}
-                poster={desktopImageUrl ?? mobileImageUrl ?? undefined}
-              >
+                poster={desktopImageUrl ?? mobileImageUrl ?? undefined}>
                 <source src={videoUrl} type={slide.video?.mimeType} />
               </video>
             )}
@@ -116,8 +119,7 @@ export default function HeroSliderClient({ slides }: HeroSliderClientProps) {
           prevSlideMessage: 'Previous hero slide',
           nextSlideMessage: 'Next hero slide',
           paginationBulletMessage: 'Go to hero slide {{index}}',
-        }}
-      >
+        }}>
         {slides.map((slide, index) => (
           <SwiperSlide key={slide.id}>
             <article className={`hero-slide hero-slide--${slide.overlayPosition}`}>
@@ -139,7 +141,12 @@ export default function HeroSliderClient({ slides }: HeroSliderClientProps) {
                   {(slide.ctaType !== 'none' || slide.secondaryCtaType !== 'none') && (
                     <div className="hero-slide__actions">
                       <SlideAction href={slide.ctaHref} label={slide.ctaLabel} target={slide.ctaTarget} variant="primary" />
-                      <SlideAction href={slide.secondaryCtaHref} label={slide.secondaryCtaLabel} target={slide.secondaryCtaTarget} variant="secondary" />
+                      <SlideAction
+                        href={slide.secondaryCtaHref}
+                        label={slide.secondaryCtaLabel}
+                        target={slide.secondaryCtaTarget}
+                        variant="secondary"
+                      />
                     </div>
                   )}
 

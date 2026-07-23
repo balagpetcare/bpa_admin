@@ -12,7 +12,7 @@ import type { RegistrationStatus, EventRegistration } from '@/types/bpa.types'
 import type { ApiError } from '@/lib/api'
 
 const STATUS_COLOR: Record<RegistrationStatus, string> = {
-  pending:   'warning',
+  pending: 'warning',
   confirmed: 'success',
   cancelled: 'danger',
 }
@@ -36,10 +36,7 @@ export default function RegistrationsTab({ eventId }: RegistrationsTabProps) {
   const { mutate, loading: updating } = useApiMutation<EventRegistration, { regId: string; status: RegistrationStatus }>()
 
   const updateStatus = async (regId: string, newStatus: RegistrationStatus) => {
-    await mutate(
-      ({ regId: rId, status: s }) => eventsApi.updateRegistrationStatus(eventId, rId, s),
-      { regId, status: newStatus },
-    )
+    await mutate(({ regId: rId, status: s }) => eventsApi.updateRegistrationStatus(eventId, rId, s), { regId, status: newStatus })
     refetch()
   }
 
@@ -50,14 +47,20 @@ export default function RegistrationsTab({ eventId }: RegistrationsTabProps) {
           size="sm"
           style={{ width: 180 }}
           value={statusFilter}
-          onChange={(e) => { setStatusFilter(e.target.value as RegistrationStatus | ''); setPage(1) }}
-        >
+          onChange={(e) => {
+            setStatusFilter(e.target.value as RegistrationStatus | '')
+            setPage(1)
+          }}>
           <option value="">All Statuses</option>
           <option value="pending">Pending</option>
           <option value="confirmed">Confirmed</option>
           <option value="cancelled">Cancelled</option>
         </Form.Select>
-        {meta && <small className="align-self-center text-muted">{meta.total} registration{meta.total !== 1 ? 's' : ''}</small>}
+        {meta && (
+          <small className="align-self-center text-muted">
+            {meta.total} registration{meta.total !== 1 ? 's' : ''}
+          </small>
+        )}
       </div>
 
       <ApiErrorAlert error={error as ApiError | null} />
@@ -79,7 +82,11 @@ export default function RegistrationsTab({ eventId }: RegistrationsTabProps) {
               {regs.length === 0 ? (
                 <tr>
                   <td colSpan={6}>
-                    <EmptyState icon="solar:users-group-two-rounded-bold-duotone" title="No registrations" description="No registrations match the current filter." />
+                    <EmptyState
+                      icon="solar:users-group-two-rounded-bold-duotone"
+                      title="No registrations"
+                      description="No registrations match the current filter."
+                    />
                   </td>
                 </tr>
               ) : (
@@ -89,7 +96,9 @@ export default function RegistrationsTab({ eventId }: RegistrationsTabProps) {
                     <td>{reg.email}</td>
                     <td>{reg.phone ?? <span className="text-muted">—</span>}</td>
                     <td>
-                      <Badge bg={STATUS_COLOR[reg.status]} className="text-capitalize">{reg.status}</Badge>
+                      <Badge bg={STATUS_COLOR[reg.status]} className="text-capitalize">
+                        {reg.status}
+                      </Badge>
                     </td>
                     <td className="small">{new Date(reg.createdAt).toLocaleDateString()}</td>
                     <td>
@@ -116,10 +125,16 @@ export default function RegistrationsTab({ eventId }: RegistrationsTabProps) {
 
       {meta && meta.totalPages > 1 && (
         <div className="d-flex justify-content-between align-items-center mt-3">
-          <small className="text-muted">Page {meta.page} of {meta.totalPages}</small>
+          <small className="text-muted">
+            Page {meta.page} of {meta.totalPages}
+          </small>
           <div className="d-flex gap-1">
-            <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage(p => p - 1)}>‹</Button>
-            <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage(p => p + 1)}>›</Button>
+            <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+              ‹
+            </Button>
+            <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+              ›
+            </Button>
           </div>
         </div>
       )}

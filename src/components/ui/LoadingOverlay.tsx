@@ -21,8 +21,7 @@ export default function LoadingOverlay({ loading, children }: LoadingOverlayProp
             justifyContent: 'center',
             zIndex: 10,
             borderRadius: 'inherit',
-          }}
-        >
+          }}>
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>

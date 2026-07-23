@@ -40,7 +40,9 @@ export default function SmsFilterBar(props: Props) {
     <Row className="g-2 mb-3 align-items-end">
       <Col xs={12} md={3}>
         <InputGroup size="sm">
-          <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
+          <InputGroup.Text>
+            <Icon icon="solar:magnifer-bold" />
+          </InputGroup.Text>
           <Form.Control
             size="sm"
             placeholder="Search reference, phone..."
@@ -54,25 +56,24 @@ export default function SmsFilterBar(props: Props) {
         <Form.Select size="sm" value={props.status} onChange={(e) => props.onStatusChange(e.target.value as SmsStatus | '')}>
           <option value="">All Statuses</option>
           {SMS_STATUSES.map((s) => (
-            <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+            <option key={s} value={s}>
+              {s.charAt(0).toUpperCase() + s.slice(1)}
+            </option>
           ))}
         </Form.Select>
       </Col>
 
       <Col xs={6} sm={4} md={2}>
-        <Form.Control
-          size="sm"
-          placeholder="Module (e.g. donations)"
-          value={props.module}
-          onChange={(e) => props.onModuleChange(e.target.value)}
-        />
+        <Form.Control size="sm" placeholder="Module (e.g. donations)" value={props.module} onChange={(e) => props.onModuleChange(e.target.value)} />
       </Col>
 
       <Col xs={6} sm={4} md={2}>
         <Form.Select size="sm" value={props.failureReason} onChange={(e) => props.onFailureReasonChange(e.target.value)}>
           <option value="">All Failure Reasons</option>
           {FAILURE_REASONS.map((r) => (
-            <option key={r.value} value={r.value}>{r.label}</option>
+            <option key={r.value} value={r.value}>
+              {r.label}
+            </option>
           ))}
         </Form.Select>
       </Col>

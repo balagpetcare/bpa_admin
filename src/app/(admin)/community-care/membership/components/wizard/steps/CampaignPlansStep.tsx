@@ -28,7 +28,8 @@ export default function CampaignPlansStep() {
     <div className="mb-4">
       <h5 className="mb-3">Campaign Plans & Offers</h5>
       <Alert variant="info" className="small">
-        Membership Tier is the master source of truth. Campaign offer changes apply only to future purchases. Existing memberships retain their stored entitlement.
+        Membership Tier is the master source of truth. Campaign offer changes apply only to future purchases. Existing memberships retain their stored
+        entitlement.
       </Alert>
 
       {activePlans.length === 0 && (
@@ -62,7 +63,9 @@ export default function CampaignPlansStep() {
             <tbody>
               {plans.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center text-muted py-4">No plans configured for this campaign.</td>
+                  <td colSpan={5} className="text-center text-muted py-4">
+                    No plans configured for this campaign.
+                  </td>
                 </tr>
               ) : (
                 plans.map((item) => (
@@ -73,7 +76,9 @@ export default function CampaignPlansStep() {
                       <div>Regular: BDT {Number(item.regularPriceSnapshot ?? item.regularPrice ?? 0).toLocaleString()}</div>
                       <div className="text-success small">Campaign: BDT {Number(item.campaignPrice ?? item.offerPrice ?? 0).toLocaleString()}</div>
                     </td>
-                    <td>{item.includedPetsSnapshot ?? item.maxCoveredPets} included / {item.maxPetsSnapshot ?? item.maxCoveredPets} max</td>
+                    <td>
+                      {item.includedPetsSnapshot ?? item.maxCoveredPets} included / {item.maxPetsSnapshot ?? item.maxCoveredPets} max
+                    </td>
                     <td>
                       <StatusBadge status={item.isActive ? 'active' : 'inactive'} label={item.isActive ? 'Active' : 'Inactive'} />
                     </td>

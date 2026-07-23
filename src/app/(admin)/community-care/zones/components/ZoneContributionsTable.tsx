@@ -41,37 +41,49 @@ export default function ZoneContributionsTable({ zoneId }: { zoneId: string }) {
             </thead>
             <tbody>
               {contributions.length === 0 ? (
-                <tr><td colSpan={6} className="text-center py-4 text-muted">No contributions found in this zone</td></tr>
-              ) : contributions.map((c: CareContribution) => (
-                <tr key={c.id}>
-                  <td className="ps-3">
-                    <div className="fw-semibold">{c.contributorName}</div>
-                    <small className="text-muted">{c.contributorEmail || 'No email'}</small>
-                  </td>
-                  <td>{c.contributorMobile}</td>
-                  <td className="fw-medium">৳{Number(c.amountBdt).toLocaleString()}</td>
-                  <td>
-                    <Badge bg={c.status === 'paid' ? 'success-subtle' : 'warning-subtle'} text={c.status === 'paid' ? 'success' : 'warning'}>
-                      {c.status.replace('_', ' ')}
-                    </Badge>
-                  </td>
-                  <td>{new Date(c.createdAt).toLocaleDateString()}</td>
-                  <td className="pe-3 text-end">
-                    <Link href={`/community-care/contributors/${c.id}`} className="btn btn-sm btn-soft-primary">
-                      <Icon icon="solar:eye-bold" />
-                    </Link>
+                <tr>
+                  <td colSpan={6} className="text-center py-4 text-muted">
+                    No contributions found in this zone
                   </td>
                 </tr>
-              ))}
+              ) : (
+                contributions.map((c: CareContribution) => (
+                  <tr key={c.id}>
+                    <td className="ps-3">
+                      <div className="fw-semibold">{c.contributorName}</div>
+                      <small className="text-muted">{c.contributorEmail || 'No email'}</small>
+                    </td>
+                    <td>{c.contributorMobile}</td>
+                    <td className="fw-medium">৳{Number(c.amountBdt).toLocaleString()}</td>
+                    <td>
+                      <Badge bg={c.status === 'paid' ? 'success-subtle' : 'warning-subtle'} text={c.status === 'paid' ? 'success' : 'warning'}>
+                        {c.status.replace('_', ' ')}
+                      </Badge>
+                    </td>
+                    <td>{new Date(c.createdAt).toLocaleDateString()}</td>
+                    <td className="pe-3 text-end">
+                      <Link href={`/community-care/contributors/${c.id}`} className="btn btn-sm btn-soft-primary">
+                        <Icon icon="solar:eye-bold" />
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </Table>
 
           {meta && meta.totalPages > 1 && (
             <div className="p-3 border-top d-flex justify-content-between align-items-center">
-              <small className="text-muted">Showing page {page} of {meta.totalPages}</small>
+              <small className="text-muted">
+                Showing page {page} of {meta.totalPages}
+              </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={page === 1} onClick={() => setPage(p => p - 1)}>‹</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage(p => p + 1)}>›</Button>
+                <Button size="sm" variant="outline-secondary" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+                  ‹
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  ›
+                </Button>
               </div>
             </div>
           )}

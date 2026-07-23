@@ -22,14 +22,16 @@ export default function MailSettingsPage() {
               <Table bordered hover responsive size="sm" className="align-middle">
                 <tbody>
                   <tr>
-                    <td className="fw-semibold bg-light text-secondary" style={{ width: '40%' }}>Max Attachment Size</td>
+                    <td className="fw-semibold bg-light text-secondary" style={{ width: '40%' }}>
+                      Max Attachment Size
+                    </td>
                     <td>15 Megabytes (15MB)</td>
                   </tr>
                   <tr>
                     <td className="fw-semibold bg-light text-secondary">Blocked File Extensions</td>
                     <td>
                       <div className="d-flex flex-wrap gap-1">
-                        {['.exe', '.js', '.sh', '.bat', '.cmd', '.scr', '.msi', '.vbs', '.com'].map(ext => (
+                        {['.exe', '.js', '.sh', '.bat', '.cmd', '.scr', '.msi', '.vbs', '.com'].map((ext) => (
                           <Badge key={ext} bg="danger-subtle" className="text-danger border border-danger">
                             {ext}
                           </Badge>
@@ -43,7 +45,9 @@ export default function MailSettingsPage() {
                   </tr>
                   <tr>
                     <td className="fw-semibold bg-light text-secondary">Password Storage</td>
-                    <td>Symmetrically encrypted using <code>aes-256-cbc</code> before database persistence</td>
+                    <td>
+                      Symmetrically encrypted using <code>aes-256-cbc</code> before database persistence
+                    </td>
                   </tr>
                 </tbody>
               </Table>
@@ -67,14 +71,17 @@ export default function MailSettingsPage() {
             <Card.Body className="d-flex flex-column justify-content-between">
               <div>
                 <p className="text-secondary small">
-                  The BPA Mailing system utilizes a dual phase synchronization strategy to download domain emails from the official cPanel IMAP server:
+                  The BPA Mailing system utilizes a dual phase synchronization strategy to download domain emails from the official cPanel IMAP
+                  server:
                 </p>
                 <ol className="small ps-3 text-secondary mb-3">
                   <li className="mb-2">
-                    <strong>Phase 1 (Manual Sync):</strong> Admin triggers immediate fetching of the latest 50 emails by clicking the &ldquo;Sync Mailbox&rdquo; button on the Inbox dashboard.
+                    <strong>Phase 1 (Manual Sync):</strong> Admin triggers immediate fetching of the latest 50 emails by clicking the &ldquo;Sync
+                    Mailbox&rdquo; button on the Inbox dashboard.
                   </li>
                   <li className="mb-2">
-                    <strong>Phase 2 (Background Job):</strong> Server runs an automated task scheduler every 5 minutes executing a cron job to synchronize new emails incrementally using <code>UID / messageId</code> duplication checks.
+                    <strong>Phase 2 (Background Job):</strong> Server runs an automated task scheduler every 5 minutes executing a cron job to
+                    synchronize new emails incrementally using <code>UID / messageId</code> duplication checks.
                   </li>
                 </ol>
                 <div className="bg-light p-3 rounded mb-3">

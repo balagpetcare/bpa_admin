@@ -8,7 +8,9 @@ import { getApiBase } from '@/lib/utils/api-url'
 const BpaMarkSvg = () => (
   <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" aria-label="BPA">
     <circle cx="14" cy="14" r="14" fill="#1a6e38" />
-    <text x="14" y="19" textAnchor="middle" fill="white" fontSize="8.5" fontFamily="Arial,sans-serif" fontWeight="700">BPA</text>
+    <text x="14" y="19" textAnchor="middle" fill="white" fontSize="8.5" fontFamily="Arial,sans-serif" fontWeight="700">
+      BPA
+    </text>
   </svg>
 )
 
@@ -37,7 +39,7 @@ const LogoBox = () => {
 
   useEffect(() => {
     fetch(`${getApiBase()}/public/site-settings`)
-      .then(r => r.json())
+      .then((r) => r.json())
       .then((json: { data?: { secondaryLogoUrl?: string | null; primaryLogoUrl?: string | null } }) => {
         const url = json?.data?.secondaryLogoUrl ?? json?.data?.primaryLogoUrl ?? null
         setLogoUrl(url)
@@ -47,12 +49,10 @@ const LogoBox = () => {
 
   const smLogo = <BpaMarkSvg />
 
-  const expandedLogo = logoUrl
-    ? (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src={logoUrl} alt="BPA" style={{ height: 28, width: 'auto', objectFit: 'contain', maxWidth: 160 }} />
-    )
-    : null
+  const expandedLogo = logoUrl ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={logoUrl} alt="BPA" style={{ height: 28, width: 'auto', objectFit: 'contain', maxWidth: 160 }} />
+  ) : null
 
   return (
     <div className="logo-box">

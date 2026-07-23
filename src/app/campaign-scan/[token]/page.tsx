@@ -87,19 +87,19 @@ function StatusBadge({ label, variant }: { label: string; variant: 'green' | 'am
   const colors = {
     green: 'bg-green-100 text-green-800 border-green-200',
     amber: 'bg-amber-100 text-amber-800 border-amber-200',
-    red:   'bg-red-100 text-red-800 border-red-200',
-    blue:  'bg-blue-100 text-blue-800 border-blue-200',
-    gray:  'bg-gray-100 text-gray-600 border-gray-200',
+    red: 'bg-red-100 text-red-800 border-red-200',
+    blue: 'bg-blue-100 text-blue-800 border-blue-200',
+    gray: 'bg-gray-100 text-gray-600 border-gray-200',
   }
-  return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${colors[variant]}`}>
-      {label}
-    </span>
-  )
+  return <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border ${colors[variant]}`}>{label}</span>
 }
 
 function ActionButton({
-  label, onClick, loading, disabled, variant = 'primary',
+  label,
+  onClick,
+  loading,
+  disabled,
+  variant = 'primary',
 }: {
   label: string
   onClick: () => void
@@ -111,15 +111,14 @@ function ActionButton({
     primary: 'bg-blue-600 hover:bg-blue-700 text-white',
     success: 'bg-green-600 hover:bg-green-700 text-white',
     warning: 'bg-amber-500 hover:bg-amber-600 text-white',
-    danger:  'bg-red-600 hover:bg-red-700 text-white',
+    danger: 'bg-red-600 hover:bg-red-700 text-white',
   }
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled || loading}
-      className={`w-full px-4 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${colors[variant]}`}
-    >
+      className={`w-full px-4 py-3 rounded-xl font-bold text-sm transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${colors[variant]}`}>
       {loading ? 'Please wait…' : label}
     </button>
   )
@@ -152,7 +151,9 @@ export default function CampaignScanPage() {
     }
   }, [token])
 
-  useEffect(() => { fetchScan() }, [fetchScan])
+  useEffect(() => {
+    fetchScan()
+  }, [fetchScan])
 
   async function handleAction(action: string, successText: string) {
     setActionLoading(action)
@@ -160,8 +161,8 @@ export default function CampaignScanPage() {
     setError(null)
     try {
       const result = await api.post<ScanData>(`/admin/campaign-registrations/scan/${token}/${action}`, {})
-      const updated = (result as unknown as { booking?: ScanData })
-      setData(updated.booking ?? result as unknown as ScanData)
+      const updated = result as unknown as { booking?: ScanData }
+      setData(updated.booking ?? (result as unknown as ScanData))
       setSuccessMsg(successText)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : `Action failed: ${action}`)
@@ -190,8 +191,9 @@ export default function CampaignScanPage() {
           </div>
           <h2 className="font-bold text-gray-800 mb-2">Booking Not Found</h2>
           <p className="text-sm text-gray-500 mb-4">{error}</p>
-          <button type="button" onClick={fetchScan}
-            className="text-sm text-blue-600 underline">Try again</button>
+          <button type="button" onClick={fetchScan} className="text-sm text-blue-600 underline">
+            Try again
+          </button>
         </div>
       </div>
     )
@@ -210,26 +212,20 @@ export default function CampaignScanPage() {
             <p className="text-[10px] font-bold text-blue-300 uppercase tracking-widest">BPA Staff Check-In</p>
             <p className="font-mono font-extrabold text-white text-lg tracking-wider">{bookingNumber}</p>
           </div>
-          <button type="button" onClick={fetchScan}
-            className="text-xs text-blue-300 underline">Refresh</button>
+          <button type="button" onClick={fetchScan} className="text-xs text-blue-300 underline">
+            Refresh
+          </button>
         </div>
       </div>
 
       <div className="max-w-xl mx-auto px-4 pt-4 space-y-4">
-
         {/* Success message */}
         {successMsg && (
-          <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm text-green-800 font-semibold">
-            ✓ {successMsg}
-          </div>
+          <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm text-green-800 font-semibold">✓ {successMsg}</div>
         )}
 
         {/* Error message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-800">
-            {error}
-          </div>
-        )}
+        {error && <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-800">{error}</div>}
 
         {/* Status badges */}
         <div className="bg-white rounded-2xl border border-gray-200 p-4">
@@ -239,18 +235,9 @@ export default function CampaignScanPage() {
               label={isPaid ? (data.paymentStatus === 'success' ? 'PAID ONLINE' : 'PAID AT CENTER') : 'PAY AT CENTER'}
               variant={isPaid ? 'green' : 'amber'}
             />
-            <StatusBadge
-              label={summary.allCheckedIn ? 'Checked In' : 'Not Checked In'}
-              variant={summary.allCheckedIn ? 'blue' : 'gray'}
-            />
-            <StatusBadge
-              label={summary.allVaccinated ? 'Vaccinated' : 'Pending Vaccination'}
-              variant={summary.allVaccinated ? 'green' : 'gray'}
-            />
-            <StatusBadge
-              label={summary.allCertIssued ? 'Certificate Issued' : 'No Certificate'}
-              variant={summary.allCertIssued ? 'green' : 'gray'}
-            />
+            <StatusBadge label={summary.allCheckedIn ? 'Checked In' : 'Not Checked In'} variant={summary.allCheckedIn ? 'blue' : 'gray'} />
+            <StatusBadge label={summary.allVaccinated ? 'Vaccinated' : 'Pending Vaccination'} variant={summary.allVaccinated ? 'green' : 'gray'} />
+            <StatusBadge label={summary.allCertIssued ? 'Certificate Issued' : 'No Certificate'} variant={summary.allCertIssued ? 'green' : 'gray'} />
           </div>
         </div>
 
@@ -258,7 +245,10 @@ export default function CampaignScanPage() {
         {!isPaid && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
             <p className="font-bold mb-0.5">Payment Pending</p>
-            <p>Collect payment at center before completing vaccination. Amount due: <strong>BDT {Number(String(totalAmountBdt)).toLocaleString()}</strong></p>
+            <p>
+              Collect payment at center before completing vaccination. Amount due:{' '}
+              <strong>BDT {Number(String(totalAmountBdt)).toLocaleString()}</strong>
+            </p>
           </div>
         )}
         {isPaid && (
@@ -272,8 +262,7 @@ export default function CampaignScanPage() {
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Owner</p>
           <p className="font-bold text-gray-800">{owner?.ownerName}</p>
           {owner?.mobile && (
-            <a href={`tel:${owner.mobile}`}
-              className="inline-flex items-center gap-1 text-blue-600 font-semibold text-sm mt-0.5">
+            <a href={`tel:${owner.mobile}`} className="inline-flex items-center gap-1 text-blue-600 font-semibold text-sm mt-0.5">
               📞 {owner.mobile}
             </a>
           )}
@@ -287,23 +276,25 @@ export default function CampaignScanPage() {
           {session && (
             <div className="mt-2 text-sm text-gray-600">
               <p>📍 {session.venue?.name ?? '—'}</p>
-              <p>📅 {fmtDate(session.sessionDate)} · {fmt12(session.startTime)}–{fmt12(session.endTime)}</p>
+              <p>
+                📅 {fmtDate(session.sessionDate)} · {fmt12(session.startTime)}–{fmt12(session.endTime)}
+              </p>
             </div>
           )}
-          <p className="text-sm font-bold text-gray-700 mt-2">
-            Total: BDT {Number(String(totalAmountBdt)).toLocaleString()}
-          </p>
+          <p className="text-sm font-bold text-gray-700 mt-2">Total: BDT {Number(String(totalAmountBdt)).toLocaleString()}</p>
         </div>
 
         {/* Pet bookings */}
         <div className="bg-white rounded-2xl border border-gray-200 p-4">
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Pets ({petBookings.length})</p>
           <div className="space-y-3">
-            {petBookings.map(pb => (
+            {petBookings.map((pb) => (
               <div key={pb.id} className="bg-gray-50 rounded-xl p-3 border border-gray-200">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <div>
-                    <p className="font-bold text-gray-800 text-sm">{pb.pet?.name} — {pb.pet?.petType}</p>
+                    <p className="font-bold text-gray-800 text-sm">
+                      {pb.pet?.name} — {pb.pet?.petType}
+                    </p>
                     {pb.pet?.breed && <p className="text-xs text-gray-500">{pb.pet.breed}</p>}
                   </div>
                   <StatusBadge
@@ -311,32 +302,32 @@ export default function CampaignScanPage() {
                     variant={
                       pb.status === 'vaccinated' || pb.status === 'certificate_issued' || pb.status === 'completed'
                         ? 'green'
-                        : pb.status === 'checked_in' ? 'blue'
-                        : pb.status === 'paid' ? 'green'
-                        : 'amber'
+                        : pb.status === 'checked_in'
+                          ? 'blue'
+                          : pb.status === 'paid'
+                            ? 'green'
+                            : 'amber'
                     }
                   />
                 </div>
                 <div className="text-xs text-gray-500 space-y-0.5">
-                  {pb.services.filter(s => s.name).map(s => (
-                    <span key={s.id} className="inline-block mr-2">
-                      · {s.name}{s.isRequired ? '' : ' (opt)'}
-                    </span>
-                  ))}
+                  {pb.services
+                    .filter((s) => s.name)
+                    .map((s) => (
+                      <span key={s.id} className="inline-block mr-2">
+                        · {s.name}
+                        {s.isRequired ? '' : ' (opt)'}
+                      </span>
+                    ))}
                 </div>
-                {pb.checkedInAt && (
-                  <p className="text-xs text-blue-600 mt-1">✓ Checked in {fmtDate(pb.checkedInAt)}</p>
-                )}
-                {pb.vaccinatedAt && (
-                  <p className="text-xs text-green-600 mt-0.5">✓ Vaccinated {fmtDate(pb.vaccinatedAt)}</p>
-                )}
+                {pb.checkedInAt && <p className="text-xs text-blue-600 mt-1">✓ Checked in {fmtDate(pb.checkedInAt)}</p>}
+                {pb.vaccinatedAt && <p className="text-xs text-green-600 mt-0.5">✓ Vaccinated {fmtDate(pb.vaccinatedAt)}</p>}
                 {pb.certificate && (
                   <a
                     href={`${CERT_BASE}/api/v1/public/campaigns/certificate-pdf/${pb.certificate.verifyToken}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-600 underline mt-0.5 block"
-                  >
+                    className="text-xs text-blue-600 underline mt-0.5 block">
                     📄 Certificate #{pb.certificate.certificateNumber}
                   </a>
                 )}
@@ -349,7 +340,6 @@ export default function CampaignScanPage() {
         <div className="bg-white rounded-2xl border border-gray-200 p-4">
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Actions</p>
           <div className="space-y-2.5">
-
             {allowedActions.canReceivePayment && (
               <ActionButton
                 label={`Receive Payment — BDT ${Number(String(totalAmountBdt)).toLocaleString()}`}
@@ -386,15 +376,14 @@ export default function CampaignScanPage() {
               />
             )}
 
-            {!allowedActions.canReceivePayment && !allowedActions.canCheckIn &&
-             !allowedActions.canMarkVaccinated && !allowedActions.canIssueCertificates && (
-              <p className="text-sm text-gray-500 text-center py-2">
-                ✓ All actions completed for this booking.
-              </p>
-            )}
+            {!allowedActions.canReceivePayment &&
+              !allowedActions.canCheckIn &&
+              !allowedActions.canMarkVaccinated &&
+              !allowedActions.canIssueCertificates && (
+                <p className="text-sm text-gray-500 text-center py-2">✓ All actions completed for this booking.</p>
+              )}
           </div>
         </div>
-
       </div>
     </div>
   )

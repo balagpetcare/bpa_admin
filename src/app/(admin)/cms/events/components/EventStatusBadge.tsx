@@ -4,9 +4,9 @@ import { Badge } from 'react-bootstrap'
 import type { EventStatus } from '@/types/bpa.types'
 
 const MAP: Record<EventStatus, { bg: string; label: string }> = {
-  draft:     { bg: 'secondary', label: 'Draft' },
-  published: { bg: 'success',   label: 'Published' },
-  cancelled: { bg: 'danger',    label: 'Cancelled' },
+  draft: { bg: 'secondary', label: 'Draft' },
+  published: { bg: 'success', label: 'Published' },
+  cancelled: { bg: 'danger', label: 'Cancelled' },
 }
 
 export default function EventStatusBadge({ status }: { status: EventStatus }) {

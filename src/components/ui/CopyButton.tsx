@@ -19,12 +19,7 @@ export default function CopyButton({ value, size = 'sm' }: CopyButtonProps) {
   }
 
   return (
-    <Button
-      variant={copied ? 'success' : 'outline-secondary'}
-      size={size}
-      onClick={handleCopy}
-      title="Copy to clipboard"
-    >
+    <Button variant={copied ? 'success' : 'outline-secondary'} size={size} onClick={handleCopy} title="Copy to clipboard">
       <Icon icon={copied ? 'solar:check-circle-bold' : 'solar:copy-bold'} />
     </Button>
   )

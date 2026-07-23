@@ -68,16 +68,22 @@ export default function UserFormModal({ isOpen, onClose, onSuccess, user }: User
   const roleIds = watch('roleIds') ?? []
 
   const onSubmit = async (values: FormValues) => {
-    const result = await mutate(
-      async (vals) => {
-        if (isEdit) {
-          return usersApi.update(user!.id, { name: vals.name, email: vals.email, phone: vals.phone ?? undefined, isActive: vals.isActive, roleIds: vals.roleIds })
-        }
-        return usersApi.create({ name: vals.name, email: vals.email, password: vals.password!, phone: vals.phone ?? undefined, roleIds: vals.roleIds })
-      },
-      values,
-    )
-    if (result) { onSuccess(); onClose() }
+    const result = await mutate(async (vals) => {
+      if (isEdit) {
+        return usersApi.update(user!.id, {
+          name: vals.name,
+          email: vals.email,
+          phone: vals.phone ?? undefined,
+          isActive: vals.isActive,
+          roleIds: vals.roleIds,
+        })
+      }
+      return usersApi.create({ name: vals.name, email: vals.email, password: vals.password!, phone: vals.phone ?? undefined, roleIds: vals.roleIds })
+    }, values)
+    if (result) {
+      onSuccess()
+      onClose()
+    }
   }
 
   return (
@@ -99,7 +105,14 @@ export default function UserFormModal({ isOpen, onClose, onSuccess, user }: User
           <Row>
             {!isEdit && (
               <Col md={6}>
-                <TextFormInput name="password" label="Password" type="password" placeholder="Min 8 characters" containerClassName="mb-3" control={control} />
+                <TextFormInput
+                  name="password"
+                  label="Password"
+                  type="password"
+                  placeholder="Min 8 characters"
+                  containerClassName="mb-3"
+                  control={control}
+                />
               </Col>
             )}
             <Col md={6}>
@@ -111,7 +124,13 @@ export default function UserFormModal({ isOpen, onClose, onSuccess, user }: User
                   name="isActive"
                   control={control}
                   render={({ field }) => (
-                    <Form.Check type="switch" id="isActive" label="Active account" checked={!!field.value} onChange={(e) => field.onChange(e.target.checked)} />
+                    <Form.Check
+                      type="switch"
+                      id="isActive"
+                      label="Active account"
+                      checked={!!field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                    />
                   )}
                 />
               </Col>
@@ -122,8 +141,12 @@ export default function UserFormModal({ isOpen, onClose, onSuccess, user }: User
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="light" onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="primary" disabled={loading}>{loading ? 'Saving...' : isEdit ? 'Save Changes' : 'Create User'}</Button>
+          <Button variant="light" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" variant="primary" disabled={loading}>
+            {loading ? 'Saving...' : isEdit ? 'Save Changes' : 'Create User'}
+          </Button>
         </Modal.Footer>
       </Form>
     </Modal>

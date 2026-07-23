@@ -21,10 +21,7 @@ export default function SettingsPage() {
 
   return (
     <div className="container-fluid py-4">
-      <PageHeader
-        title="Content Hub Settings"
-        breadcrumbs={[{ label: 'Content Hub' }, { label: 'Settings' }]}
-      />
+      <PageHeader title="Content Hub Settings" breadcrumbs={[{ label: 'Content Hub' }, { label: 'Settings' }]} />
 
       <Row className="max-w-3xl">
         <Col md={8}>
@@ -61,12 +58,7 @@ export default function SettingsPage() {
 
               <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">CDN & API Cache Revalidation Time (seconds)</Form.Label>
-                <Form.Control
-                  type="number"
-                  value={cacheTime}
-                  onChange={(e) => setCacheTime(parseInt(e.target.value, 10))}
-                  placeholder="300"
-                />
+                <Form.Control type="number" value={cacheTime} onChange={(e) => setCacheTime(parseInt(e.target.value, 10))} placeholder="300" />
                 <Form.Text className="text-muted">
                   Sets the incremental static regeneration (ISR) page caching lifetimes on the public site.
                 </Form.Text>

@@ -31,12 +31,10 @@ export interface ZoneCreatePayload {
 export type ZoneUpdatePayload = Partial<ZoneCreatePayload>
 
 export const communityZonesApi = {
-  list: (params?: PaginationQuery & { status?: string }) =>
-    api.getPaginated<CommunityZone>('/admin/community-zones', params),
+  list: (params?: PaginationQuery & { status?: string }) => api.getPaginated<CommunityZone>('/admin/community-zones', params),
   getDemandRanking: () => api.get<any[]>('/admin/community-zones/demand-ranking'),
   getById: (id: string) => api.get<CommunityZone>(`/admin/community-zones/${id}`),
   create: (data: ZoneCreatePayload) => api.post<CommunityZone>('/admin/community-zones', data),
-  update: (id: string, data: ZoneUpdatePayload) =>
-    api.patch<CommunityZone>(`/admin/community-zones/${id}`, data),
+  update: (id: string, data: ZoneUpdatePayload) => api.patch<CommunityZone>(`/admin/community-zones/${id}`, data),
   remove: (id: string) => api.delete<void>(`/admin/community-zones/${id}`),
 }

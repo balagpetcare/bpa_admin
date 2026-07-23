@@ -10,13 +10,7 @@ export interface Category {
   updatedAt: string
 }
 
-export type ContentPostType =
-  | 'VIDEO'
-  | 'COMMUNITY_POST'
-  | 'ANNOUNCEMENT'
-  | 'DONATION_STORY'
-  | 'CAMPAIGN_UPDATE'
-  | 'PET_CARE_TIP'
+export type ContentPostType = 'VIDEO' | 'COMMUNITY_POST' | 'ANNOUNCEMENT' | 'DONATION_STORY' | 'CAMPAIGN_UPDATE' | 'PET_CARE_TIP'
 
 export interface ContentPost {
   id: string
@@ -32,10 +26,11 @@ export interface ContentPost {
   thumbnailUrl: string | null
   videoUrl: string | null
   videoProvider: string | null
-  videoSourceType?: 'youtube' | 'upload'
+  videoSourceType?: 'youtube' | 'vimeo' | 'upload'
   videoFileUrl?: string | null
   videoFileKey?: string | null
   videoPosterUrl?: string | null
+  durationSeconds?: number | null
   status: 'draft' | 'published' | 'archived'
   categoryId: string | null
   tags: string[]
@@ -107,24 +102,18 @@ export const contentApi = {
     showOnHomepage?: boolean
     isFeatured?: boolean
     isPinned?: boolean
-  }) =>
-    api.get<ContentPost[]>('/admin/content/posts', params as any),
+  }) => api.get<ContentPost[]>('/admin/content/posts', params as any),
 
-  getPostById: (id: string) =>
-    api.get<ContentPost>(`/admin/content/posts/${id}`),
+  getPostById: (id: string) => api.get<ContentPost>(`/admin/content/posts/${id}`),
 
-  createPost: (dto: Partial<ContentPost>) =>
-    api.post<ContentPost>('/admin/content/posts', dto),
+  createPost: (dto: Partial<ContentPost>) => api.post<ContentPost>('/admin/content/posts', dto),
 
-  updatePost: (id: string, dto: Partial<ContentPost>) =>
-    api.patch<ContentPost>(`/admin/content/posts/${id}`, dto),
+  updatePost: (id: string, dto: Partial<ContentPost>) => api.patch<ContentPost>(`/admin/content/posts/${id}`, dto),
 
-  deletePost: (id: string) =>
-    api.delete<void>(`/admin/content/posts/${id}`),
+  deletePost: (id: string) => api.delete<void>(`/admin/content/posts/${id}`),
 
   // Categories CRUD
-  listCategories: () =>
-    api.get<Category[]>('/admin/content/categories'),
+  listCategories: () => api.get<Category[]>('/admin/content/categories'),
 
   createCategory: (dto: { nameEn: string; nameBn: string; slug: string; description?: string | null }) =>
     api.post<Category>('/admin/content/categories', dto),
@@ -132,23 +121,18 @@ export const contentApi = {
   updateCategory: (id: string, dto: { nameEn?: string; nameBn?: string; slug?: string; description?: string | null }) =>
     api.patch<Category>(`/admin/content/categories/${id}`, dto),
 
-  deleteCategory: (id: string) =>
-    api.delete<void>(`/admin/content/categories/${id}`),
+  deleteCategory: (id: string) => api.delete<void>(`/admin/content/categories/${id}`),
 
   // Comments Moderation
   listComments: (params?: { page?: number; limit?: number; status?: string; reported?: boolean; postId?: string }) =>
     api.get<ContentComment[]>('/admin/content/comments', params as any),
 
-  moderateComment: (commentId: string, status: string) =>
-    api.patch<ContentComment>(`/admin/content/comments/${commentId}/status`, { status }),
+  moderateComment: (commentId: string, status: string) => api.patch<ContentComment>(`/admin/content/comments/${commentId}/status`, { status }),
 
-  deleteComment: (commentId: string) =>
-    api.delete<void>(`/content/comments/${commentId}`),
+  deleteComment: (commentId: string) => api.delete<void>(`/content/comments/${commentId}`),
 
   // Reports Management
-  listReports: (params?: { page?: number; limit?: number; status?: string }) =>
-    api.get<ContentReport[]>('/admin/content/reports', params as any),
+  listReports: (params?: { page?: number; limit?: number; status?: string }) => api.get<ContentReport[]>('/admin/content/reports', params as any),
 
-  resolveReport: (id: string, status: string) =>
-    api.patch<ContentReport>(`/admin/content/reports/${id}/status`, { status }),
+  resolveReport: (id: string, status: string) => api.patch<ContentReport>(`/admin/content/reports/${id}/status`, { status }),
 }

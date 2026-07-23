@@ -15,9 +15,7 @@ import type { LocationNode, LocationNodeType } from '@/types/bpa.types'
 // Types specific enough to host a venue. Division/District are too coarse —
 // venues always live under a more specific area. Used only to decide when
 // to show the "Manage venues here" link into the separate Venues page.
-const VENUE_ELIGIBLE_TYPES: LocationNodeType[] = [
-  'UPAZILA', 'THANA', 'UNION', 'POURASHAVA', 'CITY_CORPORATION', 'CITY_ZONE', 'WARD', 'AREA',
-]
+const VENUE_ELIGIBLE_TYPES: LocationNodeType[] = ['UPAZILA', 'THANA', 'UNION', 'POURASHAVA', 'CITY_CORPORATION', 'CITY_ZONE', 'WARD', 'AREA']
 
 const TYPE_LABEL: Record<LocationNodeType, string> = {
   DIVISION: 'Division',
@@ -58,10 +56,7 @@ export default function LocationsContent() {
   const [searchResults, setSearchResults] = useState<LocationNode[] | null>(null)
   const [searching, setSearching] = useState(false)
 
-  const childrenFn = useCallback(
-    () => locationTreeApi.listChildren({ parentId: currentNode?.id ?? null }),
-    [currentNode?.id],
-  )
+  const childrenFn = useCallback(() => locationTreeApi.listChildren({ parentId: currentNode?.id ?? null }), [currentNode?.id])
   const { data: children, loading: loadingChildren, error: childrenError } = useApi(childrenFn, [currentNode?.id])
 
   const isVenueEligible = currentNode ? VENUE_ELIGIBLE_TYPES.includes(currentNode.type) : false
@@ -85,7 +80,10 @@ export default function LocationsContent() {
 
   async function runSearch() {
     const q = searchQuery.trim()
-    if (!q) { setSearchResults(null); return }
+    if (!q) {
+      setSearchResults(null)
+      return
+    }
     setSearching(true)
     try {
       const results = await locationTreeApi.search(q)
@@ -106,10 +104,7 @@ export default function LocationsContent() {
 
   return (
     <div className="container-fluid">
-      <PageHeader
-        title="Location Management"
-        breadcrumbs={[{ label: 'Campaign Mgmt' }, { label: 'Locations' }]}
-      />
+      <PageHeader title="Location Management" breadcrumbs={[{ label: 'Campaign Mgmt' }, { label: 'Locations' }]} />
 
       <ApiErrorAlert error={(childrenError as ApiError | null) ?? null} />
 
@@ -117,18 +112,27 @@ export default function LocationsContent() {
       <Card className="mb-3">
         <Card.Body>
           <InputGroup>
-            <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
+            <InputGroup.Text>
+              <Icon icon="solar:magnifer-bold" />
+            </InputGroup.Text>
             <Form.Control
               placeholder="Search division, district, upazila, union, city corporation, zone, or ward…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') runSearch() }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') runSearch()
+              }}
             />
             <Button variant="outline-secondary" onClick={runSearch} disabled={searching}>
               {searching ? <Spinner size="sm" /> : 'Search'}
             </Button>
             {searchResults !== null && (
-              <Button variant="outline-secondary" onClick={() => { setSearchResults(null); setSearchQuery('') }}>
+              <Button
+                variant="outline-secondary"
+                onClick={() => {
+                  setSearchResults(null)
+                  setSearchQuery('')
+                }}>
                 <Icon icon="solar:close-circle-bold" />
               </Button>
             )}
@@ -145,11 +149,12 @@ export default function LocationsContent() {
                       key={r.id}
                       type="button"
                       className="btn btn-sm btn-outline-light text-start d-flex align-items-center gap-2 border"
-                      onClick={() => jumpToSearchResult(r)}
-                    >
+                      onClick={() => jumpToSearchResult(r)}>
                       <Icon icon={TYPE_ICON[r.type]} />
                       <span className="fw-medium">{r.nameEn}</span>
-                      <Badge bg="secondary" className="ms-auto">{TYPE_LABEL[r.type]}</Badge>
+                      <Badge bg="secondary" className="ms-auto">
+                        {TYPE_LABEL[r.type]}
+                      </Badge>
                     </button>
                   ))}
                 </div>
@@ -164,7 +169,8 @@ export default function LocationsContent() {
         <ol className="breadcrumb mb-0 flex-wrap">
           <li className="breadcrumb-item">
             <button type="button" className="btn btn-link p-0 text-decoration-none" onClick={goToRoot}>
-              <Icon icon="solar:global-bold-duotone" className="me-1" />Bangladesh
+              <Icon icon="solar:global-bold-duotone" className="me-1" />
+              Bangladesh
             </button>
           </li>
           {breadcrumbTrail.map((crumb, i) => (
@@ -184,11 +190,11 @@ export default function LocationsContent() {
       {/* Children of the current node */}
       <Card className={isVenueEligible && currentNode ? 'mb-3' : ''}>
         <Card.Header className="d-flex align-items-center justify-content-between">
-          <span className="fw-semibold">
-            {currentNode ? `${TYPE_LABEL[currentNode.type]}: ${currentNode.nameEn}` : 'Divisions'}
-          </span>
+          <span className="fw-semibold">{currentNode ? `${TYPE_LABEL[currentNode.type]}: ${currentNode.nameEn}` : 'Divisions'}</span>
           {currentNode && (
-            <Badge bg="light" text="dark" className="border">{TYPE_LABEL[currentNode.type]}</Badge>
+            <Badge bg="light" text="dark" className="border">
+              {TYPE_LABEL[currentNode.type]}
+            </Badge>
           )}
         </Card.Header>
         <Card.Body className="p-0">
@@ -207,8 +213,7 @@ export default function LocationsContent() {
                     <button
                       type="button"
                       className="btn btn-light w-100 h-100 text-start d-flex align-items-center gap-2 py-2"
-                      onClick={() => drillInto(child)}
-                    >
+                      onClick={() => drillInto(child)}>
                       <Icon icon={TYPE_ICON[child.type]} className="text-primary flex-shrink-0" style={{ fontSize: 20 }} />
                       <span className="flex-grow-1 text-truncate">{child.nameEn}</span>
                       <Icon icon="solar:alt-arrow-right-linear" className="text-muted" />

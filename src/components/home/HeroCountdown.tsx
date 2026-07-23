@@ -33,10 +33,22 @@ export default function HeroCountdown({ label, targetAt }: HeroCountdownProps) {
     <div className="hero-slide__countdown" aria-live="polite">
       <span className="hero-slide__countdown-label">{label}</span>
       <div className="hero-slide__countdown-grid">
-        <div><strong>{time.days}</strong><span>Days</span></div>
-        <div><strong>{time.hours}</strong><span>Hours</span></div>
-        <div><strong>{time.minutes}</strong><span>Minutes</span></div>
-        <div><strong>{time.seconds}</strong><span>Seconds</span></div>
+        <div>
+          <strong>{time.days}</strong>
+          <span>Days</span>
+        </div>
+        <div>
+          <strong>{time.hours}</strong>
+          <span>Hours</span>
+        </div>
+        <div>
+          <strong>{time.minutes}</strong>
+          <span>Minutes</span>
+        </div>
+        <div>
+          <strong>{time.seconds}</strong>
+          <span>Seconds</span>
+        </div>
       </div>
       {time.complete && <span className="hero-slide__countdown-complete">Countdown complete</span>}
     </div>

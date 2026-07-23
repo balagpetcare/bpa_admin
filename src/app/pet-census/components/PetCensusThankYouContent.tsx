@@ -15,18 +15,24 @@ export default function PetCensusThankYouContent() {
           <div className="pet-census-simple-card">
             <span className="pet-census-kicker">Submission Received</span>
             <h1>ধন্যবাদ, আপনার Pet Census 2026 তথ্য জমা হয়েছে</h1>
-            <p>
-              BPA will use this information for future welfare planning, vaccination mapping, and community support preparation.
-            </p>
-            {id && <p className="text-muted mb-2">Reference ID: <code>{id}</code></p>}
+            <p>BPA will use this information for future welfare planning, vaccination mapping, and community support preparation.</p>
+            {id && (
+              <p className="text-muted mb-2">
+                Reference ID: <code>{id}</code>
+              </p>
+            )}
             {duplicate && (
               <div className="alert alert-warning text-start">
                 A similar mobile + pet name entry already exists in our records, so this submission has been flagged for admin review.
               </div>
             )}
             <div className="d-flex flex-wrap gap-3 justify-content-center mt-4">
-              <Link href="/pet-census/register" className="btn btn-primary btn-lg">Add Another Pet</Link>
-              <Link href="/pet-census/status" className="btn btn-outline-secondary btn-lg">Check Status</Link>
+              <Link href="/pet-census/register" className="btn btn-primary btn-lg">
+                Add Another Pet
+              </Link>
+              <Link href="/pet-census/status" className="btn btn-outline-secondary btn-lg">
+                Check Status
+              </Link>
             </div>
           </div>
         </div>

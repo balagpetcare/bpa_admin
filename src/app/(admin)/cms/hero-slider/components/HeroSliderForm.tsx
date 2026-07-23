@@ -63,10 +63,7 @@ export default function HeroSliderForm({ slide }: HeroSliderFormProps) {
   const showVideoField = form.mediaType === 'video'
   const stats = form.stats ?? []
 
-  const pageTitle = useMemo(
-    () => (isEdit ? `Edit Slide: ${slide?.title}` : 'New Hero Slide'),
-    [isEdit, slide?.title],
-  )
+  const pageTitle = useMemo(() => (isEdit ? `Edit Slide: ${slide?.title}` : 'New Hero Slide'), [isEdit, slide?.title])
 
   const update = <K extends keyof HeroSlideWriteDto>(key: K, value: HeroSlideWriteDto[K]) => {
     clearError()
@@ -111,15 +108,12 @@ export default function HeroSliderForm({ slide }: HeroSliderFormProps) {
       ctaHref: form.ctaType === 'none' ? null : form.ctaHref?.trim() || null,
       secondaryCtaLabel: form.secondaryCtaType === 'none' ? null : form.secondaryCtaLabel?.trim() || null,
       secondaryCtaHref: form.secondaryCtaType === 'none' ? null : form.secondaryCtaHref?.trim() || null,
-      video: form.mediaType === 'video' ? form.video ?? null : null,
+      video: form.mediaType === 'video' ? (form.video ?? null) : null,
       countdownLabel: form.countdownLabel?.trim() || null,
       stats: stats.filter((item) => item.label.trim() || item.value.trim()),
     }
 
-    const result = await mutate(
-      () => isEdit ? heroSliderApi.update(slide!.id, payload) : heroSliderApi.create(payload),
-      payload,
-    )
+    const result = await mutate(() => (isEdit ? heroSliderApi.update(slide!.id, payload) : heroSliderApi.create(payload)), payload)
 
     if (result) {
       router.push('/cms/hero-slider')
@@ -130,11 +124,7 @@ export default function HeroSliderForm({ slide }: HeroSliderFormProps) {
     <div className="container-fluid">
       <PageHeader
         title={pageTitle}
-        breadcrumbs={[
-          { label: 'Content' },
-          { label: 'Hero Slider', href: '/cms/hero-slider' },
-          { label: isEdit ? 'Edit' : 'Create' },
-        ]}
+        breadcrumbs={[{ label: 'Content' }, { label: 'Hero Slider', href: '/cms/hero-slider' }, { label: isEdit ? 'Edit' : 'Create' }]}
       />
 
       <Form onSubmit={handleSubmit}>
@@ -197,13 +187,21 @@ export default function HeroSliderForm({ slide }: HeroSliderFormProps) {
                   <Col md={12}>
                     <Form.Group>
                       <Form.Label>Eyebrow</Form.Label>
-                      <Form.Control value={form.eyebrow ?? ''} onChange={(e) => update('eyebrow', e.target.value)} placeholder="Optional small heading" />
+                      <Form.Control
+                        value={form.eyebrow ?? ''}
+                        onChange={(e) => update('eyebrow', e.target.value)}
+                        placeholder="Optional small heading"
+                      />
                     </Form.Group>
                   </Col>
                   <Col md={6}>
                     <Form.Group>
                       <Form.Label>Campaign Tag</Form.Label>
-                      <Form.Control value={form.campaignTag ?? ''} onChange={(e) => update('campaignTag', e.target.value)} placeholder="Vaccination Drive" />
+                      <Form.Control
+                        value={form.campaignTag ?? ''}
+                        onChange={(e) => update('campaignTag', e.target.value)}
+                        placeholder="Vaccination Drive"
+                      />
                     </Form.Group>
                   </Col>
                   <Col md={12}>
@@ -215,7 +213,13 @@ export default function HeroSliderForm({ slide }: HeroSliderFormProps) {
                   <Col md={12}>
                     <Form.Group>
                       <Form.Label>Body Copy</Form.Label>
-                      <Form.Control as="textarea" rows={4} value={form.body ?? ''} onChange={(e) => update('body', e.target.value)} placeholder="Optional supporting copy" />
+                      <Form.Control
+                        as="textarea"
+                        rows={4}
+                        value={form.body ?? ''}
+                        onChange={(e) => update('body', e.target.value)}
+                        placeholder="Optional supporting copy"
+                      />
                     </Form.Group>
                   </Col>
 
@@ -231,7 +235,9 @@ export default function HeroSliderForm({ slide }: HeroSliderFormProps) {
                   <Col md={4}>
                     <Form.Group>
                       <Form.Label>Overlay Position</Form.Label>
-                      <Form.Select value={form.overlayPosition} onChange={(e) => update('overlayPosition', e.target.value as HeroSlideWriteDto['overlayPosition'])}>
+                      <Form.Select
+                        value={form.overlayPosition}
+                        onChange={(e) => update('overlayPosition', e.target.value as HeroSlideWriteDto['overlayPosition'])}>
                         <option value="left">Left</option>
                         <option value="center">Center</option>
                         <option value="right">Right</option>
@@ -387,7 +393,9 @@ export default function HeroSliderForm({ slide }: HeroSliderFormProps) {
                   <Col md={4}>
                     <Form.Group>
                       <Form.Label>Second CTA Type</Form.Label>
-                      <Form.Select value={form.secondaryCtaType} onChange={(e) => update('secondaryCtaType', e.target.value as HeroSlideWriteDto['secondaryCtaType'])}>
+                      <Form.Select
+                        value={form.secondaryCtaType}
+                        onChange={(e) => update('secondaryCtaType', e.target.value as HeroSlideWriteDto['secondaryCtaType'])}>
                         <option value="none">No Second CTA</option>
                         <option value="internal">Internal Route</option>
                         <option value="external">External URL</option>
@@ -400,13 +408,19 @@ export default function HeroSliderForm({ slide }: HeroSliderFormProps) {
                       <Col md={4}>
                         <Form.Group>
                           <Form.Label>Second CTA Label</Form.Label>
-                          <Form.Control value={form.secondaryCtaLabel ?? ''} onChange={(e) => update('secondaryCtaLabel', e.target.value)} placeholder="Volunteer now" />
+                          <Form.Control
+                            value={form.secondaryCtaLabel ?? ''}
+                            onChange={(e) => update('secondaryCtaLabel', e.target.value)}
+                            placeholder="Volunteer now"
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={4}>
                         <Form.Group>
                           <Form.Label>Second CTA Target</Form.Label>
-                          <Form.Select value={form.secondaryCtaTarget} onChange={(e) => update('secondaryCtaTarget', e.target.value as HeroSlideWriteDto['secondaryCtaTarget'])}>
+                          <Form.Select
+                            value={form.secondaryCtaTarget}
+                            onChange={(e) => update('secondaryCtaTarget', e.target.value as HeroSlideWriteDto['secondaryCtaTarget'])}>
                             <option value="_self">Same Tab</option>
                             <option value="_blank">New Tab</option>
                           </Form.Select>
@@ -436,8 +450,7 @@ export default function HeroSliderForm({ slide }: HeroSliderFormProps) {
                   size="sm"
                   variant="outline-secondary"
                   disabled={stats.length >= 3}
-                  onClick={() => update('stats', [...stats, { id: crypto.randomUUID(), label: '', value: '' }])}
-                >
+                  onClick={() => update('stats', [...stats, { id: crypto.randomUUID(), label: '', value: '' }])}>
                   Add Stat
                 </Button>
               </Card.Header>
@@ -455,7 +468,12 @@ export default function HeroSliderForm({ slide }: HeroSliderFormProps) {
                                 <Form.Label>Label</Form.Label>
                                 <Form.Control
                                   value={stat.label}
-                                  onChange={(e) => update('stats', stats.map((item) => item.id === stat.id ? { ...item, label: e.target.value } : item))}
+                                  onChange={(e) =>
+                                    update(
+                                      'stats',
+                                      stats.map((item) => (item.id === stat.id ? { ...item, label: e.target.value } : item)),
+                                    )
+                                  }
                                   placeholder={`Statistic ${index + 1} label`}
                                 />
                               </Form.Group>
@@ -465,7 +483,12 @@ export default function HeroSliderForm({ slide }: HeroSliderFormProps) {
                                 <Form.Label>Value</Form.Label>
                                 <Form.Control
                                   value={stat.value}
-                                  onChange={(e) => update('stats', stats.map((item) => item.id === stat.id ? { ...item, value: e.target.value } : item))}
+                                  onChange={(e) =>
+                                    update(
+                                      'stats',
+                                      stats.map((item) => (item.id === stat.id ? { ...item, value: e.target.value } : item)),
+                                    )
+                                  }
                                   placeholder="25K+"
                                 />
                               </Form.Group>
@@ -475,8 +498,12 @@ export default function HeroSliderForm({ slide }: HeroSliderFormProps) {
                                 type="button"
                                 variant="outline-danger"
                                 className="w-100"
-                                onClick={() => update('stats', stats.filter((item) => item.id !== stat.id))}
-                              >
+                                onClick={() =>
+                                  update(
+                                    'stats',
+                                    stats.filter((item) => item.id !== stat.id),
+                                  )
+                                }>
                                 Remove
                               </Button>
                             </Col>

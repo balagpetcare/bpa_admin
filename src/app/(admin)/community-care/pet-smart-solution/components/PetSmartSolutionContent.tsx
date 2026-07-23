@@ -11,11 +11,7 @@ import { useApi, useApiMutation } from '@/hooks/useApi'
 import { usePermission } from '@/hooks/usePermission'
 import { petSmartSolutionApi } from '@/lib/api/pet-smart-solution.api'
 import type { ApiError } from '@/lib/api'
-import type {
-  PetSmartConnectionTestResult,
-  PetSmartIntegrationSettings,
-  PetSmartIntegrationSettingsUpdatePayload,
-} from '@/types/bpa.types'
+import type { PetSmartConnectionTestResult, PetSmartIntegrationSettings, PetSmartIntegrationSettingsUpdatePayload } from '@/types/bpa.types'
 
 const STATUS_VARIANTS: Record<string, 'secondary' | 'warning' | 'success' | 'danger'> = {
   disabled: 'secondary',
@@ -58,10 +54,7 @@ export default function PetSmartSolutionContent() {
     })
   }, [settings])
 
-  function setField<K extends keyof PetSmartIntegrationSettingsUpdatePayload>(
-    key: K,
-    value: PetSmartIntegrationSettingsUpdatePayload[K],
-  ) {
+  function setField<K extends keyof PetSmartIntegrationSettingsUpdatePayload>(key: K, value: PetSmartIntegrationSettingsUpdatePayload[K]) {
     setForm((current) => ({ ...current, [key]: value }))
   }
 
@@ -116,14 +109,15 @@ export default function PetSmartSolutionContent() {
         breadcrumbs={[{ label: 'Community Care Fund' }, { label: 'Pet Smart Solution' }]}
         action={
           <Link href="/community-care/sync-logs" className="btn btn-outline-primary">
-            <Icon icon="solar:history-bold" className="me-1" />Sync Logs
+            <Icon icon="solar:history-bold" className="me-1" />
+            Sync Logs
           </Link>
         }
       />
 
       <Alert variant="warning" className="mb-3">
-        <strong>This is only an integration placeholder.</strong> Operational clinic, pet shop, appointment, medical record,
-        prescription, e-commerce, and social feed modules belong to Pet Smart Solution, not BPA.
+        <strong>This is only an integration placeholder.</strong> Operational clinic, pet shop, appointment, medical record, prescription, e-commerce,
+        and social feed modules belong to Pet Smart Solution, not BPA.
       </Alert>
 
       <ApiErrorAlert error={(mutationError as ApiError | null) ?? (error as ApiError | null)} />
@@ -157,9 +151,7 @@ export default function PetSmartSolutionContent() {
                     <Col md={6}>
                       <Form.Group>
                         <Form.Label>Status</Form.Label>
-                        <div className="small text-muted pt-2">
-                          {currentSettings.status.replace(/_/g, ' ')}
-                        </div>
+                        <div className="small text-muted pt-2">{currentSettings.status.replace(/_/g, ' ')}</div>
                       </Form.Group>
                     </Col>
 
@@ -249,10 +241,12 @@ export default function PetSmartSolutionContent() {
                 {can('pet_smart_solution:update') && (
                   <Card.Footer className="d-flex justify-content-between align-items-center">
                     <Button variant="outline-secondary" onClick={handleTestConnection} disabled={saving}>
-                      <Icon icon="solar:shield-check-bold" className="me-1" />Test Connection
+                      <Icon icon="solar:shield-check-bold" className="me-1" />
+                      Test Connection
                     </Button>
                     <Button variant="primary" onClick={handleSave} disabled={saving}>
-                      <Icon icon="solar:diskette-bold" className="me-1" />Save Settings
+                      <Icon icon="solar:diskette-bold" className="me-1" />
+                      Save Settings
                     </Button>
                   </Card.Footer>
                 )}
@@ -265,16 +259,14 @@ export default function PetSmartSolutionContent() {
                 <Card.Body>
                   <dl className="row mb-0">
                     <dt className="col-sm-5">Last Sync</dt>
-                    <dd className="col-sm-7">
-                      {currentSettings.lastSyncAt ? new Date(currentSettings.lastSyncAt).toLocaleString() : 'Never'}
-                    </dd>
+                    <dd className="col-sm-7">{currentSettings.lastSyncAt ? new Date(currentSettings.lastSyncAt).toLocaleString() : 'Never'}</dd>
                     <dt className="col-sm-5">Enabled</dt>
                     <dd className="col-sm-7">{currentSettings.enabled ? 'Yes' : 'No'}</dd>
                     <dt className="col-sm-5">Base URL</dt>
                     <dd className="col-sm-7 small">{currentSettings.baseUrl ?? 'Not configured'}</dd>
                     <dt className="col-sm-5">API Key</dt>
                     <dd className="col-sm-7 small">
-                      {currentSettings.apiKeyConfigured ? currentSettings.apiKeyMasked ?? 'Configured' : 'Not configured'}
+                      {currentSettings.apiKeyConfigured ? (currentSettings.apiKeyMasked ?? 'Configured') : 'Not configured'}
                     </dd>
                   </dl>
                 </Card.Body>
@@ -284,9 +276,7 @@ export default function PetSmartSolutionContent() {
                 <Alert variant={testResult.status === 'placeholder_only' ? 'info' : testResult.status === 'invalid_url' ? 'danger' : 'secondary'}>
                   <div className="fw-semibold mb-1">Connection Test</div>
                   <div className="small">{testResult.message}</div>
-                  <div className="small text-muted mt-1">
-                    Checked: {new Date(testResult.checkedAt).toLocaleString()}
-                  </div>
+                  <div className="small text-muted mt-1">Checked: {new Date(testResult.checkedAt).toLocaleString()}</div>
                 </Alert>
               )}
             </Col>

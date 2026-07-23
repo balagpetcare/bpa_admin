@@ -13,15 +13,7 @@ interface EventPublishPanelProps {
   isEdit?: boolean
 }
 
-export default function EventPublishPanel({
-  status,
-  onStatusChange,
-  onSaveDraft,
-  onPublish,
-  onCancel,
-  saving,
-  isEdit,
-}: EventPublishPanelProps) {
+export default function EventPublishPanel({ status, onStatusChange, onSaveDraft, onPublish, onCancel, saving, isEdit }: EventPublishPanelProps) {
   const statusColor = { draft: 'secondary', published: 'success', cancelled: 'danger' }[status]
 
   return (

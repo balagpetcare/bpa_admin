@@ -69,9 +69,11 @@ export default function CampaignListContent() {
       refetch()
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
-      alert(msg.includes('registration close date') || msg.includes('close date')
-        ? 'Please update the registration close date before reopening.'
-        : msg || 'Failed to reopen campaign.')
+      alert(
+        msg.includes('registration close date') || msg.includes('close date')
+          ? 'Please update the registration close date before reopening.'
+          : msg || 'Failed to reopen campaign.',
+      )
     }
   }
 
@@ -83,7 +85,8 @@ export default function CampaignListContent() {
         action={
           can('campaigns:create') ? (
             <Link href="/campaigns/create" className="btn btn-primary">
-              <Icon icon="solar:add-circle-bold" className="me-1" />New Campaign
+              <Icon icon="solar:add-circle-bold" className="me-1" />
+              New Campaign
             </Link>
           ) : undefined
         }
@@ -94,18 +97,45 @@ export default function CampaignListContent() {
           <Row className="g-2 mb-3">
             <Col md={4}>
               <InputGroup>
-                <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
-                <Form.Control placeholder="Search campaigns..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} />
+                <InputGroup.Text>
+                  <Icon icon="solar:magnifer-bold" />
+                </InputGroup.Text>
+                <Form.Control
+                  placeholder="Search campaigns..."
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value)
+                    setPage(1)
+                  }}
+                />
               </InputGroup>
             </Col>
             <Col md={3}>
-              <Form.Select value={status} onChange={(e) => { setStatus(e.target.value as CampaignStatus | ''); setPage(1) }}>
-                {STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              <Form.Select
+                value={status}
+                onChange={(e) => {
+                  setStatus(e.target.value as CampaignStatus | '')
+                  setPage(1)
+                }}>
+                {STATUS_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
               </Form.Select>
             </Col>
             <Col md={3}>
-              <Form.Select value={campaignType} onChange={(e) => { setCampaignType(e.target.value as CampaignType | ''); setPage(1) }}>
-                {TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              <Form.Select
+                value={campaignType}
+                onChange={(e) => {
+                  setCampaignType(e.target.value as CampaignType | '')
+                  setPage(1)
+                }}>
+                {TYPE_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
               </Form.Select>
             </Col>
           </Row>
@@ -124,7 +154,11 @@ export default function CampaignListContent() {
               </thead>
               <tbody>
                 {campaigns.length === 0 ? (
-                  <tr><td colSpan={6} className="text-center py-4 text-muted">No campaigns found</td></tr>
+                  <tr>
+                    <td colSpan={6} className="text-center py-4 text-muted">
+                      No campaigns found
+                    </td>
+                  </tr>
                 ) : (
                   campaigns.map((c: CampaignListItem) => (
                     <tr key={c.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/campaigns/${c.id}`)}>
@@ -132,13 +166,23 @@ export default function CampaignListContent() {
                         <div className="fw-semibold">{c.title}</div>
                         <div className="text-muted small">{c.slug}</div>
                       </td>
-                      <td className="text-capitalize"><Badge bg="primary-subtle" text="primary">{c.campaignType.replace('_', ' ')}</Badge></td>
-                      <td onClick={(e) => e.stopPropagation()}><CampaignStatusBadge status={c.status} /></td>
+                      <td className="text-capitalize">
+                        <Badge bg="primary-subtle" text="primary">
+                          {c.campaignType.replace('_', ' ')}
+                        </Badge>
+                      </td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <CampaignStatusBadge status={c.status} />
+                      </td>
                       <td>
                         <div className="small">{new Date(c.startDate).toLocaleDateString()}</div>
                         <div className="small text-muted">→ {new Date(c.endDate).toLocaleDateString()}</div>
                       </td>
-                      <td><Badge bg="secondary-subtle" text="secondary">{c._count.sessions}</Badge></td>
+                      <td>
+                        <Badge bg="secondary-subtle" text="secondary">
+                          {c._count.sessions}
+                        </Badge>
+                      </td>
                       <td className="text-end" onClick={(e) => e.stopPropagation()}>
                         <div className="d-flex gap-1 justify-content-end">
                           {c.status === 'draft' && can('campaigns:lifecycle') && (
@@ -172,10 +216,16 @@ export default function CampaignListContent() {
 
           {meta && meta.totalPages > 1 && (
             <div className="d-flex justify-content-between align-items-center mt-3">
-              <small className="text-muted">{meta.total} campaigns · Page {meta.page} of {meta.totalPages}</small>
+              <small className="text-muted">
+                {meta.total} campaigns · Page {meta.page} of {meta.totalPages}
+              </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage(p => p - 1)}>‹</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage(p => p + 1)}>›</Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                  ‹
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  ›
+                </Button>
               </div>
             </div>
           )}

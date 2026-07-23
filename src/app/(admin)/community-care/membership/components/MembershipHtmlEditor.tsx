@@ -18,15 +18,7 @@ const modules = {
 
 const formats = ['header', 'bold', 'italic', 'underline', 'list', 'blockquote', 'link']
 
-export default function MembershipHtmlEditor({
-  label,
-  value,
-  onChange,
-}: {
-  label: string
-  value: string
-  onChange: (value: string) => void
-}) {
+export default function MembershipHtmlEditor({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
   return (
     <Form.Group className="mb-3">
       <Form.Label className="fw-semibold">{label}</Form.Label>

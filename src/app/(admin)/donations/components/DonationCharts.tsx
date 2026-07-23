@@ -12,7 +12,12 @@ function MonthlyTrendChart({ data }: { data: { month: string; total: number; cou
     chart: { type: 'area', height: 280, toolbar: { show: false }, zoom: { enabled: false } },
     stroke: { curve: 'smooth', width: 2.5 },
     fill: { type: 'gradient', gradient: { opacityFrom: 0.45, opacityTo: 0.05 } },
-    xaxis: { categories: data.map((d) => d.month), labels: { style: { fontSize: '11px', fontWeight: 500 } }, axisBorder: { show: false }, axisTicks: { show: false } },
+    xaxis: {
+      categories: data.map((d) => d.month),
+      labels: { style: { fontSize: '11px', fontWeight: 500 } },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
+    },
     yaxis: { min: 0, axisBorder: { show: false }, labels: { formatter: (v) => `৳${(v / 1000).toFixed(0)}k` } },
     grid: { strokeDashArray: 3, borderColor: '#f1f1f1' },
     colors: ['#1a6b3c', '#4ecac2'],
@@ -26,7 +31,9 @@ function MonthlyTrendChart({ data }: { data: { month: string; total: number; cou
   ]
   return (
     <Card className="border-0 shadow-sm">
-      <Card.Header className="bg-transparent border-light py-3"><h5 className="mb-0 fw-bold text-dark">Monthly Donation Trend</h5></Card.Header>
+      <Card.Header className="bg-transparent border-light py-3">
+        <h5 className="mb-0 fw-bold text-dark">Monthly Donation Trend</h5>
+      </Card.Header>
       <Card.Body>
         {data.length === 0 ? (
           <div className="text-center text-muted py-5">No monthly data yet.</div>
@@ -50,7 +57,9 @@ function PurposeChart({ data }: { data: { titleEn: string; total: number; count:
   }
   return (
     <Card className="border-0 shadow-sm h-100">
-      <Card.Header className="bg-transparent border-light py-3"><h5 className="mb-0 fw-bold text-dark">Purpose Allocation</h5></Card.Header>
+      <Card.Header className="bg-transparent border-light py-3">
+        <h5 className="mb-0 fw-bold text-dark">Purpose Allocation</h5>
+      </Card.Header>
       <Card.Body className="d-flex align-items-center justify-content-center">
         {data.length === 0 ? (
           <div className="text-center text-muted py-5">No data yet.</div>
@@ -74,7 +83,9 @@ function StatusBreakdownChart({ data }: { data: { status: string; count: number;
   }
   return (
     <Card className="border-0 shadow-sm h-100">
-      <Card.Header className="bg-transparent border-light py-3"><h5 className="mb-0 fw-bold text-dark">Donation Statuses</h5></Card.Header>
+      <Card.Header className="bg-transparent border-light py-3">
+        <h5 className="mb-0 fw-bold text-dark">Donation Statuses</h5>
+      </Card.Header>
       <Card.Body className="d-flex align-items-center justify-content-center">
         {data.length === 0 ? (
           <div className="text-center text-muted py-5">No status breakdown data.</div>
@@ -118,7 +129,9 @@ function PaymentMethodChart({ data }: { data: { method: string; count: number; a
   ]
   return (
     <Card className="border-0 shadow-sm h-100">
-      <Card.Header className="bg-transparent border-light py-3"><h5 className="mb-0 fw-bold text-dark">Payment Methods</h5></Card.Header>
+      <Card.Header className="bg-transparent border-light py-3">
+        <h5 className="mb-0 fw-bold text-dark">Payment Methods</h5>
+      </Card.Header>
       <Card.Body>
         {data.length === 0 ? (
           <div className="text-center text-muted py-5">No method statistics yet.</div>
@@ -133,7 +146,9 @@ function PaymentMethodChart({ data }: { data: { method: string; count: number; a
 function CampaignTable({ data }: { data: { titleEn: string; total: number; count: number }[] }) {
   return (
     <Card className="border-0 shadow-sm h-100">
-      <Card.Header className="bg-transparent border-light py-3"><h5 className="mb-0 fw-bold text-dark">Campaign Allocation</h5></Card.Header>
+      <Card.Header className="bg-transparent border-light py-3">
+        <h5 className="mb-0 fw-bold text-dark">Campaign Allocation</h5>
+      </Card.Header>
       <Card.Body className="p-0">
         {data.length === 0 ? (
           <p className="text-muted text-center py-5 mb-0">No active campaigns data.</p>
@@ -167,7 +182,9 @@ function CampaignTable({ data }: { data: { titleEn: string; total: number; count
 function CountryTable({ data }: { data: { country: string; count: number }[] }) {
   return (
     <Card className="border-0 shadow-sm h-100">
-      <Card.Header className="bg-transparent border-light py-3"><h5 className="mb-0 fw-bold text-dark">Geographic Donors</h5></Card.Header>
+      <Card.Header className="bg-transparent border-light py-3">
+        <h5 className="mb-0 fw-bold text-dark">Geographic Donors</h5>
+      </Card.Header>
       <Card.Body className="p-0">
         {data.length === 0 ? (
           <p className="text-muted text-center py-5 mb-0">No country statistics.</p>

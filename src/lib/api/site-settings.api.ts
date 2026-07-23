@@ -57,6 +57,5 @@ export type UpdateSiteSettingsDto = Partial<Omit<SiteSettings, 'id' | 'createdAt
 
 export const siteSettingsApi = {
   get: () => apiClient<SiteSettings>('/admin/site-settings'),
-  update: (dto: UpdateSiteSettingsDto) =>
-    apiClient<SiteSettings>('/admin/site-settings', { method: 'PUT', body: dto }),
+  update: (dto: UpdateSiteSettingsDto) => apiClient<SiteSettings>('/admin/site-settings', { method: 'PUT', body: dto }),
 }

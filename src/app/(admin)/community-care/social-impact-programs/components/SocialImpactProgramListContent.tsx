@@ -33,10 +33,7 @@ export default function SocialImpactProgramListContent() {
   const [impactType, setImpactType] = useState<SocialImpactProgramType | ''>('')
   const { mutate } = useApiMutation<unknown, unknown>()
 
-  const fetchFn = useCallback(
-    () => socialImpactProgramsApi.list({ page, limit: 20, impactType: impactType || undefined }),
-    [page, impactType],
-  )
+  const fetchFn = useCallback(() => socialImpactProgramsApi.list({ page, limit: 20, impactType: impactType || undefined }), [page, impactType])
   const { data, loading, error, refetch } = useApi(fetchFn, [page, impactType])
   const items = data?.data ?? []
   const meta = data?.meta ?? null
@@ -60,7 +57,8 @@ export default function SocialImpactProgramListContent() {
         action={
           can('social_impact_programs:create') ? (
             <Link href="/community-care/social-impact-programs/create" className="btn btn-primary">
-              <Icon icon="solar:add-circle-bold" className="me-1" />New Program
+              <Icon icon="solar:add-circle-bold" className="me-1" />
+              New Program
             </Link>
           ) : undefined
         }
@@ -70,8 +68,17 @@ export default function SocialImpactProgramListContent() {
         <Card.Body>
           <Row className="g-2 mb-3">
             <Col md={4}>
-              <Form.Select value={impactType} onChange={e => { setImpactType(e.target.value as SocialImpactProgramType | ''); setPage(1) }}>
-                {IMPACT_TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              <Form.Select
+                value={impactType}
+                onChange={(e) => {
+                  setImpactType(e.target.value as SocialImpactProgramType | '')
+                  setPage(1)
+                }}>
+                {IMPACT_TYPE_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
               </Form.Select>
             </Col>
           </Row>
@@ -90,58 +97,70 @@ export default function SocialImpactProgramListContent() {
               </thead>
               <tbody>
                 {items.length === 0 ? (
-                  <tr><td colSpan={6} className="text-center py-4 text-muted">No programs found</td></tr>
-                ) : items.map((item: SocialImpactProgram) => (
-                  <tr key={item.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/community-care/social-impact-programs/${item.id}`)}>
-                    <td className="text-muted small">{item.sortOrder}</td>
-                    <td>
-                      <div className="fw-semibold">{item.titleEn}</div>
-                      <div className="text-muted small">{item.titleBn}</div>
-                    </td>
-                    <td onClick={e => e.stopPropagation()}>
-                      <SocialImpactProgramTypeBadge impactType={item.impactType} />
-                    </td>
-                    <td>
-                      {item.icon
-                        ? <Icon icon={item.icon} width={20} className="text-muted" />
-                        : <span className="text-muted small">—</span>}
-                    </td>
-                    <td onClick={e => e.stopPropagation()}>
-                      <Badge bg={item.isActive ? 'success-subtle' : 'secondary-subtle'} text={item.isActive ? 'success' : 'secondary'}>
-                        {item.isActive ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </td>
-                    <td className="text-end" onClick={e => e.stopPropagation()}>
-                      <div className="d-flex gap-1 justify-content-end">
-                        {can('social_impact_programs:update') && (
-                          <>
-                            <Link href={`/community-care/social-impact-programs/${item.id}`} className="btn btn-soft-primary btn-sm">
-                              <Icon icon="solar:pen-bold" />
-                            </Link>
-                            <Button variant={item.isActive ? 'soft-warning' : 'soft-success'} size="sm" title={item.isActive ? 'Deactivate' : 'Activate'} onClick={() => handleToggleActive(item)}>
-                              <Icon icon={item.isActive ? 'solar:eye-closed-bold' : 'solar:eye-bold'} />
-                            </Button>
-                          </>
-                        )}
-                        {can('social_impact_programs:delete') && (
-                          <Button variant="soft-danger" size="sm" onClick={() => handleDelete(item.id)}>
-                            <Icon icon="solar:trash-bin-trash-bold" />
-                          </Button>
-                        )}
-                      </div>
+                  <tr>
+                    <td colSpan={6} className="text-center py-4 text-muted">
+                      No programs found
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  items.map((item: SocialImpactProgram) => (
+                    <tr key={item.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/community-care/social-impact-programs/${item.id}`)}>
+                      <td className="text-muted small">{item.sortOrder}</td>
+                      <td>
+                        <div className="fw-semibold">{item.titleEn}</div>
+                        <div className="text-muted small">{item.titleBn}</div>
+                      </td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <SocialImpactProgramTypeBadge impactType={item.impactType} />
+                      </td>
+                      <td>{item.icon ? <Icon icon={item.icon} width={20} className="text-muted" /> : <span className="text-muted small">—</span>}</td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <Badge bg={item.isActive ? 'success-subtle' : 'secondary-subtle'} text={item.isActive ? 'success' : 'secondary'}>
+                          {item.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </td>
+                      <td className="text-end" onClick={(e) => e.stopPropagation()}>
+                        <div className="d-flex gap-1 justify-content-end">
+                          {can('social_impact_programs:update') && (
+                            <>
+                              <Link href={`/community-care/social-impact-programs/${item.id}`} className="btn btn-soft-primary btn-sm">
+                                <Icon icon="solar:pen-bold" />
+                              </Link>
+                              <Button
+                                variant={item.isActive ? 'soft-warning' : 'soft-success'}
+                                size="sm"
+                                title={item.isActive ? 'Deactivate' : 'Activate'}
+                                onClick={() => handleToggleActive(item)}>
+                                <Icon icon={item.isActive ? 'solar:eye-closed-bold' : 'solar:eye-bold'} />
+                              </Button>
+                            </>
+                          )}
+                          {can('social_impact_programs:delete') && (
+                            <Button variant="soft-danger" size="sm" onClick={() => handleDelete(item.id)}>
+                              <Icon icon="solar:trash-bin-trash-bold" />
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </Table>
           </LoadingOverlay>
 
           {meta && meta.totalPages > 1 && (
             <div className="d-flex justify-content-between align-items-center mt-3">
-              <small className="text-muted">{meta.total} programs · Page {meta.page} of {meta.totalPages}</small>
+              <small className="text-muted">
+                {meta.total} programs · Page {meta.page} of {meta.totalPages}
+              </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage(p => p - 1)}>‹</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage(p => p + 1)}>›</Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                  ‹
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  ›
+                </Button>
               </div>
             </div>
           )}

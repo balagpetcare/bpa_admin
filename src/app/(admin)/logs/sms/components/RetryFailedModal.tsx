@@ -43,19 +43,25 @@ export default function RetryFailedModal({ isOpen, onClose, onConfirm }: Props) 
       </Modal.Header>
       <Modal.Body>
         {!result && !error && (
-          <p className="mb-0">
-            You are about to resend failed transactional SMS messages. OTP messages will be skipped. Continue?
-          </p>
+          <p className="mb-0">You are about to resend failed transactional SMS messages. OTP messages will be skipped. Continue?</p>
         )}
         {error && <Alert variant="danger">{error}</Alert>}
         {result && (
           <Alert variant="success">
             <div className="fw-semibold mb-2">Retry complete</div>
             <ul className="mb-0 small">
-              <li>Attempted: <strong>{result.attempted}</strong></li>
-              <li>Sent: <strong>{result.sent}</strong></li>
-              <li>Failed: <strong>{result.failed}</strong></li>
-              <li>Skipped: <strong>{result.skipped}</strong> (OTP: {result.skippedOtp}, Max Attempts: {result.skippedMaxAttempts})</li>
+              <li>
+                Attempted: <strong>{result.attempted}</strong>
+              </li>
+              <li>
+                Sent: <strong>{result.sent}</strong>
+              </li>
+              <li>
+                Failed: <strong>{result.failed}</strong>
+              </li>
+              <li>
+                Skipped: <strong>{result.skipped}</strong> (OTP: {result.skippedOtp}, Max Attempts: {result.skippedMaxAttempts})
+              </li>
             </ul>
           </Alert>
         )}
@@ -67,7 +73,9 @@ export default function RetryFailedModal({ isOpen, onClose, onConfirm }: Props) 
             Confirm Retry
           </Button>
         )}
-        <Button variant="secondary" onClick={handleClose}>Close</Button>
+        <Button variant="secondary" onClick={handleClose}>
+          Close
+        </Button>
       </Modal.Footer>
     </Modal>
   )

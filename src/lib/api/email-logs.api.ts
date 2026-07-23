@@ -15,10 +15,7 @@ export interface EmailLogListParams {
 
 export const emailLogsApi = {
   list: (params?: EmailLogListParams) =>
-    api.get<PaginatedResult<EmailLog>>(
-      '/admin/email-logs',
-      params as Record<string, string | number | boolean | undefined>,
-    ),
+    api.get<PaginatedResult<EmailLog>>('/admin/email-logs', params as Record<string, string | number | boolean | undefined>),
 
   getById: (id: string) => api.get<EmailLog>(`/admin/email-logs/${id}`),
 }

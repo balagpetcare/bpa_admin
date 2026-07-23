@@ -10,10 +10,7 @@ import { useApi, useApiMutation } from '@/hooks/useApi'
 import { usePermission } from '@/hooks/usePermission'
 import { campaignsApi } from '@/lib/api/campaigns.api'
 import type { ApiError } from '@/lib/api'
-import type {
-  QRVerifyResult, QRVerifyPetBooking, FieldOpsStats,
-  QRScanLogEntry, CampaignRegistrationStatus
-} from '@/types/bpa.types'
+import type { QRVerifyResult, QRVerifyPetBooking, FieldOpsStats, QRScanLogEntry, CampaignRegistrationStatus } from '@/types/bpa.types'
 import dayjs from 'dayjs'
 
 function StatusBadge({ status }: { status: string }) {
@@ -43,7 +40,9 @@ function StatCard({ label, value, icon, color }: { label: string; value: number;
   return (
     <Card className="text-center border-0 shadow-sm h-100">
       <Card.Body className="py-3">
-        <div className={`text-${color} mb-1`} style={{ fontSize: 28 }}><Icon icon={icon} /></div>
+        <div className={`text-${color} mb-1`} style={{ fontSize: 28 }}>
+          <Icon icon={icon} />
+        </div>
         <div className="fw-bold fs-4">{value}</div>
         <div className="text-muted small">{label}</div>
       </Card.Body>
@@ -52,7 +51,10 @@ function StatCard({ label, value, icon, color }: { label: string; value: number;
 }
 
 function PetActionButtons({
-  campaignId, pet, verifyResult, onAction
+  campaignId,
+  pet,
+  verifyResult,
+  onAction,
 }: {
   campaignId: string
   pet: QRVerifyPetBooking
@@ -64,14 +66,24 @@ function PetActionButtons({
   const [certUrl, setCertUrl] = useState<string | null>(null)
 
   async function doCheckIn() {
-    clearError(); setLocalMsg(null); setCertUrl(null)
-    const r = await mutate(() => campaignsApi.checkIn(campaignId, { petBookingId: pet.id, registrationId: verifyResult.registrationId }), undefined) as any
-    if (r) { setLocalMsg('Checked in successfully!'); onAction() }
+    clearError()
+    setLocalMsg(null)
+    setCertUrl(null)
+    const r = (await mutate(
+      () => campaignsApi.checkIn(campaignId, { petBookingId: pet.id, registrationId: verifyResult.registrationId }),
+      undefined,
+    )) as any
+    if (r) {
+      setLocalMsg('Checked in successfully!')
+      onAction()
+    }
   }
 
   async function doVaccinate() {
-    clearError(); setLocalMsg(null); setCertUrl(null)
-    const r = await mutate(() => campaignsApi.vaccinationComplete(campaignId, { petBookingId: pet.id }), undefined) as any
+    clearError()
+    setLocalMsg(null)
+    setCertUrl(null)
+    const r = (await mutate(() => campaignsApi.vaccinationComplete(campaignId, { petBookingId: pet.id }), undefined)) as any
     if (r) {
       const data = r.data ?? r
       const msg = data?.warningNoSigningDoctor
@@ -83,8 +95,10 @@ function PetActionButtons({
   }
 
   async function doIssueCert() {
-    clearError(); setLocalMsg(null); setCertUrl(null)
-    const r = await mutate(() => campaignsApi.issueCertificate(campaignId, { petBookingId: pet.id }), undefined) as any
+    clearError()
+    setLocalMsg(null)
+    setCertUrl(null)
+    const r = (await mutate(() => campaignsApi.issueCertificate(campaignId, { petBookingId: pet.id }), undefined)) as any
     if (r) {
       const data = r.data ?? r
       setCertUrl(data?.verifyUrl ?? data?.pdfUrl ?? null)
@@ -94,8 +108,10 @@ function PetActionButtons({
   }
 
   async function doResend() {
-    clearError(); setLocalMsg(null); setCertUrl(null)
-    const r = await mutate(() => campaignsApi.resendCertificate(campaignId, pet.id), undefined) as any
+    clearError()
+    setLocalMsg(null)
+    setCertUrl(null)
+    const r = (await mutate(() => campaignsApi.resendCertificate(campaignId, pet.id), undefined)) as any
     if (r) {
       const data = r.data ?? r
       setCertUrl(data?.verifyUrl ?? data?.pdfUrl ?? null)
@@ -108,33 +124,69 @@ function PetActionButtons({
   return (
     <div className="d-flex flex-column gap-2 mt-2">
       {(error as ApiError | null) && (
-        <Alert variant="danger" className="py-2 small mb-0">{(error as any)?.message ?? 'Error'}</Alert>
+        <Alert variant="danger" className="py-2 small mb-0">
+          {(error as any)?.message ?? 'Error'}
+        </Alert>
       )}
       {localMsg && (
         <Alert variant={certUrl ? 'success' : 'info'} className="py-2 small mb-0">
           {localMsg}
-          {certUrl && <div className="mt-1"><a href={certUrl} target="_blank" rel="noreferrer" className="fw-bold">View Certificate →</a></div>}
+          {certUrl && (
+            <div className="mt-1">
+              <a href={certUrl} target="_blank" rel="noreferrer" className="fw-bold">
+                View Certificate →
+              </a>
+            </div>
+          )}
         </Alert>
       )}
       <div className="d-flex flex-wrap gap-2">
         {a.canCheckIn && (
           <Button variant="primary" size="sm" onClick={doCheckIn} disabled={loading} style={{ minWidth: 120 }}>
-            {loading ? <Spinner size="sm" /> : <><Icon icon="solar:check-circle-bold" className="me-1" />Check In</>}
+            {loading ? (
+              <Spinner size="sm" />
+            ) : (
+              <>
+                <Icon icon="solar:check-circle-bold" className="me-1" />
+                Check In
+              </>
+            )}
           </Button>
         )}
         {a.canMarkVaccinated && (
           <Button variant="success" size="sm" onClick={doVaccinate} disabled={loading} style={{ minWidth: 140 }}>
-            {loading ? <Spinner size="sm" /> : <><Icon icon="solar:syringe-bold" className="me-1" />Complete Vaccination</>}
+            {loading ? (
+              <Spinner size="sm" />
+            ) : (
+              <>
+                <Icon icon="solar:syringe-bold" className="me-1" />
+                Complete Vaccination
+              </>
+            )}
           </Button>
         )}
         {a.canIssueCertificate && (
           <Button variant="warning" size="sm" onClick={doIssueCert} disabled={loading} style={{ minWidth: 140 }}>
-            {loading ? <Spinner size="sm" /> : <><Icon icon="solar:diploma-bold" className="me-1" />Issue Certificate</>}
+            {loading ? (
+              <Spinner size="sm" />
+            ) : (
+              <>
+                <Icon icon="solar:diploma-bold" className="me-1" />
+                Issue Certificate
+              </>
+            )}
           </Button>
         )}
         {a.canResendCertificate && (
           <Button variant="outline-secondary" size="sm" onClick={doResend} disabled={loading} style={{ minWidth: 120 }}>
-            {loading ? <Spinner size="sm" /> : <><Icon icon="solar:link-bold" className="me-1" />Resend Cert</>}
+            {loading ? (
+              <Spinner size="sm" />
+            ) : (
+              <>
+                <Icon icon="solar:link-bold" className="me-1" />
+                Resend Cert
+              </>
+            )}
           </Button>
         )}
       </div>
@@ -175,15 +227,17 @@ export default function FieldOpsDashboard({ campaignId }: { campaignId: string }
 
   async function handleVerify() {
     if (!qrInput.trim()) return
-    setVerifying(true); setVerifyError(null); setVerifyResult(null)
+    setVerifying(true)
+    setVerifyError(null)
+    setVerifyResult(null)
     try {
-      const res = await campaignsApi.qrVerify(campaignId, {
+      const res = (await campaignsApi.qrVerify(campaignId, {
         qrToken: qrInput.trim(),
         bookingReference: qrInput.trim(),
-      }) as any
+      })) as any
       const data = res?.data ?? res
       setVerifyResult(data)
-      setRefreshKey(k => k + 1)
+      setRefreshKey((k) => k + 1)
     } catch (e: any) {
       setVerifyError(e?.message ?? 'Verification failed.')
     } finally {
@@ -196,7 +250,9 @@ export default function FieldOpsDashboard({ campaignId }: { campaignId: string }
   }
 
   function handleClear() {
-    setQrInput(''); setVerifyResult(null); setVerifyError(null)
+    setQrInput('')
+    setVerifyResult(null)
+    setVerifyError(null)
   }
 
   const scanResultColor = (r: string) => {
@@ -217,13 +273,16 @@ export default function FieldOpsDashboard({ campaignId }: { campaignId: string }
         </div>
         <div className="d-flex gap-2">
           <Link href={`/campaigns/${campaignId}/staff`} className="btn btn-outline-secondary btn-sm">
-            <Icon icon="solar:users-group-two-rounded-bold" className="me-1" />Staff
+            <Icon icon="solar:users-group-two-rounded-bold" className="me-1" />
+            Staff
           </Link>
           <Link href={`/campaigns/${campaignId}/doctors`} className="btn btn-outline-secondary btn-sm">
-            <Icon icon="solar:stethoscope-bold" className="me-1" />Doctors
+            <Icon icon="solar:stethoscope-bold" className="me-1" />
+            Doctors
           </Link>
-          <Button variant="outline-primary" size="sm" onClick={() => setRefreshKey(k => k + 1)}>
-            <Icon icon="solar:restart-bold" className="me-1" />Refresh Stats
+          <Button variant="outline-primary" size="sm" onClick={() => setRefreshKey((k) => k + 1)}>
+            <Icon icon="solar:restart-bold" className="me-1" />
+            Refresh Stats
           </Button>
         </div>
       </div>
@@ -252,13 +311,19 @@ export default function FieldOpsDashboard({ campaignId }: { campaignId: string }
         </Row>
       )}
       {loadingStats && !stats && (
-        <div className="text-center py-3 text-muted small"><Spinner size="sm" className="me-2" />Loading stats…</div>
+        <div className="text-center py-3 text-muted small">
+          <Spinner size="sm" className="me-2" />
+          Loading stats…
+        </div>
       )}
 
       {/* QR / Reference Verify */}
       <Card className="mb-4 shadow-sm">
         <Card.Header className="bg-white border-bottom py-3">
-          <h5 className="mb-0 fw-bold"><Icon icon="solar:qr-code-bold" className="me-2 text-primary" />Scan / Verify Booking</h5>
+          <h5 className="mb-0 fw-bold">
+            <Icon icon="solar:qr-code-bold" className="me-2 text-primary" />
+            Scan / Verify Booking
+          </h5>
         </Card.Header>
         <Card.Body>
           <InputGroup className="mb-3" style={{ maxWidth: 600 }}>
@@ -266,7 +331,7 @@ export default function FieldOpsDashboard({ campaignId }: { campaignId: string }
               type="text"
               placeholder="Enter QR token or booking reference number..."
               value={qrInput}
-              onChange={e => setQrInput(e.target.value)}
+              onChange={(e) => setQrInput(e.target.value)}
               onKeyDown={handleKeyDown}
               autoFocus
               size="lg"
@@ -278,7 +343,14 @@ export default function FieldOpsDashboard({ campaignId }: { campaignId: string }
               </Button>
             )}
             <Button variant="primary" onClick={handleVerify} disabled={verifying || !qrInput.trim()} style={{ minWidth: 120 }}>
-              {verifying ? <Spinner size="sm" /> : <><Icon icon="solar:magnifer-bold" className="me-1" />Verify</>}
+              {verifying ? (
+                <Spinner size="sm" />
+              ) : (
+                <>
+                  <Icon icon="solar:magnifer-bold" className="me-1" />
+                  Verify
+                </>
+              )}
             </Button>
           </InputGroup>
           <div className="text-muted small">Paste QR code token or booking reference. Press Enter to verify.</div>
@@ -293,14 +365,23 @@ export default function FieldOpsDashboard({ campaignId }: { campaignId: string }
           {verifyResult && (
             <div className="mt-4">
               {/* Scan result banner */}
-              <Alert variant={
-                verifyResult.scanResult === 'VALID' ? 'success'
-                  : ['PAYMENT_PENDING', 'ALREADY_CHECKED_IN'].includes(verifyResult.scanResult) ? 'warning'
-                    : 'danger'
-              } className="d-flex align-items-center gap-2 mb-3">
-                <Icon icon={verifyResult.scanResult === 'VALID' ? 'solar:check-circle-bold' : 'solar:danger-triangle-bold'} style={{ fontSize: 24 }} />
+              <Alert
+                variant={
+                  verifyResult.scanResult === 'VALID'
+                    ? 'success'
+                    : ['PAYMENT_PENDING', 'ALREADY_CHECKED_IN'].includes(verifyResult.scanResult)
+                      ? 'warning'
+                      : 'danger'
+                }
+                className="d-flex align-items-center gap-2 mb-3">
+                <Icon
+                  icon={verifyResult.scanResult === 'VALID' ? 'solar:check-circle-bold' : 'solar:danger-triangle-bold'}
+                  style={{ fontSize: 24 }}
+                />
                 <div>
-                  <strong>Scan result: <StatusBadge status={verifyResult.scanResult} /></strong>
+                  <strong>
+                    Scan result: <StatusBadge status={verifyResult.scanResult} />
+                  </strong>
                   {!verifyResult.isPaid && <span className="ms-2 badge bg-danger">Payment Pending</span>}
                 </div>
               </Alert>
@@ -329,13 +410,11 @@ export default function FieldOpsDashboard({ campaignId }: { campaignId: string }
                       <div className="fw-bold">{verifyResult.session?.venue?.name}</div>
                       <div className="text-muted small">{verifyResult.session?.venue?.address}</div>
                       <div className="text-muted small">
-                        {verifyResult.session && dayjs(verifyResult.session.sessionDate).format('DD MMM YYYY')} ·{' '}
-                        {verifyResult.session?.startTime} – {verifyResult.session?.endTime}
+                        {verifyResult.session && dayjs(verifyResult.session.sessionDate).format('DD MMM YYYY')} · {verifyResult.session?.startTime} –{' '}
+                        {verifyResult.session?.endTime}
                       </div>
                       {verifyResult.assignedDoctors?.length > 0 && (
-                        <div className="mt-1 small text-muted">
-                          Doctors: {verifyResult.assignedDoctors.map(d => d.name).join(', ')}
-                        </div>
+                        <div className="mt-1 small text-muted">Doctors: {verifyResult.assignedDoctors.map((d) => d.name).join(', ')}</div>
                       )}
                     </Card.Body>
                   </Card>
@@ -347,19 +426,26 @@ export default function FieldOpsDashboard({ campaignId }: { campaignId: string }
                 <Alert variant="warning" className="d-flex align-items-center gap-2 py-2 small mb-3">
                   <Icon icon="solar:danger-triangle-bold" style={{ fontSize: 18, flexShrink: 0 }} />
                   <span>No signing doctor assigned to this session. Certificates cannot be issued. </span>
-                  <Link href={`/campaigns/${campaignId}/doctors`} className="ms-1 text-warning-emphasis fw-bold">Assign doctor →</Link>
+                  <Link href={`/campaigns/${campaignId}/doctors`} className="ms-1 text-warning-emphasis fw-bold">
+                    Assign doctor →
+                  </Link>
                 </Alert>
               )}
 
               {/* Per-pet bookings */}
               <h6 className="fw-bold mb-2">Pet Bookings ({verifyResult.petBookings?.length ?? 0})</h6>
               {(verifyResult.petBookings ?? []).map((pet: QRVerifyPetBooking) => (
-                <Card key={pet.id} className={`mb-3 border-2 ${pet.status === 'cancelled' ? 'border-danger opacity-75' : pet.status === 'vaccinated' || pet.status === 'certificate_issued' ? 'border-success' : pet.status === 'checked_in' ? 'border-primary' : 'border-secondary'}`}>
+                <Card
+                  key={pet.id}
+                  className={`mb-3 border-2 ${pet.status === 'cancelled' ? 'border-danger opacity-75' : pet.status === 'vaccinated' || pet.status === 'certificate_issued' ? 'border-success' : pet.status === 'checked_in' ? 'border-primary' : 'border-secondary'}`}>
                   <Card.Body>
                     <div className="d-flex justify-content-between align-items-start mb-2">
                       <div>
                         <span className="fw-bold fs-6">{pet.pet?.name}</span>
-                        <span className="ms-2 text-muted small">{pet.pet?.petType}{pet.pet?.breed ? ` · ${pet.pet.breed}` : ''}</span>
+                        <span className="ms-2 text-muted small">
+                          {pet.pet?.petType}
+                          {pet.pet?.breed ? ` · ${pet.pet.breed}` : ''}
+                        </span>
                       </div>
                       <StatusBadge status={pet.status} />
                     </div>
@@ -367,8 +453,10 @@ export default function FieldOpsDashboard({ campaignId }: { campaignId: string }
                     {/* Services */}
                     {pet.services?.length > 0 && (
                       <div className="mb-2 small">
-                        {pet.services.map(s => (
-                          <span key={s.id} className={`badge me-1 ${s.administered ? 'bg-success-subtle text-success' : 'bg-light text-secondary border'}`}>
+                        {pet.services.map((s) => (
+                          <span
+                            key={s.id}
+                            className={`badge me-1 ${s.administered ? 'bg-success-subtle text-success' : 'bg-light text-secondary border'}`}>
                             {s.administered && <Icon icon="solar:check-circle-bold" className="me-1" />}
                             {s.name}
                           </span>
@@ -386,18 +474,23 @@ export default function FieldOpsDashboard({ campaignId }: { campaignId: string }
 
                     {/* Timestamps */}
                     <div className="small text-muted d-flex flex-wrap gap-3 mb-2">
-                      {pet.checkedInAt && <span><Icon icon="solar:check-circle-bold" className="me-1 text-primary" />Checked in {dayjs(pet.checkedInAt).format('HH:mm')}</span>}
-                      {pet.vaccinatedAt && <span><Icon icon="solar:syringe-bold" className="me-1 text-success" />Vaccinated {dayjs(pet.vaccinatedAt).format('HH:mm')}</span>}
+                      {pet.checkedInAt && (
+                        <span>
+                          <Icon icon="solar:check-circle-bold" className="me-1 text-primary" />
+                          Checked in {dayjs(pet.checkedInAt).format('HH:mm')}
+                        </span>
+                      )}
+                      {pet.vaccinatedAt && (
+                        <span>
+                          <Icon icon="solar:syringe-bold" className="me-1 text-success" />
+                          Vaccinated {dayjs(pet.vaccinatedAt).format('HH:mm')}
+                        </span>
+                      )}
                     </div>
 
                     {/* Action buttons */}
                     {pet.status !== 'cancelled' && (
-                      <PetActionButtons
-                        campaignId={campaignId}
-                        pet={pet}
-                        verifyResult={verifyResult}
-                        onAction={() => setRefreshKey(k => k + 1)}
-                      />
+                      <PetActionButtons campaignId={campaignId} pet={pet} verifyResult={verifyResult} onAction={() => setRefreshKey((k) => k + 1)} />
                     )}
                   </Card.Body>
                 </Card>
@@ -410,7 +503,10 @@ export default function FieldOpsDashboard({ campaignId }: { campaignId: string }
       {/* Scan Logs */}
       <Card className="shadow-sm">
         <Card.Header className="bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-          <h5 className="mb-0 fw-bold"><Icon icon="solar:history-bold" className="me-2 text-secondary" />Recent QR Scan Logs</h5>
+          <h5 className="mb-0 fw-bold">
+            <Icon icon="solar:history-bold" className="me-2 text-secondary" />
+            Recent QR Scan Logs
+          </h5>
           <Link href={`/campaigns/${campaignId}/qr-logs`} className="btn btn-outline-secondary btn-sm">
             View All
           </Link>
@@ -429,16 +525,24 @@ export default function FieldOpsDashboard({ campaignId }: { campaignId: string }
               </thead>
               <tbody>
                 {scanLogs.length === 0 ? (
-                  <tr><td colSpan={5} className="text-center py-4 text-muted">No scan logs yet</td></tr>
-                ) : scanLogs.map((log: QRScanLogEntry) => (
-                  <tr key={log.id}>
-                    <td className="text-nowrap">{dayjs(log.createdAt).format('DD MMM HH:mm')}</td>
-                    <td><StatusBadge status={log.scanResult} /></td>
-                    <td>{log.scannedBy?.name ?? '—'}</td>
-                    <td>{log.petBooking?.pet?.name ?? <span className="text-muted">—</span>}</td>
-                    <td className="text-muted">{log.notes ?? '—'}</td>
+                  <tr>
+                    <td colSpan={5} className="text-center py-4 text-muted">
+                      No scan logs yet
+                    </td>
                   </tr>
-                ))}
+                ) : (
+                  scanLogs.map((log: QRScanLogEntry) => (
+                    <tr key={log.id}>
+                      <td className="text-nowrap">{dayjs(log.createdAt).format('DD MMM HH:mm')}</td>
+                      <td>
+                        <StatusBadge status={log.scanResult} />
+                      </td>
+                      <td>{log.scannedBy?.name ?? '—'}</td>
+                      <td>{log.petBooking?.pet?.name ?? <span className="text-muted">—</span>}</td>
+                      <td className="text-muted">{log.notes ?? '—'}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </Table>
           </LoadingOverlay>

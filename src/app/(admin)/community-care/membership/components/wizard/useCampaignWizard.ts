@@ -5,13 +5,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useForm, UseFormReturn } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { MembershipCampaign } from '@/lib/api/membership-campaign.api'
-import {
-  wizardSchema,
-  CampaignWizardFormValues,
-  campaignToWizardValues,
-  WIZARD_STEPS,
-  WizardStepId,
-} from './wizard.types'
+import { wizardSchema, CampaignWizardFormValues, campaignToWizardValues, WIZARD_STEPS, WizardStepId } from './wizard.types'
 
 interface WizardContextType {
   form: UseFormReturn<CampaignWizardFormValues>
@@ -40,7 +34,7 @@ export function useCampaignWizard(campaign?: MembershipCampaign | null) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  
+
   const form = useForm<CampaignWizardFormValues>({
     resolver: yupResolver(wizardSchema),
     defaultValues: campaignToWizardValues(campaign),
@@ -48,7 +42,10 @@ export function useCampaignWizard(campaign?: MembershipCampaign | null) {
   })
 
   const stepQuery = searchParams.get('step') as WizardStepId | null
-  const currentStepIndex = Math.max(0, WIZARD_STEPS.findIndex((s) => s.id === stepQuery))
+  const currentStepIndex = Math.max(
+    0,
+    WIZARD_STEPS.findIndex((s) => s.id === stepQuery),
+  )
   const currentStepId = WIZARD_STEPS[currentStepIndex].id
   const isFirstStep = currentStepIndex === 0
   const isLastStep = currentStepIndex === WIZARD_STEPS.length - 1
@@ -76,12 +73,12 @@ export function useCampaignWizard(campaign?: MembershipCampaign | null) {
   const validateStep = async (stepIndex: number): Promise<boolean> => {
     const step = WIZARD_STEPS[stepIndex]
     if (!step.fields.length) return true
-    
+
     const isStepValid = await form.trigger(step.fields as any)
     if (!isStepValid) {
       // Find the first error and focus it if possible
       const errors = form.formState.errors
-      const firstErrorField = step.fields.find(f => errors[f as keyof typeof errors])
+      const firstErrorField = step.fields.find((f) => errors[f as keyof typeof errors])
       if (firstErrorField) {
         form.setFocus(firstErrorField as any)
       }
@@ -90,7 +87,7 @@ export function useCampaignWizard(campaign?: MembershipCampaign | null) {
   }
 
   const goToStep = async (stepId: WizardStepId) => {
-    const targetIndex = WIZARD_STEPS.findIndex(s => s.id === stepId)
+    const targetIndex = WIZARD_STEPS.findIndex((s) => s.id === stepId)
     if (targetIndex === -1) return
 
     // If moving forward, validate current step

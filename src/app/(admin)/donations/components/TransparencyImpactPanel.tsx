@@ -47,7 +47,17 @@ export default function TransparencyImpactPanel({ data }: Props) {
 
           <div className="d-flex flex-column gap-3 mb-4">
             <div className="d-flex align-items-center gap-3">
-              <div className="avatar-sm bg-soft-success text-success rounded flex-centered" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#e8f5e9', color: '#1a6b3c' }}>
+              <div
+                className="avatar-sm bg-soft-success text-success rounded flex-centered"
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#e8f5e9',
+                  color: '#1a6b3c',
+                }}>
                 <Icon icon="solar:star-bold-duotone" className="fs-20 text-success" />
               </div>
               <div>
@@ -57,7 +67,17 @@ export default function TransparencyImpactPanel({ data }: Props) {
             </div>
 
             <div className="d-flex align-items-center gap-3">
-              <div className="avatar-sm bg-soft-info text-info rounded flex-centered" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#e0f2f1', color: '#00695c' }}>
+              <div
+                className="avatar-sm bg-soft-info text-info rounded flex-centered"
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#e0f2f1',
+                  color: '#00695c',
+                }}>
                 <Icon icon="solar:document-text-bold-duotone" className="fs-20 text-info" />
               </div>
               <div>

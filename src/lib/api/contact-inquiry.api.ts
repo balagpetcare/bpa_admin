@@ -141,13 +141,11 @@ export interface InquiryListParams {
 // ─── Inquiry Inbox ────────────────────────────────────────────────
 
 export const contactInquiryApi = {
-  list: (params?: InquiryListParams) =>
-    apiClientPaginated<InquiryListItem>(BASE, { method: 'GET', params: params as Record<string, string> }),
+  list: (params?: InquiryListParams) => apiClientPaginated<InquiryListItem>(BASE, { method: 'GET', params: params as Record<string, string> }),
 
   getById: (id: string) => api.get<InquiryDetail>(`${BASE}/${id}`),
 
-  updateStatus: (id: string, status: InquiryStatus) =>
-    api.patch(`${BASE}/${id}/status`, { status }),
+  updateStatus: (id: string, status: InquiryStatus) => api.patch(`${BASE}/${id}/status`, { status }),
 
   assign: (id: string, data: { departmentId?: string | null; assignedToId?: string | null; priority?: InquiryPriority }) =>
     api.patch(`${BASE}/${id}/assign`, data),
@@ -178,14 +176,11 @@ export const contactInquiryApi = {
     },
   ) => api.post(`${BASE}/${id}/forward`, data),
 
-  sendSms: (id: string, data: { phone: string; message: string }) =>
-    api.post(`${BASE}/${id}/sms`, data),
+  sendSms: (id: string, data: { phone: string; message: string }) => api.post(`${BASE}/${id}/sms`, data),
 
-  addNote: (id: string, note: string) =>
-    api.post(`${BASE}/${id}/notes`, { note }),
+  addNote: (id: string, note: string) => api.post(`${BASE}/${id}/notes`, { note }),
 
-  deleteNote: (id: string, noteId: string) =>
-    api.delete(`${BASE}/${id}/notes/${noteId}`),
+  deleteNote: (id: string, noteId: string) => api.delete(`${BASE}/${id}/notes/${noteId}`),
 }
 
 // ─── Config: Contact Types ────────────────────────────────────────
@@ -224,7 +219,6 @@ export const priorityRuleApi = {
   list: () => api.get<ContactPriorityRule[]>(`${BASE}/config/priority-rules`),
   getById: (id: string) => api.get<ContactPriorityRule>(`${BASE}/config/priority-rules/${id}`),
   create: (data: Partial<ContactPriorityRule>) => api.post<ContactPriorityRule>(`${BASE}/config/priority-rules`, data),
-  update: (id: string, data: Partial<ContactPriorityRule>) =>
-    api.patch<ContactPriorityRule>(`${BASE}/config/priority-rules/${id}`, data),
+  update: (id: string, data: Partial<ContactPriorityRule>) => api.patch<ContactPriorityRule>(`${BASE}/config/priority-rules/${id}`, data),
   delete: (id: string) => api.delete(`${BASE}/config/priority-rules/${id}`),
 }

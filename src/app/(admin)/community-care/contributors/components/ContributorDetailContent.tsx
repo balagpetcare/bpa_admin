@@ -25,7 +25,8 @@ export default function ContributorDetailContent({ id }: { id: string }) {
         breadcrumbs={[{ label: 'Community Care Fund' }, { label: 'Contributors', href: '/community-care/contributors' }, { label: 'Detail' }]}
         action={
           <Button variant="outline-secondary" size="sm" onClick={() => router.push('/community-care/contributors')}>
-            <Icon icon="solar:arrow-left-bold" className="me-1" />Back
+            <Icon icon="solar:arrow-left-bold" className="me-1" />
+            Back
           </Button>
         }
       />
@@ -41,7 +42,9 @@ export default function ContributorDetailContent({ id }: { id: string }) {
                     <dt className="col-sm-5">Contribution #</dt>
                     <dd className="col-sm-7 font-monospace">{c.contributionNumber}</dd>
                     <dt className="col-sm-5">Status</dt>
-                    <dd className="col-sm-7"><ContributionStatusBadge status={c.status} /></dd>
+                    <dd className="col-sm-7">
+                      <ContributionStatusBadge status={c.status} />
+                    </dd>
                     <dt className="col-sm-5">Plan</dt>
                     <dd className="col-sm-7">{c.plan.title}</dd>
                     <dt className="col-sm-5">Zone</dt>
@@ -79,7 +82,8 @@ export default function ContributorDetailContent({ id }: { id: string }) {
                   <Card.Header className="fw-semibold d-flex justify-content-between align-items-center">
                     Care Partner Card
                     <Link href={`/community-care/cards/${c.carePartnerCard.id}`} className="btn btn-soft-primary btn-sm">
-                      <Icon icon="solar:eye-bold" className="me-1" />View Card
+                      <Icon icon="solar:eye-bold" className="me-1" />
+                      View Card
                     </Link>
                   </Card.Header>
                   <Card.Body>
@@ -88,7 +92,9 @@ export default function ContributorDetailContent({ id }: { id: string }) {
                       <dd className="col-sm-9 font-monospace fw-bold">{c.carePartnerCard.cardNumber}</dd>
                       <dt className="col-sm-3">Card Status</dt>
                       <dd className="col-sm-9">
-                        <Badge bg={c.carePartnerCard.status === 'active' ? 'success-subtle' : 'secondary-subtle'} text={c.carePartnerCard.status === 'active' ? 'success' : 'secondary'}>
+                        <Badge
+                          bg={c.carePartnerCard.status === 'active' ? 'success-subtle' : 'secondary-subtle'}
+                          text={c.carePartnerCard.status === 'active' ? 'success' : 'secondary'}>
                           {c.carePartnerCard.status}
                         </Badge>
                       </dd>

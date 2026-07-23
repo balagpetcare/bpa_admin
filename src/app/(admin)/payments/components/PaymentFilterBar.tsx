@@ -13,19 +13,14 @@ interface PaymentFilterBarProps {
   onGatewayChange: (v: PaymentGateway | '') => void
 }
 
-export default function PaymentFilterBar({
-  search, status, gateway,
-  onSearchChange, onStatusChange, onGatewayChange,
-}: PaymentFilterBarProps) {
+export default function PaymentFilterBar({ search, status, gateway, onSearchChange, onStatusChange, onGatewayChange }: PaymentFilterBarProps) {
   return (
     <div className="d-flex gap-2 mb-3 flex-wrap">
       <InputGroup style={{ maxWidth: 320 }}>
-        <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
-        <Form.Control
-          placeholder="Search by reference or ID…"
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
+        <InputGroup.Text>
+          <Icon icon="solar:magnifer-bold" />
+        </InputGroup.Text>
+        <Form.Control placeholder="Search by reference or ID…" value={search} onChange={(e) => onSearchChange(e.target.value)} />
         {search && (
           <Button variant="outline-secondary" onClick={() => onSearchChange('')}>
             <Icon icon="solar:close-circle-bold" />
@@ -33,11 +28,7 @@ export default function PaymentFilterBar({
         )}
       </InputGroup>
 
-      <Form.Select
-        style={{ maxWidth: 160 }}
-        value={status}
-        onChange={(e) => onStatusChange(e.target.value as PaymentStatus | '')}
-      >
+      <Form.Select style={{ maxWidth: 160 }} value={status} onChange={(e) => onStatusChange(e.target.value as PaymentStatus | '')}>
         <option value="">All statuses</option>
         <option value="pending">Pending</option>
         <option value="success">Success</option>
@@ -45,11 +36,7 @@ export default function PaymentFilterBar({
         <option value="refunded">Refunded</option>
       </Form.Select>
 
-      <Form.Select
-        style={{ maxWidth: 160 }}
-        value={gateway}
-        onChange={(e) => onGatewayChange(e.target.value as PaymentGateway | '')}
-      >
+      <Form.Select style={{ maxWidth: 160 }} value={gateway} onChange={(e) => onGatewayChange(e.target.value as PaymentGateway | '')}>
         <option value="">All methods</option>
         <option value="eps">Online Payment</option>
       </Form.Select>

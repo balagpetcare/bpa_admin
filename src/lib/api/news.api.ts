@@ -40,8 +40,7 @@ export const newsApi = {
   deleteTag: (id: string) => api.delete<void>(`/news/tags/${id}`),
 
   // Articles
-  list: (params?: NewsListParams) =>
-    api.get<PaginatedResult<NewsListItem>>('/news', params as Record<string, string | number | boolean | undefined>),
+  list: (params?: NewsListParams) => api.get<PaginatedResult<NewsListItem>>('/news', params as Record<string, string | number | boolean | undefined>),
 
   getById: (id: string) => api.get<NewsDetail>(`/news/${id}`),
 

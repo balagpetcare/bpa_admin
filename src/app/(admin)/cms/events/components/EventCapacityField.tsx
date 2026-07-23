@@ -4,7 +4,6 @@ import { Row, Col, Form, Card } from 'react-bootstrap'
 import type { Control } from 'react-hook-form'
 import TextFormInput from '@/components/form/TextFormInput'
 
- 
 interface EventCapacityFieldProps {
   control: Control<any>
   isPaid: boolean
@@ -14,7 +13,9 @@ interface EventCapacityFieldProps {
 export default function EventCapacityField({ control, isPaid, onIsPaidChange }: EventCapacityFieldProps) {
   return (
     <Card className="mb-3">
-      <Card.Header className="py-2"><h6 className="mb-0">Capacity & Pricing</h6></Card.Header>
+      <Card.Header className="py-2">
+        <h6 className="mb-0">Capacity & Pricing</h6>
+      </Card.Header>
       <Card.Body>
         <Row>
           <Col md={6}>
@@ -37,14 +38,7 @@ export default function EventCapacityField({ control, isPaid, onIsPaidChange }: 
           className="mb-3"
         />
         {isPaid && (
-          <TextFormInput
-            name="fee"
-            label="Registration Fee (৳)"
-            placeholder="0.00"
-            type="number"
-            containerClassName="mb-0"
-            control={control}
-          />
+          <TextFormInput name="fee" label="Registration Fee (৳)" placeholder="0.00" type="number" containerClassName="mb-0" control={control} />
         )}
       </Card.Body>
     </Card>

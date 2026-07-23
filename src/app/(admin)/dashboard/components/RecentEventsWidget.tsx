@@ -10,7 +10,9 @@ export default function RecentEventsWidget({ items }: { items: EventListItem[] }
     <Card className="h-100">
       <Card.Header className="d-flex justify-content-between align-items-center">
         <h5 className="mb-0">Upcoming Events</h5>
-        <Link href="/cms/events" className="text-muted small">View all →</Link>
+        <Link href="/cms/events" className="text-muted small">
+          View all →
+        </Link>
       </Card.Header>
       <Card.Body className="p-0">
         {items.length === 0 ? (
@@ -31,9 +33,7 @@ export default function RecentEventsWidget({ items }: { items: EventListItem[] }
                     </span>
                   </div>
                   <div className="text-end flex-shrink-0">
-                    <Badge bg={e.status === 'published' ? 'success' : e.status === 'cancelled' ? 'danger' : 'secondary'}>
-                      {e.status}
-                    </Badge>
+                    <Badge bg={e.status === 'published' ? 'success' : e.status === 'cancelled' ? 'danger' : 'secondary'}>{e.status}</Badge>
                     {e.capacity !== null && (
                       <div className="text-muted" style={{ fontSize: 11 }}>
                         {e.registrationCount}/{e.capacity}

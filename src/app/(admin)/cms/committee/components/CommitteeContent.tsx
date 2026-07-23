@@ -20,21 +20,24 @@ export default function CommitteeContent() {
   const [showInactive, setShowInactive] = useState(false)
   const [localData, setLocalData] = useState<CommitteeMember[] | null>(null)
 
-  const { data: fetched, loading, error, refetch } = useApi(
-    () => committeeApi.list(showInactive ? undefined : true),
-    [showInactive],
-  )
+  const { data: fetched, loading, error, refetch } = useApi(() => committeeApi.list(showInactive ? undefined : true), [showInactive])
 
   // Prefer localData for optimistic DnD updates; fall back to fetched
   const members = localData ?? fetched ?? []
 
   // When remote data arrives, clear local override
-  if (fetched && localData && JSON.stringify(localData.map(m => m.id)) === JSON.stringify(fetched.map((m: CommitteeMember) => m.id))) {
+  if (fetched && localData && JSON.stringify(localData.map((m) => m.id)) === JSON.stringify(fetched.map((m: CommitteeMember) => m.id))) {
     setLocalData(null)
   }
 
-  const openCreate = () => { setEditMember(null); setModalOpen(true) }
-  const openEdit = (m: CommitteeMember) => { setEditMember(m); setModalOpen(true) }
+  const openCreate = () => {
+    setEditMember(null)
+    setModalOpen(true)
+  }
+  const openEdit = (m: CommitteeMember) => {
+    setEditMember(m)
+    setModalOpen(true)
+  }
 
   const handleReordered = (reordered: CommitteeMember[]) => setLocalData(reordered)
 
@@ -69,7 +72,10 @@ export default function CommitteeContent() {
               id="showInactive"
               label="Show inactive"
               checked={showInactive}
-              onChange={(e) => { setShowInactive(e.target.checked); setLocalData(null) }}
+              onChange={(e) => {
+                setShowInactive(e.target.checked)
+                setLocalData(null)
+              }}
             />
             <small className="text-muted ms-auto">
               Drag <Icon icon="solar:sort-vertical-bold" className="mx-1" /> to reorder
@@ -77,20 +83,17 @@ export default function CommitteeContent() {
           </div>
         </Card.Header>
         <Card.Body className="p-0">
-          <CommitteeTable
-            data={members}
-            loading={loading}
-            onEdit={openEdit}
-            onDeleted={handleDeleted}
-            onReordered={handleReordered}
-          />
+          <CommitteeTable data={members} loading={loading} onEdit={openEdit} onDeleted={handleDeleted} onReordered={handleReordered} />
         </Card.Body>
       </Card>
 
       <CommitteeForm
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        onSuccess={() => { setLocalData(null); refetch() }}
+        onSuccess={() => {
+          setLocalData(null)
+          refetch()
+        }}
         member={editMember}
       />
     </div>

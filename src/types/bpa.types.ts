@@ -180,6 +180,8 @@ export interface MediaFile {
   uploadedById: string | null
   createdAt: string
   updatedAt: string
+  /** True when the backend could not find the underlying file in storage. `url` is a placeholder in that case. */
+  missing?: boolean
 }
 
 // ─── SEO ──────────────────────────────────────────────────────────

@@ -14,7 +14,7 @@ import type { ApiError } from '@/lib/api'
 export default function PetCensusSettingsContent() {
   const { can } = usePermission()
   const { mutate, loading: saving, error: mutationError } = useApiMutation<unknown, unknown>()
-  
+
   const [form, setForm] = useState({
     title: 'Pet Census 2026',
     description: '',
@@ -28,7 +28,7 @@ export default function PetCensusSettingsContent() {
 
   const { data: campaigns, loading, error, refetch } = useApi(() => petCensusApi.listCampaigns(), [])
 
-  const activeCampaign = (campaigns as any[])?.find(c => c.isActive) || (campaigns as any[])?.[0]
+  const activeCampaign = (campaigns as any[])?.find((c) => c.isActive) || (campaigns as any[])?.[0]
 
   useEffect(() => {
     if (!activeCampaign) return
@@ -44,7 +44,7 @@ export default function PetCensusSettingsContent() {
     })
   }, [activeCampaign])
 
-  function setField<K extends keyof typeof form>(key: K, value: typeof form[K]) {
+  function setField<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((current) => ({ ...current, [key]: value }))
   }
 
@@ -56,7 +56,7 @@ export default function PetCensusSettingsContent() {
       countdownTargetAt: form.countdownTargetAt ? new Date(form.countdownTargetAt).toISOString() : null,
     }
 
-    let result;
+    let result
     if (activeCampaign) {
       result = await mutate(() => petCensusApi.updateCampaign(activeCampaign.id, payload), undefined)
     } else {
@@ -70,10 +70,7 @@ export default function PetCensusSettingsContent() {
 
   return (
     <div className="container-fluid">
-      <PageHeader
-        title="Pet Census Settings"
-        breadcrumbs={[{ label: 'Community Care' }, { label: 'Pet Census' }, { label: 'Settings' }]}
-      />
+      <PageHeader title="Pet Census Settings" breadcrumbs={[{ label: 'Community Care' }, { label: 'Pet Census' }, { label: 'Settings' }]} />
 
       <ApiErrorAlert error={(mutationError as ApiError | null) ?? (error as ApiError | null)} />
 
@@ -114,11 +111,7 @@ export default function PetCensusSettingsContent() {
                   <Col md={6}>
                     <Form.Group>
                       <Form.Label>Status</Form.Label>
-                      <Form.Select
-                        value={form.status}
-                        onChange={(e) => setField('status', e.target.value)}
-                        disabled={!can('pet_census:update')}
-                      >
+                      <Form.Select value={form.status} onChange={(e) => setField('status', e.target.value)} disabled={!can('pet_census:update')}>
                         <option value="draft">Draft</option>
                         <option value="published">Published</option>
                         <option value="registration_open">Registration Open</option>

@@ -29,30 +29,32 @@ export default function PaymentsTable({ data, loading, onView }: PaymentsTablePr
         cell: ({ row }) => (
           <div>
             <code className="text-primary small">{row.original.merchantTxnId ?? row.original.gatewayRef ?? '—'}</code>
-            <div className="text-muted" style={{ fontSize: 11 }}>{row.original.id.slice(0, 8)}…</div>
+            <div className="text-muted" style={{ fontSize: 11 }}>
+              {row.original.id.slice(0, 8)}…
+            </div>
           </div>
         ),
       },
       {
         header: 'Purpose',
         accessorKey: 'purpose',
-        cell: ({ getValue }) => <Badge bg="info" className="text-capitalize">{getValue<string>()}</Badge>,
+        cell: ({ getValue }) => (
+          <Badge bg="info" className="text-capitalize">
+            {getValue<string>()}
+          </Badge>
+        ),
       },
       {
         header: 'Amount',
         accessorKey: 'amount',
-        cell: ({ row }) => (
-          <span className="fw-semibold">
-            {formatAmount(row.original.amount, row.original.currency)}
-          </span>
-        ),
+        cell: ({ row }) => <span className="fw-semibold">{formatAmount(row.original.amount, row.original.currency)}</span>,
       },
       {
         header: 'Method',
         accessorKey: 'gateway',
         cell: ({ getValue }) => {
-          const v = getValue<string>();
-          return <span className="small">{v === 'eps' ? 'Online Payment' : v}</span>;
+          const v = getValue<string>()
+          return <span className="small">{v === 'eps' ? 'Online Payment' : v}</span>
         },
       },
       {
@@ -73,8 +75,10 @@ export default function PaymentsTable({ data, loading, onView }: PaymentsTablePr
             variant="soft-primary"
             size="sm"
             title="View details"
-            onClick={(e) => { e.stopPropagation(); onView(row.original) }}
-          >
+            onClick={(e) => {
+              e.stopPropagation()
+              onView(row.original)
+            }}>
             <Icon icon="solar:eye-bold" />
           </Button>
         ),
@@ -102,11 +106,7 @@ export default function PaymentsTable({ data, loading, onView }: PaymentsTablePr
             {data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length}>
-                  <EmptyState
-                    icon="solar:wallet-bold-duotone"
-                    title="No payments found"
-                    description="No payment records match the current filter."
-                  />
+                  <EmptyState icon="solar:wallet-bold-duotone" title="No payments found" description="No payment records match the current filter." />
                 </td>
               </tr>
             ) : (

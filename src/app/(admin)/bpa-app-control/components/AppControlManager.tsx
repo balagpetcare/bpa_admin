@@ -13,49 +13,29 @@ import StatusBadge from '@/components/ui/StatusBadge'
 import { confirmDelete, confirmDialog } from '@/components/ui/ConfirmDialog'
 import { useApi, useApiMutation } from '@/hooks/useApi'
 import { usePermission } from '@/hooks/usePermission'
+import { useNotificationContext } from '@/context/useNotificationContext'
 import { campaignsApi } from '@/lib/api/campaigns.api'
+import { resolveMediaUrl } from '@/lib/utils/media-url'
 import {
   appControlApi,
   APP_CONTROL_PAGE_OPTIONS,
   type AppControlDestinationType,
-  type AppControlPayload,
   type AppControlRecord,
   type AppControlStatus,
   type AppControlTargetAudience,
-  type AppThemeSettingPayload,
   type AppThemeSettingRecord,
-  type AppVersionSettingPayload,
   type AppVersionSettingRecord,
 } from '@/lib/api/app-control.api'
 import type { ApiError } from '@/lib/api'
-
-type ResourceKind = 'standard' | 'theme' | 'version'
-
-type FormState = {
-  title: string
-  subtitle: string
-  description: string
-  imageUrl: string
-  mobileImageUrl: string
-  ctaText: string
-  destinationType: AppControlDestinationType
-  destinationValue: string
-  sortOrder: string
-  startsAt: string
-  endsAt: string
-  isActive: boolean
-  targetAudience: AppControlTargetAudience
-  status: AppControlStatus
-  primaryColor?: string
-  secondaryColor?: string
-  accentColor?: string
-  fontFamily?: string
-  logoUrl?: string
-  minimumVersion?: string
-  latestVersion?: string
-  forceUpdate?: boolean
-  releaseNotes?: string
-}
+import {
+  buildPayload,
+  destinationValueLabel,
+  getInitialForm,
+  isKnownSeedPlaceholderUrl,
+  validateForm,
+  type FormState,
+  type ResourceKind,
+} from './AppControlManager.helpers'
 
 export interface AppControlManagerProps {
   resource: string
@@ -91,86 +71,6 @@ const TARGET_AUDIENCE_OPTIONS: Array<{ value: AppControlTargetAudience; label: s
   { value: 'staff', label: 'Staff' },
 ]
 
-const DEFAULT_FORM: FormState = {
-  title: '',
-  subtitle: '',
-  description: '',
-  imageUrl: '',
-  mobileImageUrl: '',
-  ctaText: '',
-  destinationType: 'NONE',
-  destinationValue: '',
-  sortOrder: '0',
-  startsAt: '',
-  endsAt: '',
-  isActive: true,
-  targetAudience: 'all',
-  status: 'draft',
-  primaryColor: '',
-  secondaryColor: '',
-  accentColor: '',
-  fontFamily: '',
-  logoUrl: '',
-  minimumVersion: '',
-  latestVersion: '',
-  forceUpdate: false,
-  releaseNotes: '',
-}
-
-function toLocalDateTimeInput(value?: string | null) {
-  if (!value) return ''
-  const d = new Date(value)
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
-}
-
-function toApiDateTime(value: string) {
-  return value ? new Date(value).toISOString() : null
-}
-
-function getInitialForm(record?: AppControlRecord | AppThemeSettingRecord | AppVersionSettingRecord | null, defaults?: Partial<FormState>): FormState {
-  if (!record) return { ...DEFAULT_FORM, ...defaults }
-  return {
-    title: record.title ?? '',
-    subtitle: record.subtitle ?? '',
-    description: record.description ?? '',
-    imageUrl: record.imageUrl ?? '',
-    mobileImageUrl: record.mobileImageUrl ?? '',
-    ctaText: record.ctaText ?? '',
-    destinationType: record.destinationType ?? 'NONE',
-    destinationValue: record.destinationValue ?? '',
-    sortOrder: String(record.sortOrder ?? 0),
-    startsAt: toLocalDateTimeInput(record.startsAt),
-    endsAt: toLocalDateTimeInput(record.endsAt),
-    isActive: record.isActive ?? true,
-    targetAudience: record.targetAudience ?? 'all',
-    status: record.status ?? 'draft',
-    primaryColor: 'primaryColor' in record ? record.primaryColor ?? '' : '',
-    secondaryColor: 'secondaryColor' in record ? record.secondaryColor ?? '' : '',
-    accentColor: 'accentColor' in record ? record.accentColor ?? '' : '',
-    fontFamily: 'fontFamily' in record ? record.fontFamily ?? '' : '',
-    logoUrl: 'logoUrl' in record ? record.logoUrl ?? '' : '',
-    minimumVersion: 'minimumVersion' in record ? record.minimumVersion ?? '' : '',
-    latestVersion: 'latestVersion' in record ? record.latestVersion ?? '' : '',
-    forceUpdate: 'forceUpdate' in record ? record.forceUpdate : false,
-    releaseNotes: 'releaseNotes' in record ? record.releaseNotes ?? '' : '',
-    ...defaults,
-  }
-}
-
-function destinationValueLabel(type: AppControlDestinationType) {
-  switch (type) {
-    case 'CAMPAIGN': return 'Campaign'
-    case 'INTERNAL_PAGE': return 'App Page'
-    case 'EXTERNAL_URL': return 'External URL'
-    case 'MEMBERSHIP': return 'Membership Target'
-    case 'DONATION': return 'Donation Target'
-    case 'PET_CENSUS': return 'Pet Census Target'
-    case 'SERVICE': return 'Service Target'
-    default: return 'Destination'
-  }
-}
-
 export default function AppControlManager({
   resource,
   title,
@@ -185,6 +85,7 @@ export default function AppControlManager({
   maintenanceModeOnly = false,
 }: AppControlManagerProps) {
   const { permissions, isSuperAdmin } = usePermission()
+  const { showNotification } = useNotificationContext()
   const canManage = isSuperAdmin || permissions.includes('app_control:manage')
   const canPublish = isSuperAdmin || permissions.includes('app_control:publish')
   const canDelete = isSuperAdmin || permissions.includes('app_control:delete')
@@ -197,6 +98,13 @@ export default function AppControlManager({
   const [editing, setEditing] = useState<AppControlRecord | AppThemeSettingRecord | AppVersionSettingRecord | null>(null)
   const [form, setForm] = useState<FormState>(getInitialForm(null, createDefaults))
   const [formError, setFormError] = useState<string | null>(null)
+  // Tracks whether the admin has explicitly interacted with the Mobile
+  // Banner Image control THIS editing session — used only to decide
+  // whether picking a new Main Banner Image should auto-clear a stale
+  // seed/demo mobile image the admin never actually configured (see
+  // isKnownSeedPlaceholderUrl). Once the admin touches the mobile image
+  // field themselves, their choice is never overridden automatically.
+  const [mobileImageTouched, setMobileImageTouched] = useState(false)
 
   useEffect(() => {
     if (!showModal) {
@@ -230,6 +138,7 @@ export default function AppControlManager({
     setEditing(null)
     setForm(getInitialForm(null, createDefaults))
     setFormError(null)
+    setMobileImageTouched(false)
     clearError()
     setShowModal(true)
   }
@@ -238,6 +147,7 @@ export default function AppControlManager({
     setEditing(item)
     setForm(getInitialForm(item, createDefaults))
     setFormError(null)
+    setMobileImageTouched(false)
     clearError()
     setShowModal(true)
   }
@@ -246,72 +156,18 @@ export default function AppControlManager({
     setForm((prev) => ({ ...prev, [key]: value }))
   }
 
-  function validateForm() {
-    if (!form.title.trim()) return 'Title is required.'
-    if (form.startsAt && form.endsAt && new Date(form.endsAt) < new Date(form.startsAt)) return 'End date must be after start date.'
-    if (form.destinationType === 'EXTERNAL_URL' && form.destinationValue.trim()) {
-      try { new URL(form.destinationValue.trim()) } catch { return 'Please enter a valid external URL.' }
-    }
-    if (form.destinationType !== 'NONE' && !form.destinationValue.trim()) return 'Destination target is required.'
-    if (form.destinationType === 'CAMPAIGN' && !form.destinationValue.trim()) return 'Select a campaign.'
-    if (kind === 'version') {
-      if (!form.minimumVersion?.trim()) return 'Minimum version is required.'
-      if (!form.latestVersion?.trim()) return 'Latest version is required.'
-    }
-    return null
-  }
-
-  function buildPayload(): AppControlPayload | AppThemeSettingPayload | AppVersionSettingPayload {
-    const base: AppControlPayload = {
-      title: form.title.trim() || null,
-      subtitle: form.subtitle.trim() || null,
-      description: form.description.trim() || null,
-      imageUrl: form.imageUrl.trim() || null,
-      mobileImageUrl: form.mobileImageUrl.trim() || null,
-      ctaText: form.ctaText.trim() || null,
-      destinationType: form.destinationType,
-      destinationValue: form.destinationType === 'NONE' ? null : form.destinationValue.trim() || null,
-      sortOrder: Number(form.sortOrder || 0),
-      isActive: form.isActive,
-      startsAt: toApiDateTime(form.startsAt),
-      endsAt: toApiDateTime(form.endsAt),
-      targetAudience: form.targetAudience,
-      status: form.status,
-    }
-
-    if (kind === 'theme') {
-      return {
-        ...base,
-        primaryColor: form.primaryColor?.trim() || null,
-        secondaryColor: form.secondaryColor?.trim() || null,
-        accentColor: form.accentColor?.trim() || null,
-        fontFamily: form.fontFamily?.trim() || null,
-        logoUrl: form.logoUrl?.trim() || null,
-      }
-    }
-
-    if (kind === 'version') {
-      return {
-        ...base,
-        minimumVersion: form.minimumVersion?.trim() || '',
-        latestVersion: form.latestVersion?.trim() || '',
-        forceUpdate: !!form.forceUpdate,
-        releaseNotes: form.releaseNotes?.trim() || null,
-      }
-    }
-
-    return base
-  }
-
   async function handleSave() {
-    const validationError = validateForm()
+    if (saving) return
+
+    const validationError = validateForm(form, kind)
     if (validationError) {
       setFormError(validationError)
       return
     }
 
     setFormError(null)
-    const payload = buildPayload()
+    const payload = buildPayload(form, kind)
+    const wasEditing = !!editing
 
     const result = editing
       ? await mutate(() => appControlApi.update(resource, editing.id, payload), undefined)
@@ -320,6 +176,10 @@ export default function AppControlManager({
     if (result) {
       setShowModal(false)
       refetch()
+      showNotification({
+        message: wasEditing ? `${title} updated successfully.` : `${title} created successfully.`,
+        variant: 'success',
+      })
     }
   }
 
@@ -353,7 +213,7 @@ export default function AppControlManager({
           <Form.Select value={form.destinationValue} onChange={(e) => setField('destinationValue', e.target.value)}>
             <option value="">Select campaign</option>
             {campaigns.map((campaign) => (
-              <option key={campaign.id} value={campaign.slug || campaign.id}>
+              <option key={campaign.id} value={campaign.id}>
                 {campaign.title}
               </option>
             ))}
@@ -369,7 +229,9 @@ export default function AppControlManager({
           <Form.Select value={form.destinationValue} onChange={(e) => setField('destinationValue', e.target.value)}>
             <option value="">Select app page</option>
             {APP_CONTROL_PAGE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
             ))}
           </Form.Select>
         </Form.Group>
@@ -394,18 +256,22 @@ export default function AppControlManager({
       <PageHeader
         title={title}
         breadcrumbs={breadcrumbs}
-        action={canManage ? (
-          <Button variant="primary" onClick={openCreate}>
-            <Icon icon="solar:add-circle-bold" className="me-1" />
-            Add Record
-          </Button>
-        ) : null}
+        action={
+          canManage ? (
+            <Button variant="primary" onClick={openCreate}>
+              <Icon icon="solar:add-circle-bold" className="me-1" />
+              Add Record
+            </Button>
+          ) : null
+        }
       />
 
       <Card className="border-0 shadow-sm mb-3">
         <Card.Body className="p-4">
           <div className="d-flex align-items-start gap-3">
-            <div className="rounded-3 bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 46, height: 46 }}>
+            <div
+              className="rounded-3 bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center flex-shrink-0"
+              style={{ width: 46, height: 46 }}>
               <Icon icon={icon} width="22" />
             </div>
             <div>
@@ -421,13 +287,27 @@ export default function AppControlManager({
             <Col md={4}>
               <Form.Label className="small fw-semibold">Search</Form.Label>
               <InputGroup>
-                <InputGroup.Text><Icon icon="solar:magnifer-linear" /></InputGroup.Text>
-                <Form.Control value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="Search title, subtitle, description..." />
+                <InputGroup.Text>
+                  <Icon icon="solar:magnifer-linear" />
+                </InputGroup.Text>
+                <Form.Control
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value)
+                    setPage(1)
+                  }}
+                  placeholder="Search title, subtitle, description..."
+                />
               </InputGroup>
             </Col>
             <Col md={3}>
               <Form.Label className="small fw-semibold">Status</Form.Label>
-              <Form.Select value={status} onChange={(e) => { setStatus(e.target.value as AppControlStatus | ''); setPage(1) }}>
+              <Form.Select
+                value={status}
+                onChange={(e) => {
+                  setStatus(e.target.value as AppControlStatus | '')
+                  setPage(1)
+                }}>
                 <option value="">All statuses</option>
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
@@ -442,8 +322,7 @@ export default function AppControlManager({
                   const value = e.target.value
                   setIsActive(value === '' ? '' : value === 'true')
                   setPage(1)
-                }}
-              >
+                }}>
                 <option value="">All records</option>
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
@@ -452,10 +331,17 @@ export default function AppControlManager({
             {!hideDestinationTypeFilter && (
               <Col md={2}>
                 <Form.Label className="small fw-semibold">Destination</Form.Label>
-                <Form.Select value={destinationTypeFilter} onChange={(e) => { setDestinationTypeFilter(e.target.value as AppControlDestinationType | ''); setPage(1) }}>
+                <Form.Select
+                  value={destinationTypeFilter}
+                  onChange={(e) => {
+                    setDestinationTypeFilter(e.target.value as AppControlDestinationType | '')
+                    setPage(1)
+                  }}>
                   <option value="">All</option>
                   {DESTINATION_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </Form.Select>
               </Col>
@@ -471,7 +357,9 @@ export default function AppControlManager({
       <Card className="border-0 shadow-sm">
         <Card.Header className="bg-transparent border-bottom py-3 d-flex justify-content-between align-items-center">
           <span className="fw-semibold">Records</span>
-          <span className="text-muted small">{items.length} item{items.length === 1 ? '' : 's'}</span>
+          <span className="text-muted small">
+            {items.length} item{items.length === 1 ? '' : 's'}
+          </span>
         </Card.Header>
         <Card.Body className="p-0">
           <LoadingOverlay loading={loading || deleting}>
@@ -480,7 +368,13 @@ export default function AppControlManager({
                 icon={icon}
                 title={emptyTitle}
                 description={emptyDescription}
-                action={canManage ? <Button variant="primary" size="sm" onClick={openCreate}>Create first record</Button> : undefined}
+                action={
+                  canManage ? (
+                    <Button variant="primary" size="sm" onClick={openCreate}>
+                      Create first record
+                    </Button>
+                  ) : undefined
+                }
               />
             ) : (
               <div className="table-responsive">
@@ -504,7 +398,11 @@ export default function AppControlManager({
                             <div className="rounded overflow-hidden border bg-light flex-shrink-0" style={{ width: 56, height: 56 }}>
                               {item.imageUrl ? (
                                 // eslint-disable-next-line @next/next/no-img-element
-                                <img src={item.imageUrl} alt={item.title || 'App control image'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <img
+                                  src={item.imageUrl}
+                                  alt={item.title || 'App control image'}
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
                               ) : (
                                 <div className="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
                                   <Icon icon={icon} width="22" />
@@ -545,7 +443,11 @@ export default function AppControlManager({
                               </Button>
                             )}
                             {canPublish && (
-                              <Button variant={item.status === 'published' ? 'soft-warning' : 'soft-success'} size="sm" onClick={() => handlePublishToggle(item)} title={item.status === 'published' ? 'Unpublish' : 'Publish'}>
+                              <Button
+                                variant={item.status === 'published' ? 'soft-warning' : 'soft-success'}
+                                size="sm"
+                                onClick={() => handlePublishToggle(item)}
+                                title={item.status === 'published' ? 'Unpublish' : 'Publish'}>
                                 <Icon icon={item.status === 'published' ? 'solar:eye-closed-bold' : 'solar:check-circle-bold'} />
                               </Button>
                             )}
@@ -566,10 +468,16 @@ export default function AppControlManager({
         </Card.Body>
         {meta && meta.totalPages > 1 && (
           <Card.Footer className="bg-transparent d-flex justify-content-between align-items-center py-3">
-            <span className="small text-muted">Page {meta.page} of {meta.totalPages} · {meta.total} total</span>
+            <span className="small text-muted">
+              Page {meta.page} of {meta.totalPages} · {meta.total} total
+            </span>
             <div className="d-flex gap-2">
-              <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>Previous</Button>
-              <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>Next</Button>
+              <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                Previous
+              </Button>
+              <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                Next
+              </Button>
             </div>
           </Card.Footer>
         )}
@@ -606,29 +514,50 @@ export default function AppControlManager({
                     <Col md={12}>
                       <Form.Group>
                         <Form.Label>Description</Form.Label>
-                        <Form.Control as="textarea" rows={4} value={form.description} onChange={(e) => setField('description', e.target.value)} placeholder="Enter description" />
+                        <Form.Control
+                          as="textarea"
+                          rows={4}
+                          value={form.description}
+                          onChange={(e) => setField('description', e.target.value)}
+                          placeholder="Enter description"
+                        />
                       </Form.Group>
                     </Col>
                     <Col md={6}>
                       <MediaPickerInput
-                        label="Image Upload"
+                        label="Main Banner Image"
+                        helpText="Recommended: 1200 × 600. Used whenever no separate Mobile Banner Image is set."
                         value={null}
                         previewUrl={form.imageUrl || null}
-                        onChange={(_id, file) => setField('imageUrl', file?.url || '')}
                         emptyLabel="Choose image from media"
+                        onChange={(_id, file) => {
+                          const nextImageUrl = (file?.url ? resolveMediaUrl(file.url) : null) || ''
+                          setField('imageUrl', nextImageUrl)
+                          // A brand-new Main Banner Image was picked. If the
+                          // admin hasn't touched the Mobile Banner Image
+                          // control themselves and it's still holding only
+                          // seed/demo filler content, clear it so the app
+                          // falls back to the new main image instead of
+                          // silently continuing to show stale placeholder
+                          // art the admin never actually configured.
+                          if (!mobileImageTouched && isKnownSeedPlaceholderUrl(form.mobileImageUrl)) {
+                            setField('mobileImageUrl', '')
+                          }
+                        }}
                       />
                     </Col>
                     <Col md={6}>
-                      <Form.Group>
-                        <Form.Label>Image URL</Form.Label>
-                        <Form.Control type="url" value={form.imageUrl} onChange={(e) => setField('imageUrl', e.target.value)} placeholder="https://..." />
-                      </Form.Group>
-                    </Col>
-                    <Col md={6}>
-                      <Form.Group>
-                        <Form.Label>Mobile Image URL</Form.Label>
-                        <Form.Control type="url" value={form.mobileImageUrl} onChange={(e) => setField('mobileImageUrl', e.target.value)} placeholder="https://..." />
-                      </Form.Group>
+                      <MediaPickerInput
+                        label="Mobile Banner Image — Optional"
+                        helpText="Recommended: 720 × 960. If empty, the Main Banner Image will be used. When set, this overrides the Main Banner Image in the mobile app."
+                        value={null}
+                        previewUrl={form.mobileImageUrl || null}
+                        emptyLabel="Choose image from media (optional)"
+                        onChange={(_id, file) => {
+                          setMobileImageTouched(true)
+                          setField('mobileImageUrl', (file?.url ? resolveMediaUrl(file.url) : null) || '')
+                        }}
+                      />
                     </Col>
                     <Col md={6}>
                       <Form.Group>
@@ -645,10 +574,11 @@ export default function AppControlManager({
                             const value = e.target.value as AppControlDestinationType
                             setField('destinationType', value)
                             setField('destinationValue', '')
-                          }}
-                        >
+                          }}>
                           {DESTINATION_OPTIONS.map((option) => (
-                            <option key={option.value} value={option.value}>{option.label}</option>
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
                           ))}
                         </Form.Select>
                       </Form.Group>
@@ -656,16 +586,18 @@ export default function AppControlManager({
                     <Col md={6}>
                       <Form.Group>
                         <Form.Label>Target Audience</Form.Label>
-                        <Form.Select value={form.targetAudience} onChange={(e) => setField('targetAudience', e.target.value as AppControlTargetAudience)}>
+                        <Form.Select
+                          value={form.targetAudience}
+                          onChange={(e) => setField('targetAudience', e.target.value as AppControlTargetAudience)}>
                           {TARGET_AUDIENCE_OPTIONS.map((option) => (
-                            <option key={option.value} value={option.value}>{option.label}</option>
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
                           ))}
                         </Form.Select>
                       </Form.Group>
                     </Col>
-                    <Col md={12}>
-                      {renderDestinationControl()}
-                    </Col>
+                    <Col md={12}>{renderDestinationControl()}</Col>
                     <Col md={4}>
                       <Form.Group>
                         <Form.Label>Start Date</Form.Label>
@@ -712,7 +644,9 @@ export default function AppControlManager({
 
               {kind === 'theme' && (
                 <Card className="border mb-3">
-                  <Card.Header className="bg-transparent"><h6 className="mb-0">Theme Settings</h6></Card.Header>
+                  <Card.Header className="bg-transparent">
+                    <h6 className="mb-0">Theme Settings</h6>
+                  </Card.Header>
                   <Card.Body>
                     <Row className="g-3">
                       <Col md={12}>
@@ -724,7 +658,11 @@ export default function AppControlManager({
                       <Col md={12}>
                         <Form.Group>
                           <Form.Label>Secondary Color</Form.Label>
-                          <Form.Control value={form.secondaryColor} onChange={(e) => setField('secondaryColor', e.target.value)} placeholder="#F4B942" />
+                          <Form.Control
+                            value={form.secondaryColor}
+                            onChange={(e) => setField('secondaryColor', e.target.value)}
+                            placeholder="#F4B942"
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={12}>
@@ -736,13 +674,22 @@ export default function AppControlManager({
                       <Col md={12}>
                         <Form.Group>
                           <Form.Label>Font Family</Form.Label>
-                          <Form.Control value={form.fontFamily} onChange={(e) => setField('fontFamily', e.target.value)} placeholder="Manrope, sans-serif" />
+                          <Form.Control
+                            value={form.fontFamily}
+                            onChange={(e) => setField('fontFamily', e.target.value)}
+                            placeholder="Manrope, sans-serif"
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={12}>
                         <Form.Group>
                           <Form.Label>Logo URL</Form.Label>
-                          <Form.Control type="url" value={form.logoUrl} onChange={(e) => setField('logoUrl', e.target.value)} placeholder="https://..." />
+                          <Form.Control
+                            type="url"
+                            value={form.logoUrl}
+                            onChange={(e) => setField('logoUrl', e.target.value)}
+                            placeholder="https://..."
+                          />
                         </Form.Group>
                       </Col>
                     </Row>
@@ -752,13 +699,19 @@ export default function AppControlManager({
 
               {kind === 'version' && (
                 <Card className="border mb-3">
-                  <Card.Header className="bg-transparent"><h6 className="mb-0">Version Rules</h6></Card.Header>
+                  <Card.Header className="bg-transparent">
+                    <h6 className="mb-0">Version Rules</h6>
+                  </Card.Header>
                   <Card.Body>
                     <Row className="g-3">
                       <Col md={12}>
                         <Form.Group>
                           <Form.Label>Minimum Version</Form.Label>
-                          <Form.Control value={form.minimumVersion} onChange={(e) => setField('minimumVersion', e.target.value)} placeholder="1.0.0" />
+                          <Form.Control
+                            value={form.minimumVersion}
+                            onChange={(e) => setField('minimumVersion', e.target.value)}
+                            placeholder="1.0.0"
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={12}>
@@ -802,7 +755,9 @@ export default function AppControlManager({
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="light" onClick={() => setShowModal(false)}>Cancel</Button>
+          <Button variant="light" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
           {canManage && (
             <Button variant="primary" onClick={handleSave} disabled={saving}>
               {saving ? 'Saving...' : editing ? 'Update Record' : 'Create Record'}

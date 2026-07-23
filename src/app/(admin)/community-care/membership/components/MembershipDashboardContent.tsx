@@ -35,19 +35,96 @@ export default function MembershipDashboardContent() {
         <Row className="g-3 mb-3">
           {cards.map((card) => (
             <Col md={3} key={card.label}>
-              <Card><Card.Body><div className="text-muted small">{card.label}</div><h3 className="mb-0">{card.value}</h3></Card.Body></Card>
+              <Card>
+                <Card.Body>
+                  <div className="text-muted small">{card.label}</div>
+                  <h3 className="mb-0">{card.value}</h3>
+                </Card.Body>
+              </Card>
             </Col>
           ))}
         </Row>
         <Row className="g-3">
           <Col lg={4}>
-            <Card><Card.Header><h5 className="mb-0">Recent Applications</h5></Card.Header><Card.Body className="p-0"><Table hover className="mb-0"><thead><tr><th>Applicant</th><th>Status</th></tr></thead><tbody>{applications?.data?.map((item) => <tr key={item.id}><td>{item.applicantName}</td><td><StatusBadge status={item.status} /></td></tr>)}</tbody></Table></Card.Body></Card>
+            <Card>
+              <Card.Header>
+                <h5 className="mb-0">Recent Applications</h5>
+              </Card.Header>
+              <Card.Body className="p-0">
+                <Table hover className="mb-0">
+                  <thead>
+                    <tr>
+                      <th>Applicant</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {applications?.data?.map((item) => (
+                      <tr key={item.id}>
+                        <td>{item.applicantName}</td>
+                        <td>
+                          <StatusBadge status={item.status} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </Card.Body>
+            </Card>
           </Col>
           <Col lg={4}>
-            <Card><Card.Header><h5 className="mb-0">Recent Members</h5></Card.Header><Card.Body className="p-0"><Table hover className="mb-0"><thead><tr><th>Member</th><th>Status</th></tr></thead><tbody>{memberships?.data?.map((item: any) => <tr key={item.id}><td>{item.membershipNumber ?? item.cardNumber ?? item.id}</td><td><StatusBadge status={item.membershipRecordStatus ?? item.status} /></td></tr>)}</tbody></Table></Card.Body></Card>
+            <Card>
+              <Card.Header>
+                <h5 className="mb-0">Recent Members</h5>
+              </Card.Header>
+              <Card.Body className="p-0">
+                <Table hover className="mb-0">
+                  <thead>
+                    <tr>
+                      <th>Member</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {memberships?.data?.map((item: any) => (
+                      <tr key={item.id}>
+                        <td>{item.membershipNumber ?? item.cardNumber ?? item.id}</td>
+                        <td>
+                          <StatusBadge status={item.membershipRecordStatus ?? item.status} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </Card.Body>
+            </Card>
           </Col>
           <Col lg={4}>
-            <Card><Card.Header><h5 className="mb-0">Recent Upgrades</h5></Card.Header><Card.Body className="p-0"><Table hover className="mb-0"><thead><tr><th>To Plan</th><th>Status</th></tr></thead><tbody>{upgrades?.data?.map((item) => <tr key={item.id}><td>{item.toPlan?.code ?? '-'}</td><td><StatusBadge status={item.status} /></td></tr>)}</tbody></Table></Card.Body></Card>
+            <Card>
+              <Card.Header>
+                <h5 className="mb-0">Recent Upgrades</h5>
+              </Card.Header>
+              <Card.Body className="p-0">
+                <Table hover className="mb-0">
+                  <thead>
+                    <tr>
+                      <th>To Plan</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {upgrades?.data?.map((item) => (
+                      <tr key={item.id}>
+                        <td>{item.toPlan?.code ?? '-'}</td>
+                        <td>
+                          <StatusBadge status={item.status} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </Card.Body>
+            </Card>
           </Col>
         </Row>
       </LoadingOverlay>

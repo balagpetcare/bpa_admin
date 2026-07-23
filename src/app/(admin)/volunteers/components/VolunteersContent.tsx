@@ -27,29 +27,32 @@ export default function VolunteersContent() {
   const volunteers = data?.data ?? []
   const meta = data?.meta ?? null
 
-  const handleView = (v: Volunteer) => { setSelected(v); setModalOpen(true) }
-  const handleStatusChanged = () => { refetch() }
+  const handleView = (v: Volunteer) => {
+    setSelected(v)
+    setModalOpen(true)
+  }
+  const handleStatusChanged = () => {
+    refetch()
+  }
 
-  const handleSearch = (v: string) => { setSearch(v); setPage(1) }
-  const handleStatus = (v: VolunteerStatus | '') => { setStatus(v); setPage(1) }
+  const handleSearch = (v: string) => {
+    setSearch(v)
+    setPage(1)
+  }
+  const handleStatus = (v: VolunteerStatus | '') => {
+    setStatus(v)
+    setPage(1)
+  }
 
   return (
     <div className="container-fluid">
-      <PageHeader
-        title="Volunteers"
-        breadcrumbs={[{ label: 'Community' }, { label: 'Volunteers' }]}
-      />
+      <PageHeader title="Volunteers" breadcrumbs={[{ label: 'Community' }, { label: 'Volunteers' }]} />
 
       <ApiErrorAlert error={error as ApiError | null} />
 
       <Card>
         <Card.Body>
-          <VolunteerFilterBar
-            search={search}
-            status={status}
-            onSearchChange={handleSearch}
-            onStatusChange={handleStatus}
-          />
+          <VolunteerFilterBar search={search} status={status} onSearchChange={handleSearch} onStatusChange={handleStatus} />
 
           <VolunteersTable data={volunteers} loading={loading} onView={handleView} />
 
@@ -59,20 +62,19 @@ export default function VolunteersContent() {
                 {meta.total} application{meta.total !== 1 ? 's' : ''} · Page {meta.page} of {meta.totalPages}
               </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage(p => p - 1)}>‹</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage(p => p + 1)}>›</Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                  ‹
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  ›
+                </Button>
               </div>
             </div>
           )}
         </Card.Body>
       </Card>
 
-      <VolunteerDetailsModal
-        volunteer={selected}
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onStatusChanged={handleStatusChanged}
-      />
+      <VolunteerDetailsModal volunteer={selected} isOpen={modalOpen} onClose={() => setModalOpen(false)} onStatusChanged={handleStatusChanged} />
     </div>
   )
 }

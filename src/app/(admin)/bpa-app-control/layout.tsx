@@ -7,9 +7,7 @@ export default function BPAAppControlLayout({ children }: { children: ReactNode 
       <div className="col-12 col-xl-3 col-xxl-2">
         <InternalSidebar />
       </div>
-      <div className="col-12 col-xl-9 col-xxl-10">
-        {children}
-      </div>
+      <div className="col-12 col-xl-9 col-xxl-10">{children}</div>
     </div>
   )
 }

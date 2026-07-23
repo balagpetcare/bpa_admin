@@ -149,9 +149,7 @@ export default function PetCensusRegisterForm() {
           <div className="pet-census-form-shell__intro">
             <span className="pet-census-kicker">Pet Census 2026 Registration</span>
             <h1>বাংলাদেশজুড়ে পোষা প্রাণীর তথ্য একসাথে</h1>
-            <p>
-              One submission captures one pet profile. If you have multiple pets, you can submit this form again after completion.
-            </p>
+            <p>One submission captures one pet profile. If you have multiple pets, you can submit this form again after completion.</p>
             {session?.user && (
               <Alert variant="success" className="mb-0">
                 Signed in as <strong>{session.user.name}</strong>. Your submission will be linked to your BPA account automatically.
@@ -184,7 +182,12 @@ export default function PetCensusRegisterForm() {
                       <Col md={6}>
                         <Form.Group>
                           <Form.Label>Mobile number</Form.Label>
-                          <Form.Control required value={form.mobile} onChange={(e) => updateField('mobile', e.target.value)} placeholder="01XXXXXXXXX" />
+                          <Form.Control
+                            required
+                            value={form.mobile}
+                            onChange={(e) => updateField('mobile', e.target.value)}
+                            placeholder="01XXXXXXXXX"
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={6}>
@@ -208,7 +211,9 @@ export default function PetCensusRegisterForm() {
                           <Form.Select required value={form.divisionId} onChange={(e) => handleDivisionChange(e.target.value)}>
                             <option value="">Select division</option>
                             {divisions.map((division) => (
-                              <option key={division.id} value={division.id}>{division.name}</option>
+                              <option key={division.id} value={division.id}>
+                                {division.name}
+                              </option>
                             ))}
                           </Form.Select>
                         </Form.Group>
@@ -216,10 +221,16 @@ export default function PetCensusRegisterForm() {
                       <Col md={4}>
                         <Form.Group>
                           <Form.Label>District</Form.Label>
-                          <Form.Select required value={form.districtId} onChange={(e) => updateField('districtId', e.target.value)} disabled={!selectedDivision}>
+                          <Form.Select
+                            required
+                            value={form.districtId}
+                            onChange={(e) => updateField('districtId', e.target.value)}
+                            disabled={!selectedDivision}>
                             <option value="">Select district</option>
                             {districts.map((district) => (
-                              <option key={district.id} value={district.id}>{district.name}</option>
+                              <option key={district.id} value={district.id}>
+                                {district.name}
+                              </option>
                             ))}
                           </Form.Select>
                         </Form.Group>
@@ -227,16 +238,29 @@ export default function PetCensusRegisterForm() {
                       <Col md={4}>
                         <Form.Group>
                           <Form.Label>City / Upazila</Form.Label>
-                          <Form.Control required value={form.cityUpazila} onChange={(e) => updateField('cityUpazila', e.target.value)} list="pet-census-city-suggestions" />
+                          <Form.Control
+                            required
+                            value={form.cityUpazila}
+                            onChange={(e) => updateField('cityUpazila', e.target.value)}
+                            list="pet-census-city-suggestions"
+                          />
                           <datalist id="pet-census-city-suggestions">
-                            {suggestedAreas.map((item) => <option key={item.id} value={item.name} />)}
+                            {suggestedAreas.map((item) => (
+                              <option key={item.id} value={item.name} />
+                            ))}
                           </datalist>
                         </Form.Group>
                       </Col>
                       <Col md={12}>
                         <Form.Group>
                           <Form.Label>Area / address</Form.Label>
-                          <Form.Control required as="textarea" rows={3} value={form.address} onChange={(e) => updateField('address', e.target.value)} />
+                          <Form.Control
+                            required
+                            as="textarea"
+                            rows={3}
+                            value={form.address}
+                            onChange={(e) => updateField('address', e.target.value)}
+                          />
                         </Form.Group>
                       </Col>
                     </Row>
@@ -258,7 +282,11 @@ export default function PetCensusRegisterForm() {
                         <Form.Group>
                           <Form.Label>Pet type</Form.Label>
                           <Form.Select value={form.petType} onChange={(e) => updateField('petType', e.target.value as PetCensusPetType)}>
-                            {PET_TYPES.map((item) => <option key={item} value={item}>{labelize(item)}</option>)}
+                            {PET_TYPES.map((item) => (
+                              <option key={item} value={item}>
+                                {labelize(item)}
+                              </option>
+                            ))}
                           </Form.Select>
                         </Form.Group>
                       </Col>
@@ -266,14 +294,23 @@ export default function PetCensusRegisterForm() {
                         <Form.Group>
                           <Form.Label>Gender</Form.Label>
                           <Form.Select value={form.petGender} onChange={(e) => updateField('petGender', e.target.value as PetCensusPetGender)}>
-                            {PET_GENDERS.map((item) => <option key={item} value={item}>{labelize(item)}</option>)}
+                            {PET_GENDERS.map((item) => (
+                              <option key={item} value={item}>
+                                {labelize(item)}
+                              </option>
+                            ))}
                           </Form.Select>
                         </Form.Group>
                       </Col>
                       <Col md={4}>
                         <Form.Group>
                           <Form.Label>Approx age</Form.Label>
-                          <Form.Control required value={form.approxAge} onChange={(e) => updateField('approxAge', e.target.value)} placeholder="e.g. 2 years" />
+                          <Form.Control
+                            required
+                            value={form.approxAge}
+                            onChange={(e) => updateField('approxAge', e.target.value)}
+                            placeholder="e.g. 2 years"
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={4}>
@@ -285,23 +322,42 @@ export default function PetCensusRegisterForm() {
                       <Col md={4}>
                         <Form.Group>
                           <Form.Label>Vaccination status</Form.Label>
-                          <Form.Select value={form.vaccinationStatus} onChange={(e) => updateField('vaccinationStatus', e.target.value as PetCensusVaccinationStatus)}>
-                            {VACCINATION_STATUSES.map((item) => <option key={item} value={item}>{labelize(item)}</option>)}
+                          <Form.Select
+                            value={form.vaccinationStatus}
+                            onChange={(e) => updateField('vaccinationStatus', e.target.value as PetCensusVaccinationStatus)}>
+                            {VACCINATION_STATUSES.map((item) => (
+                              <option key={item} value={item}>
+                                {labelize(item)}
+                              </option>
+                            ))}
                           </Form.Select>
                         </Form.Group>
                       </Col>
                       <Col md={4}>
                         <Form.Group>
                           <Form.Label>Neutered / spayed</Form.Label>
-                          <Form.Select value={form.neuteredStatus} onChange={(e) => updateField('neuteredStatus', e.target.value as PetCensusNeuteredStatus)}>
-                            {NEUTERED_STATUSES.map((item) => <option key={item} value={item}>{labelize(item)}</option>)}
+                          <Form.Select
+                            value={form.neuteredStatus}
+                            onChange={(e) => updateField('neuteredStatus', e.target.value as PetCensusNeuteredStatus)}>
+                            {NEUTERED_STATUSES.map((item) => (
+                              <option key={item} value={item}>
+                                {labelize(item)}
+                              </option>
+                            ))}
                           </Form.Select>
                         </Form.Group>
                       </Col>
                       <Col md={4}>
                         <Form.Group>
                           <Form.Label>Number of pets in household</Form.Label>
-                          <Form.Control type="number" min={1} max={999} required value={form.householdPetCount} onChange={(e) => updateField('householdPetCount', e.target.value)} />
+                          <Form.Control
+                            type="number"
+                            min={1}
+                            max={999}
+                            required
+                            value={form.householdPetCount}
+                            onChange={(e) => updateField('householdPetCount', e.target.value)}
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={6}>
@@ -318,9 +374,7 @@ export default function PetCensusRegisterForm() {
                             accept="image/*"
                             onChange={(e) => void handlePhotoChange((e.target as HTMLInputElement).files?.[0] ?? null)}
                           />
-                          <Form.Text className="text-muted">
-                            Optional. Upload a real image file to the BPA media storage.
-                          </Form.Text>
+                          <Form.Text className="text-muted">Optional. Upload a real image file to the BPA media storage.</Form.Text>
                           {(uploadingPhoto || form.photoUrl) && (
                             <div className="pet-census-upload-preview mt-3">
                               {uploadingPhoto ? (
@@ -367,7 +421,9 @@ export default function PetCensusRegisterForm() {
                     <Button type="submit" size="lg" disabled={submitting}>
                       {submitting ? 'Submitting...' : 'Submit Pet Census'}
                     </Button>
-                    <Link href="/pet-census/status" className="btn btn-outline-secondary btn-lg">Check Status Instead</Link>
+                    <Link href="/pet-census/status" className="btn btn-outline-secondary btn-lg">
+                      Check Status Instead
+                    </Link>
                   </div>
                 </Form>
               )}

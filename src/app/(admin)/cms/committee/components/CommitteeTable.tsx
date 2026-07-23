@@ -2,21 +2,8 @@
 
 import { useState, useCallback } from 'react'
 import { Table, Button, Alert } from 'react-bootstrap'
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from '@dnd-kit/core'
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-  arrayMove,
-} from '@dnd-kit/sortable'
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable'
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import EmptyState from '@/components/ui/EmptyState'
 import LoadingOverlay from '@/components/ui/LoadingOverlay'
@@ -36,10 +23,7 @@ export default function CommitteeTable({ data, loading, onEdit, onDeleted, onReo
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-  )
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))
 
   const handleDragEnd = useCallback(
     async (event: DragEndEvent) => {
@@ -80,12 +64,7 @@ export default function CommitteeTable({ data, loading, onEdit, onDeleted, onReo
 
       <LoadingOverlay loading={loading}>
         <div className="table-responsive">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-            modifiers={[restrictToVerticalAxis]}
-          >
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} modifiers={[restrictToVerticalAxis]}>
             <Table hover className="table-centered align-middle mb-0">
               <thead className="table-light">
                 <tr>
@@ -110,13 +89,7 @@ export default function CommitteeTable({ data, loading, onEdit, onDeleted, onReo
                 ) : (
                   <SortableContext items={data.map((m) => m.id)} strategy={verticalListSortingStrategy}>
                     {data.map((member) => (
-                      <CommitteeSortableRow
-                        key={member.id}
-                        member={member}
-                        onEdit={onEdit}
-                        onDeleted={onDeleted}
-                        onToggled={onDeleted}
-                      />
+                      <CommitteeSortableRow key={member.id} member={member} onEdit={onEdit} onDeleted={onDeleted} onToggled={onDeleted} />
                     ))}
                   </SortableContext>
                 )}

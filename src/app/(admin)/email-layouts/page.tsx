@@ -13,11 +13,11 @@ export default function EmailLayoutsPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  
+
   // List vs Edit vs Create Views
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list')
   const [editingId, setEditingId] = useState<string | null>(null)
-  
+
   // Form state
   const [form, setForm] = useState<CreateEmailLayoutDto>({
     name: '',
@@ -49,7 +49,7 @@ export default function EmailLayoutsPage() {
   const [previewHtml, setPreviewHtml] = useState<string>('')
   const [previewLoading, setPreviewLoading] = useState(false)
   const [advancedMode, setAdvancedMode] = useState(false)
-  
+
   // Send test email state
   const [testEmail, setTestEmail] = useState('')
   const [sendingTest, setSendingTest] = useState(false)
@@ -113,7 +113,7 @@ export default function EmailLayoutsPage() {
               <strong>Note:</strong> Please arrive 15 minutes before your scheduled appointment block with your pet's vaccination card if available.
             </div>
           `,
-          previewText: 'Your BPA booking is confirmed! View receipt & tickets inside.'
+          previewText: 'Your BPA booking is confirmed! View receipt & tickets inside.',
         }
         const res = await emailLayoutsApi.preview(payload)
         setPreviewHtml(res.html)
@@ -129,9 +129,9 @@ export default function EmailLayoutsPage() {
   }, [form, view])
 
   const handleInputChange = (key: keyof CreateEmailLayoutDto, value: any) => {
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }))
   }
 
@@ -245,7 +245,7 @@ export default function EmailLayoutsPage() {
   const handleSendTest = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!testEmail) return
-    
+
     setSendingTest(true)
     setError('')
     setSuccess('')
@@ -255,7 +255,7 @@ export default function EmailLayoutsPage() {
         email: testEmail,
         layoutId: editingId,
         layoutData: editingId ? undefined : form,
-        locale: form.locale
+        locale: form.locale,
       }
       await emailLayoutsApi.sendTest(payload)
       setSuccess(`Test email sent successfully to ${testEmail}!`)
@@ -268,13 +268,18 @@ export default function EmailLayoutsPage() {
 
   return (
     <div className="container-fluid">
-      <PageHeader 
-        title="Email Layout Templates" 
-        breadcrumbs={[{ label: 'Settings' }, { label: 'Email Layouts' }]}
-      />
+      <PageHeader title="Email Layout Templates" breadcrumbs={[{ label: 'Settings' }, { label: 'Email Layouts' }]} />
 
-      {error && <Alert variant="danger" className="mb-3" dismissible onClose={() => setError('')}>{error}</Alert>}
-      {success && <Alert variant="success" className="mb-3" dismissible onClose={() => setSuccess('')}>{success}</Alert>}
+      {error && (
+        <Alert variant="danger" className="mb-3" dismissible onClose={() => setError('')}>
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert variant="success" className="mb-3" dismissible onClose={() => setSuccess('')}>
+          {success}
+        </Alert>
+      )}
 
       {/* ─── LIST VIEW ─── */}
       {view === 'list' && (
@@ -309,7 +314,7 @@ export default function EmailLayoutsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {layouts.map(layout => (
+                  {layouts.map((layout) => (
                     <tr key={layout.id}>
                       <td className="fw-semibold">{layout.name}</td>
                       <td>
@@ -318,9 +323,7 @@ export default function EmailLayoutsPage() {
                         </Badge>
                       </td>
                       <td>
-                        <Badge bg={layout.status === 'active' ? 'success' : 'secondary'}>
-                          {layout.status}
-                        </Badge>
+                        <Badge bg={layout.status === 'active' ? 'success' : 'secondary'}>{layout.status}</Badge>
                       </td>
                       <td>
                         {layout.isDefault ? (
@@ -328,21 +331,50 @@ export default function EmailLayoutsPage() {
                             <Icon icon="solar:check-circle-bold" /> Default Active
                           </Badge>
                         ) : (
-                          <Button 
-                            variant="outline-secondary" 
+                          <Button
+                            variant="outline-secondary"
                             size="sm"
                             onClick={() => handleSetDefault(layout.id)}
-                            disabled={layout.status !== 'active'}
-                          >
+                            disabled={layout.status !== 'active'}>
                             Set Default
                           </Button>
                         )}
                       </td>
                       <td>
                         <span className="d-inline-flex gap-1">
-                          <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: '50%', backgroundColor: layout.headerBackgroundColor, border: '1px solid #ccc' }} title="Header Bg" />
-                          <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: '50%', backgroundColor: layout.buttonPrimaryColor, border: '1px solid #ccc' }} title="Button" />
-                          <span style={{ display: 'inline-block', width: 14, height: 14, borderRadius: '50%', backgroundColor: layout.footerBackgroundColor, border: '1px solid #ccc' }} title="Footer Bg" />
+                          <span
+                            style={{
+                              display: 'inline-block',
+                              width: 14,
+                              height: 14,
+                              borderRadius: '50%',
+                              backgroundColor: layout.headerBackgroundColor,
+                              border: '1px solid #ccc',
+                            }}
+                            title="Header Bg"
+                          />
+                          <span
+                            style={{
+                              display: 'inline-block',
+                              width: 14,
+                              height: 14,
+                              borderRadius: '50%',
+                              backgroundColor: layout.buttonPrimaryColor,
+                              border: '1px solid #ccc',
+                            }}
+                            title="Button"
+                          />
+                          <span
+                            style={{
+                              display: 'inline-block',
+                              width: 14,
+                              height: 14,
+                              borderRadius: '50%',
+                              backgroundColor: layout.footerBackgroundColor,
+                              border: '1px solid #ccc',
+                            }}
+                            title="Footer Bg"
+                          />
                         </span>
                       </td>
                       <td className="small text-muted">{new Date(layout.updatedAt).toLocaleString()}</td>
@@ -368,9 +400,7 @@ export default function EmailLayoutsPage() {
             <Col lg={7}>
               <Card className="shadow-sm">
                 <Card.Header className="bg-white border-bottom-0 d-flex justify-content-between align-items-center py-3">
-                  <span className="fw-bold text-secondary-emphasis">
-                    {view === 'create' ? 'Create Email Layout' : 'Edit Email Layout'}
-                  </span>
+                  <span className="fw-bold text-secondary-emphasis">{view === 'create' ? 'Create Email Layout' : 'Edit Email Layout'}</span>
                   <Button variant="light" size="sm" onClick={() => setView('list')} className="d-flex align-items-center gap-1">
                     <Icon icon="solar:arrow-left-bold" /> Back
                   </Button>
@@ -383,10 +413,10 @@ export default function EmailLayoutsPage() {
                         <Col md={12}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">Layout Name</Form.Label>
-                            <Form.Control 
-                              value={form.name} 
-                              onChange={e => handleInputChange('name', e.target.value)} 
-                              required 
+                            <Form.Control
+                              value={form.name}
+                              onChange={(e) => handleInputChange('name', e.target.value)}
+                              required
                               placeholder="e.g. Primary English Layout, Holiday Theme Layout"
                             />
                           </Form.Group>
@@ -394,10 +424,7 @@ export default function EmailLayoutsPage() {
                         <Col md={6}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">Locale Language</Form.Label>
-                            <Form.Select 
-                              value={form.locale} 
-                              onChange={e => handleInputChange('locale', e.target.value)}
-                            >
+                            <Form.Select value={form.locale} onChange={(e) => handleInputChange('locale', e.target.value)}>
                               <option value="en">English (en)</option>
                               <option value="bn">Bangla (bn)</option>
                             </Form.Select>
@@ -406,22 +433,19 @@ export default function EmailLayoutsPage() {
                         <Col md={6}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">Status</Form.Label>
-                            <Form.Select 
-                              value={form.status} 
-                              onChange={e => handleInputChange('status', e.target.value)}
-                            >
+                            <Form.Select value={form.status} onChange={(e) => handleInputChange('status', e.target.value)}>
                               <option value="active">Active</option>
                               <option value="inactive">Inactive</option>
                             </Form.Select>
                           </Form.Group>
                         </Col>
                         <Col md={12} className="mt-4">
-                          <Form.Check 
+                          <Form.Check
                             type="checkbox"
                             id="layout-is-default"
                             label="Set as default active layout for this locale"
                             checked={form.isDefault}
-                            onChange={e => handleInputChange('isDefault', e.target.checked)}
+                            onChange={(e) => handleInputChange('isDefault', e.target.checked)}
                             className="fw-semibold"
                           />
                           <Form.Text className="text-muted block mt-1">
@@ -456,20 +480,13 @@ export default function EmailLayoutsPage() {
                         <Col md={12}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">Header Title</Form.Label>
-                            <Form.Control 
-                              value={form.headerTitle} 
-                              onChange={e => handleInputChange('headerTitle', e.target.value)}
-                              required
-                            />
+                            <Form.Control value={form.headerTitle} onChange={(e) => handleInputChange('headerTitle', e.target.value)} required />
                           </Form.Group>
                         </Col>
                         <Col md={12}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">Header Subtitle (Optional)</Form.Label>
-                            <Form.Control 
-                              value={form.headerSubtitle || ''} 
-                              onChange={e => handleInputChange('headerSubtitle', e.target.value)}
-                            />
+                            <Form.Control value={form.headerSubtitle || ''} onChange={(e) => handleInputChange('headerSubtitle', e.target.value)} />
                           </Form.Group>
                         </Col>
                       </Row>
@@ -493,67 +510,61 @@ export default function EmailLayoutsPage() {
                         <Col md={6}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">Support Email</Form.Label>
-                            <Form.Control 
+                            <Form.Control
                               type="email"
-                              value={form.footerSupportEmail || ''} 
-                              onChange={e => handleInputChange('footerSupportEmail', e.target.value)}
+                              value={form.footerSupportEmail || ''}
+                              onChange={(e) => handleInputChange('footerSupportEmail', e.target.value)}
                             />
                           </Form.Group>
                         </Col>
                         <Col md={6}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">Website URL</Form.Label>
-                            <Form.Control 
+                            <Form.Control
                               type="url"
-                              value={form.footerWebsiteUrl || ''} 
-                              onChange={e => handleInputChange('footerWebsiteUrl', e.target.value)}
+                              value={form.footerWebsiteUrl || ''}
+                              onChange={(e) => handleInputChange('footerWebsiteUrl', e.target.value)}
                             />
                           </Form.Group>
                         </Col>
                         <Col md={6}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">Primary Helpline Phone</Form.Label>
-                            <Form.Control 
-                              value={form.footerPhonePrimary || ''} 
-                              onChange={e => handleInputChange('footerPhonePrimary', e.target.value)}
+                            <Form.Control
+                              value={form.footerPhonePrimary || ''}
+                              onChange={(e) => handleInputChange('footerPhonePrimary', e.target.value)}
                             />
                           </Form.Group>
                         </Col>
                         <Col md={6}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">Secondary Helpline Phone</Form.Label>
-                            <Form.Control 
-                              value={form.footerPhoneSecondary || ''} 
-                              onChange={e => handleInputChange('footerPhoneSecondary', e.target.value)}
+                            <Form.Control
+                              value={form.footerPhoneSecondary || ''}
+                              onChange={(e) => handleInputChange('footerPhoneSecondary', e.target.value)}
                             />
                           </Form.Group>
                         </Col>
                         <Col md={12}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">Physical Address</Form.Label>
-                            <Form.Control 
-                              value={form.footerAddress || ''} 
-                              onChange={e => handleInputChange('footerAddress', e.target.value)}
-                            />
+                            <Form.Control value={form.footerAddress || ''} onChange={(e) => handleInputChange('footerAddress', e.target.value)} />
                           </Form.Group>
                         </Col>
                         <Col md={12}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">Footer Text / Brand Tagline</Form.Label>
-                            <Form.Control 
-                              value={form.footerText || ''} 
-                              onChange={e => handleInputChange('footerText', e.target.value)}
-                            />
+                            <Form.Control value={form.footerText || ''} onChange={(e) => handleInputChange('footerText', e.target.value)} />
                           </Form.Group>
                         </Col>
                         <Col md={12}>
                           <Form.Group>
                             <Form.Label className="fw-semibold">Legal Note / Privacy Footer</Form.Label>
-                            <Form.Control 
+                            <Form.Control
                               as="textarea"
                               rows={2}
-                              value={form.legalNote || ''} 
-                              onChange={e => handleInputChange('legalNote', e.target.value)}
+                              value={form.legalNote || ''}
+                              onChange={(e) => handleInputChange('legalNote', e.target.value)}
                             />
                           </Form.Group>
                         </Col>
@@ -567,15 +578,15 @@ export default function EmailLayoutsPage() {
                           <Form.Group>
                             <Form.Label className="fw-semibold d-block">Header Background Color</Form.Label>
                             <div className="d-flex gap-2">
-                              <Form.Control 
-                                type="color" 
-                                value={form.headerBackgroundColor} 
-                                onChange={e => handleInputChange('headerBackgroundColor', e.target.value)}
+                              <Form.Control
+                                type="color"
+                                value={form.headerBackgroundColor}
+                                onChange={(e) => handleInputChange('headerBackgroundColor', e.target.value)}
                                 style={{ width: 50, padding: 0 }}
                               />
-                              <Form.Control 
-                                value={form.headerBackgroundColor} 
-                                onChange={e => handleInputChange('headerBackgroundColor', e.target.value)}
+                              <Form.Control
+                                value={form.headerBackgroundColor}
+                                onChange={(e) => handleInputChange('headerBackgroundColor', e.target.value)}
                                 placeholder="#1a2540"
                               />
                             </div>
@@ -585,15 +596,15 @@ export default function EmailLayoutsPage() {
                           <Form.Group>
                             <Form.Label className="fw-semibold d-block">Header Text Color</Form.Label>
                             <div className="d-flex gap-2">
-                              <Form.Control 
-                                type="color" 
-                                value={form.headerTextColor} 
-                                onChange={e => handleInputChange('headerTextColor', e.target.value)}
+                              <Form.Control
+                                type="color"
+                                value={form.headerTextColor}
+                                onChange={(e) => handleInputChange('headerTextColor', e.target.value)}
                                 style={{ width: 50, padding: 0 }}
                               />
-                              <Form.Control 
-                                value={form.headerTextColor} 
-                                onChange={e => handleInputChange('headerTextColor', e.target.value)}
+                              <Form.Control
+                                value={form.headerTextColor}
+                                onChange={(e) => handleInputChange('headerTextColor', e.target.value)}
                                 placeholder="#ffffff"
                               />
                             </div>
@@ -603,15 +614,15 @@ export default function EmailLayoutsPage() {
                           <Form.Group>
                             <Form.Label className="fw-semibold d-block">Button Primary Color</Form.Label>
                             <div className="d-flex gap-2">
-                              <Form.Control 
-                                type="color" 
-                                value={form.buttonPrimaryColor} 
-                                onChange={e => handleInputChange('buttonPrimaryColor', e.target.value)}
+                              <Form.Control
+                                type="color"
+                                value={form.buttonPrimaryColor}
+                                onChange={(e) => handleInputChange('buttonPrimaryColor', e.target.value)}
                                 style={{ width: 50, padding: 0 }}
                               />
-                              <Form.Control 
-                                value={form.buttonPrimaryColor} 
-                                onChange={e => handleInputChange('buttonPrimaryColor', e.target.value)}
+                              <Form.Control
+                                value={form.buttonPrimaryColor}
+                                onChange={(e) => handleInputChange('buttonPrimaryColor', e.target.value)}
                                 placeholder="#1a6b3c"
                               />
                             </div>
@@ -621,15 +632,15 @@ export default function EmailLayoutsPage() {
                           <Form.Group>
                             <Form.Label className="fw-semibold d-block">Button Text Color</Form.Label>
                             <div className="d-flex gap-2">
-                              <Form.Control 
-                                type="color" 
-                                value={form.buttonTextColor} 
-                                onChange={e => handleInputChange('buttonTextColor', e.target.value)}
+                              <Form.Control
+                                type="color"
+                                value={form.buttonTextColor}
+                                onChange={(e) => handleInputChange('buttonTextColor', e.target.value)}
                                 style={{ width: 50, padding: 0 }}
                               />
-                              <Form.Control 
-                                value={form.buttonTextColor} 
-                                onChange={e => handleInputChange('buttonTextColor', e.target.value)}
+                              <Form.Control
+                                value={form.buttonTextColor}
+                                onChange={(e) => handleInputChange('buttonTextColor', e.target.value)}
                                 placeholder="#ffffff"
                               />
                             </div>
@@ -639,15 +650,15 @@ export default function EmailLayoutsPage() {
                           <Form.Group>
                             <Form.Label className="fw-semibold d-block">Footer Background Color</Form.Label>
                             <div className="d-flex gap-2">
-                              <Form.Control 
-                                type="color" 
-                                value={form.footerBackgroundColor} 
-                                onChange={e => handleInputChange('footerBackgroundColor', e.target.value)}
+                              <Form.Control
+                                type="color"
+                                value={form.footerBackgroundColor}
+                                onChange={(e) => handleInputChange('footerBackgroundColor', e.target.value)}
                                 style={{ width: 50, padding: 0 }}
                               />
-                              <Form.Control 
-                                value={form.footerBackgroundColor} 
-                                onChange={e => handleInputChange('footerBackgroundColor', e.target.value)}
+                              <Form.Control
+                                value={form.footerBackgroundColor}
+                                onChange={(e) => handleInputChange('footerBackgroundColor', e.target.value)}
                                 placeholder="#1a2540"
                               />
                             </div>
@@ -657,15 +668,15 @@ export default function EmailLayoutsPage() {
                           <Form.Group>
                             <Form.Label className="fw-semibold d-block">Footer Text Color</Form.Label>
                             <div className="d-flex gap-2">
-                              <Form.Control 
-                                type="color" 
-                                value={form.footerTextColor} 
-                                onChange={e => handleInputChange('footerTextColor', e.target.value)}
+                              <Form.Control
+                                type="color"
+                                value={form.footerTextColor}
+                                onChange={(e) => handleInputChange('footerTextColor', e.target.value)}
                                 style={{ width: 50, padding: 0 }}
                               />
-                              <Form.Control 
-                                value={form.footerTextColor} 
-                                onChange={e => handleInputChange('footerTextColor', e.target.value)}
+                              <Form.Control
+                                value={form.footerTextColor}
+                                onChange={(e) => handleInputChange('footerTextColor', e.target.value)}
                                 placeholder="#aabbcc"
                               />
                             </div>
@@ -678,17 +689,18 @@ export default function EmailLayoutsPage() {
                     <Tab eventKey="advanced" title="Advanced Layout">
                       <Row className="g-3 pt-2">
                         <Col md={12}>
-                          <Form.Check 
+                          <Form.Check
                             type="switch"
                             id="layout-advanced-switch"
                             label="Enable custom HTML header/footer mode"
                             checked={advancedMode}
-                            onChange={e => setAdvancedMode(e.target.checked)}
+                            onChange={(e) => setAdvancedMode(e.target.checked)}
                             className="fw-bold mb-3"
                           />
                           <Alert variant="warning" className="small py-2">
                             <Icon icon="solar:info-circle-bold-duotone" className="me-1" />
-                            If enabled, standard header and footer fields above will be ignored. The email client safe structure must be preserved. Do not include external JS or tailwind CSS. Script tags will be sanitized out automatically.
+                            If enabled, standard header and footer fields above will be ignored. The email client safe structure must be preserved. Do
+                            not include external JS or tailwind CSS. Script tags will be sanitized out automatically.
                           </Alert>
                         </Col>
                         {advancedMode && (
@@ -696,11 +708,11 @@ export default function EmailLayoutsPage() {
                             <Col md={12}>
                               <Form.Group>
                                 <Form.Label className="fw-semibold">Custom Header HTML</Form.Label>
-                                <Form.Control 
+                                <Form.Control
                                   as="textarea"
                                   rows={8}
-                                  value={form.customHeaderHtml || ''} 
-                                  onChange={e => handleInputChange('customHeaderHtml', e.target.value)}
+                                  value={form.customHeaderHtml || ''}
+                                  onChange={(e) => handleInputChange('customHeaderHtml', e.target.value)}
                                   placeholder="<tr><td bgcolor='#1a2540' style='padding:32px;text-align:center;'>...</td></tr>"
                                   style={{ fontFamily: 'monospace', fontSize: 13 }}
                                 />
@@ -709,11 +721,11 @@ export default function EmailLayoutsPage() {
                             <Col md={12}>
                               <Form.Group>
                                 <Form.Label className="fw-semibold">Custom Footer HTML</Form.Label>
-                                <Form.Control 
+                                <Form.Control
                                   as="textarea"
                                   rows={8}
-                                  value={form.customFooterHtml || ''} 
-                                  onChange={e => handleInputChange('customFooterHtml', e.target.value)}
+                                  value={form.customFooterHtml || ''}
+                                  onChange={(e) => handleInputChange('customFooterHtml', e.target.value)}
                                   placeholder="<tr><td bgcolor='#1a2540' style='padding:32px;color:#abbcc;'>...</td></tr>"
                                   style={{ fontFamily: 'monospace', fontSize: 13 }}
                                 />
@@ -725,7 +737,7 @@ export default function EmailLayoutsPage() {
                     </Tab>
                   </Tabs>
                 </Card.Body>
-                
+
                 {/* Form Buttons */}
                 <Card.Footer className="bg-white py-3 border-top-0 d-flex justify-content-end gap-2">
                   <Button variant="outline-secondary" size="sm" onClick={() => setView('list')}>
@@ -746,23 +758,28 @@ export default function EmailLayoutsPage() {
                       <Col md={8}>
                         <Form.Group>
                           <Form.Label className="small fw-semibold">Send a test email using current unsaved edits</Form.Label>
-                          <Form.Control 
-                            type="email" 
-                            placeholder="recipient@example.com" 
+                          <Form.Control
+                            type="email"
+                            placeholder="recipient@example.com"
                             value={testEmail}
-                            onChange={e => setTestEmail(e.target.value)}
+                            onChange={(e) => setTestEmail(e.target.value)}
                             required
                           />
                         </Form.Group>
                       </Col>
                       <Col md={4}>
-                        <Button 
-                          variant="secondary" 
-                          type="submit" 
+                        <Button
+                          variant="secondary"
+                          type="submit"
                           disabled={sendingTest || !testEmail}
-                          className="w-100 d-flex align-items-center justify-content-center gap-1"
-                        >
-                          {sendingTest ? 'Sending...' : <><Icon icon="solar:plain-bold" /> Send Test</>}
+                          className="w-100 d-flex align-items-center justify-content-center gap-1">
+                          {sendingTest ? (
+                            'Sending...'
+                          ) : (
+                            <>
+                              <Icon icon="solar:plain-bold" /> Send Test
+                            </>
+                          )}
                         </Button>
                       </Col>
                     </Row>
@@ -780,7 +797,7 @@ export default function EmailLayoutsPage() {
                 </Card.Header>
                 <Card.Body className="p-0 bg-light" style={{ minHeight: '600px', display: 'flex', flexDirection: 'column' }}>
                   {previewHtml ? (
-                    <iframe 
+                    <iframe
                       title="Email Live Preview"
                       srcDoc={previewHtml}
                       style={{ flex: 1, border: 'none', width: '100%', height: '100%', minHeight: '580px' }}

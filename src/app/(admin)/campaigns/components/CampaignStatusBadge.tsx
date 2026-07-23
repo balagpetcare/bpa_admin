@@ -11,7 +11,5 @@ const STATUS_CONFIG: Record<CampaignStatus, { label: string; bg: string; text: s
 
 export default function CampaignStatusBadge({ status }: { status: CampaignStatus }) {
   const cfg = STATUS_CONFIG[status] ?? { label: status, bg: 'secondary', text: 'secondary' }
-  return (
-    <span className={`badge bg-${cfg.bg}-subtle text-${cfg.text}`}>{cfg.label}</span>
-  )
+  return <span className={`badge bg-${cfg.bg}-subtle text-${cfg.text}`}>{cfg.label}</span>
 }

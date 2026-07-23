@@ -10,7 +10,12 @@ import HeroSliderForm from './HeroSliderForm'
 export default function HeroSliderEditContent({ id }: { id: string }) {
   const { data, loading, error } = useApi(() => heroSliderApi.getById(id), [id])
 
-  if (loading) return <div className="text-center py-5"><div className="spinner-border text-primary" /></div>
+  if (loading)
+    return (
+      <div className="text-center py-5">
+        <div className="spinner-border text-primary" />
+      </div>
+    )
   if (error) return <ApiErrorAlert error={error as ApiError} />
   if (!data) return <EmptyState title="Hero slide not found" description="The requested slide could not be loaded." />
 

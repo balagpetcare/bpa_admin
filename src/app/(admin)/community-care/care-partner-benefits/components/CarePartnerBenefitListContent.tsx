@@ -33,10 +33,7 @@ export default function CarePartnerBenefitListContent() {
   const [category, setCategory] = useState<CarePartnerBenefitCategory | ''>('')
   const { mutate } = useApiMutation<unknown, unknown>()
 
-  const fetchFn = useCallback(
-    () => carePartnerBenefitsApi.list({ page, limit: 20, category: category || undefined }),
-    [page, category],
-  )
+  const fetchFn = useCallback(() => carePartnerBenefitsApi.list({ page, limit: 20, category: category || undefined }), [page, category])
   const { data, loading, error, refetch } = useApi(fetchFn, [page, category])
   const items = data?.data ?? []
   const meta = data?.meta ?? null
@@ -60,7 +57,8 @@ export default function CarePartnerBenefitListContent() {
         action={
           can('care_partner_benefits:create') ? (
             <Link href="/community-care/care-partner-benefits/create" className="btn btn-primary">
-              <Icon icon="solar:add-circle-bold" className="me-1" />New Benefit
+              <Icon icon="solar:add-circle-bold" className="me-1" />
+              New Benefit
             </Link>
           ) : undefined
         }
@@ -72,9 +70,15 @@ export default function CarePartnerBenefitListContent() {
             <Col md={4}>
               <Form.Select
                 value={category}
-                onChange={e => { setCategory(e.target.value as CarePartnerBenefitCategory | ''); setPage(1) }}
-              >
-                {CATEGORY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                onChange={(e) => {
+                  setCategory(e.target.value as CarePartnerBenefitCategory | '')
+                  setPage(1)
+                }}>
+                {CATEGORY_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
               </Form.Select>
             </Col>
           </Row>
@@ -93,64 +97,70 @@ export default function CarePartnerBenefitListContent() {
               </thead>
               <tbody>
                 {items.length === 0 ? (
-                  <tr><td colSpan={6} className="text-center py-4 text-muted">No benefits found</td></tr>
-                ) : items.map((item: CarePartnerBenefit) => (
-                  <tr key={item.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/community-care/care-partner-benefits/${item.id}`)}>
-                    <td className="text-muted small">{item.sortOrder}</td>
-                    <td>
-                      <div className="fw-semibold">{item.titleEn}</div>
-                      <div className="text-muted small">{item.titleBn}</div>
-                    </td>
-                    <td onClick={e => e.stopPropagation()}>
-                      <CarePartnerBenefitCategoryBadge category={item.category} />
-                    </td>
-                    <td>
-                      {item.icon
-                        ? <Icon icon={item.icon} width={20} className="text-muted" />
-                        : <span className="text-muted small">—</span>
-                      }
-                    </td>
-                    <td onClick={e => e.stopPropagation()}>
-                      <Badge bg={item.isActive ? 'success-subtle' : 'secondary-subtle'} text={item.isActive ? 'success' : 'secondary'}>
-                        {item.isActive ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </td>
-                    <td className="text-end" onClick={e => e.stopPropagation()}>
-                      <div className="d-flex gap-1 justify-content-end">
-                        {can('care_partner_benefits:update') && (
-                          <>
-                            <Link href={`/community-care/care-partner-benefits/${item.id}`} className="btn btn-soft-primary btn-sm">
-                              <Icon icon="solar:pen-bold" />
-                            </Link>
-                            <Button
-                              variant={item.isActive ? 'soft-warning' : 'soft-success'}
-                              size="sm"
-                              title={item.isActive ? 'Deactivate' : 'Activate'}
-                              onClick={() => handleToggleActive(item)}
-                            >
-                              <Icon icon={item.isActive ? 'solar:eye-closed-bold' : 'solar:eye-bold'} />
-                            </Button>
-                          </>
-                        )}
-                        {can('care_partner_benefits:delete') && (
-                          <Button variant="soft-danger" size="sm" onClick={() => handleDelete(item.id)}>
-                            <Icon icon="solar:trash-bin-trash-bold" />
-                          </Button>
-                        )}
-                      </div>
+                  <tr>
+                    <td colSpan={6} className="text-center py-4 text-muted">
+                      No benefits found
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  items.map((item: CarePartnerBenefit) => (
+                    <tr key={item.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/community-care/care-partner-benefits/${item.id}`)}>
+                      <td className="text-muted small">{item.sortOrder}</td>
+                      <td>
+                        <div className="fw-semibold">{item.titleEn}</div>
+                        <div className="text-muted small">{item.titleBn}</div>
+                      </td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <CarePartnerBenefitCategoryBadge category={item.category} />
+                      </td>
+                      <td>{item.icon ? <Icon icon={item.icon} width={20} className="text-muted" /> : <span className="text-muted small">—</span>}</td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <Badge bg={item.isActive ? 'success-subtle' : 'secondary-subtle'} text={item.isActive ? 'success' : 'secondary'}>
+                          {item.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </td>
+                      <td className="text-end" onClick={(e) => e.stopPropagation()}>
+                        <div className="d-flex gap-1 justify-content-end">
+                          {can('care_partner_benefits:update') && (
+                            <>
+                              <Link href={`/community-care/care-partner-benefits/${item.id}`} className="btn btn-soft-primary btn-sm">
+                                <Icon icon="solar:pen-bold" />
+                              </Link>
+                              <Button
+                                variant={item.isActive ? 'soft-warning' : 'soft-success'}
+                                size="sm"
+                                title={item.isActive ? 'Deactivate' : 'Activate'}
+                                onClick={() => handleToggleActive(item)}>
+                                <Icon icon={item.isActive ? 'solar:eye-closed-bold' : 'solar:eye-bold'} />
+                              </Button>
+                            </>
+                          )}
+                          {can('care_partner_benefits:delete') && (
+                            <Button variant="soft-danger" size="sm" onClick={() => handleDelete(item.id)}>
+                              <Icon icon="solar:trash-bin-trash-bold" />
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </Table>
           </LoadingOverlay>
 
           {meta && meta.totalPages > 1 && (
             <div className="d-flex justify-content-between align-items-center mt-3">
-              <small className="text-muted">{meta.total} benefits · Page {meta.page} of {meta.totalPages}</small>
+              <small className="text-muted">
+                {meta.total} benefits · Page {meta.page} of {meta.totalPages}
+              </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage(p => p - 1)}>‹</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage(p => p + 1)}>›</Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                  ‹
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  ›
+                </Button>
               </div>
             </div>
           )}

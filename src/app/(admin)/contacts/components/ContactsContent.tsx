@@ -29,16 +29,22 @@ export default function ContactsContent() {
   const contacts = data?.data ?? []
   const meta = data?.meta ?? null
 
-  const handleView = (c: ContactSubmission) => { setSelected(c); setModalOpen(true) }
-  const handleSearch = (v: string) => { setSearch(v); setPage(1) }
-  const handleStatus = (v: StatusFilter) => { setStatus(v); setPage(1) }
+  const handleView = (c: ContactSubmission) => {
+    setSelected(c)
+    setModalOpen(true)
+  }
+  const handleSearch = (v: string) => {
+    setSearch(v)
+    setPage(1)
+  }
+  const handleStatus = (v: StatusFilter) => {
+    setStatus(v)
+    setPage(1)
+  }
 
   return (
     <div className="container-fluid">
-      <PageHeader
-        title="Contact Messages"
-        breadcrumbs={[{ label: 'Community' }, { label: 'Contacts' }]}
-      />
+      <PageHeader title="Contact Messages" breadcrumbs={[{ label: 'Community' }, { label: 'Contacts' }]} />
 
       <ApiErrorAlert error={error as ApiError | null} />
 
@@ -46,12 +52,10 @@ export default function ContactsContent() {
         <Card.Body>
           <div className="d-flex gap-2 mb-3 flex-wrap">
             <InputGroup style={{ maxWidth: 320 }}>
-              <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
-              <Form.Control
-                placeholder="Search by name or email…"
-                value={search}
-                onChange={(e) => handleSearch(e.target.value)}
-              />
+              <InputGroup.Text>
+                <Icon icon="solar:magnifer-bold" />
+              </InputGroup.Text>
+              <Form.Control placeholder="Search by name or email…" value={search} onChange={(e) => handleSearch(e.target.value)} />
               {search && (
                 <Button variant="outline-secondary" onClick={() => handleSearch('')}>
                   <Icon icon="solar:close-circle-bold" />
@@ -59,11 +63,7 @@ export default function ContactsContent() {
               )}
             </InputGroup>
 
-            <Form.Select
-              style={{ maxWidth: 160 }}
-              value={status}
-              onChange={(e) => handleStatus(e.target.value as StatusFilter)}
-            >
+            <Form.Select style={{ maxWidth: 160 }} value={status} onChange={(e) => handleStatus(e.target.value as StatusFilter)}>
               <option value="">All statuses</option>
               <option value="unread">Unread</option>
               <option value="read">Read</option>
@@ -79,20 +79,19 @@ export default function ContactsContent() {
                 {meta.total} message{meta.total !== 1 ? 's' : ''} · Page {meta.page} of {meta.totalPages}
               </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage(p => p - 1)}>‹</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage(p => p + 1)}>›</Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                  ‹
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  ›
+                </Button>
               </div>
             </div>
           )}
         </Card.Body>
       </Card>
 
-      <ContactDetailsModal
-        contact={selected}
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onStatusChanged={refetch}
-      />
+      <ContactDetailsModal contact={selected} isOpen={modalOpen} onClose={() => setModalOpen(false)} onStatusChanged={refetch} />
     </div>
   )
 }

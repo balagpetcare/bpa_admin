@@ -1,10 +1,7 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import {
-  Alert, Badge, Button, Card, Col, Form,
-  Modal, Row, Spinner, Tab, Table, Tabs,
-} from 'react-bootstrap'
+import { Alert, Badge, Button, Card, Col, Form, Modal, Row, Spinner, Tab, Table, Tabs } from 'react-bootstrap'
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
 import PageHeader from '@/components/ui/PageHeader'
@@ -66,7 +63,9 @@ function ConfirmModal({ preview, template, onConfirm, onCancel, sending }: Confi
             <div className="d-flex flex-column gap-2" style={{ maxHeight: 200, overflowY: 'auto' }}>
               {preview.sampleRecipients.map((r, i) => (
                 <div key={i} className="border rounded p-2 small">
-                  <div className="fw-semibold text-primary">{r.ownerName} · {r.bookingNumber}</div>
+                  <div className="fw-semibold text-primary">
+                    {r.ownerName} · {r.bookingNumber}
+                  </div>
                   <div className="text-muted mt-1">{r.renderedMessage}</div>
                 </div>
               ))}
@@ -75,7 +74,9 @@ function ConfirmModal({ preview, template, onConfirm, onCancel, sending }: Confi
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onCancel} disabled={sending}>Cancel</Button>
+        <Button variant="secondary" onClick={onCancel} disabled={sending}>
+          Cancel
+        </Button>
         <Button variant="primary" onClick={onConfirm} disabled={sending} className="d-flex align-items-center gap-2">
           {sending ? <Spinner size="sm" /> : <Icon icon="solar:send-bold-duotone" />}
           {sending ? 'Sending…' : `Send to ${preview.recipientCount.toLocaleString()} recipients`}
@@ -91,13 +92,19 @@ function SmsHistory({ campaignId }: { campaignId: string }) {
   const fn = useCallback(() => campaignsApi.bulkSmsHistory(campaignId), [campaignId])
   const { data: batches, loading } = useApi<BulkSmsBatch[]>(fn, [campaignId])
 
-  if (loading) return <div className="text-center py-4"><Spinner /></div>
-  if (!batches || batches.length === 0) return (
-    <div className="text-center py-5 text-muted">
-      <Icon icon="solar:chat-round-like-bold-duotone" className="fs-36 mb-2 d-block mx-auto" />
-      No SMS batches sent yet.
-    </div>
-  )
+  if (loading)
+    return (
+      <div className="text-center py-4">
+        <Spinner />
+      </div>
+    )
+  if (!batches || batches.length === 0)
+    return (
+      <div className="text-center py-5 text-muted">
+        <Icon icon="solar:chat-round-like-bold-duotone" className="fs-36 mb-2 d-block mx-auto" />
+        No SMS batches sent yet.
+      </div>
+    )
 
   return (
     <Table hover className="small align-middle">
@@ -113,7 +120,7 @@ function SmsHistory({ campaignId }: { campaignId: string }) {
         </tr>
       </thead>
       <tbody>
-        {batches.map(b => (
+        {batches.map((b) => (
           <tr key={b.id}>
             <td>{dayjs(b.createdAt).format('MMM D, YYYY HH:mm')}</td>
             <td>{b.createdBy?.name ?? '—'}</td>
@@ -121,9 +128,7 @@ function SmsHistory({ campaignId }: { campaignId: string }) {
             <td className="text-center">{b.queuedCount.toLocaleString()}</td>
             <td className="text-center text-danger">{b.failedCount.toLocaleString()}</td>
             <td>
-              <Badge bg={b.status === 'completed' ? 'success' : b.status === 'failed' ? 'danger' : 'warning'}>
-                {b.status}
-              </Badge>
+              <Badge bg={b.status === 'completed' ? 'success' : b.status === 'failed' ? 'danger' : 'warning'}>{b.status}</Badge>
             </td>
             <td>
               <div style={{ maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={b.template}>
@@ -153,16 +158,21 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
   const [errMsg, setErrMsg] = useState<string | null>(null)
 
   function insertVar(v: string) {
-    setTemplate(t => t + v)
+    setTemplate((t) => t + v)
   }
 
   function applyQuickAudience(f: BulkSmsFilters) {
-    setFilters(f); setPreview(null)
+    setFilters(f)
+    setPreview(null)
   }
 
   async function handlePreview() {
-    if (!template.trim()) { setErrMsg('Template is required.'); return }
-    setErrMsg(null); setPreviewing(true)
+    if (!template.trim()) {
+      setErrMsg('Template is required.')
+      return
+    }
+    setErrMsg(null)
+    setPreviewing(true)
     try {
       const result = await campaignsApi.bulkSmsPreview(campaignId, { template, filters })
       setPreview(result)
@@ -185,7 +195,9 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
       })
       setShowConfirm(false)
       setSuccessMsg(`SMS batch submitted: ${(result as any)?.queued ?? preview.recipientCount} messages queued.`)
-      setTemplate(''); setFilters({}); setPreview(null)
+      setTemplate('')
+      setFilters({})
+      setPreview(null)
     } catch (e: unknown) {
       setErrMsg(e instanceof Error ? e.message : 'Send failed.')
       setShowConfirm(false)
@@ -201,23 +213,36 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
     <div className="container-fluid">
       <PageHeader
         title="Bulk SMS Center"
-        breadcrumbs={[
-          { label: 'Campaigns', href: '/campaigns' },
-          { label: 'Detail', href: `/campaigns/${campaignId}` },
-          { label: 'Bulk SMS' },
-        ]}
+        breadcrumbs={[{ label: 'Campaigns', href: '/campaigns' }, { label: 'Detail', href: `/campaigns/${campaignId}` }, { label: 'Bulk SMS' }]}
         action={
           <Link href={`/campaigns/${campaignId}/participants`} className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1">
-            <Icon icon="solar:users-group-two-rounded-bold" />Participants
+            <Icon icon="solar:users-group-two-rounded-bold" />
+            Participants
           </Link>
         }
       />
 
-      {successMsg && <Alert variant="success" dismissible onClose={() => setSuccessMsg(null)} className="d-flex align-items-center gap-2"><Icon icon="solar:check-circle-bold-duotone" className="fs-20" />{successMsg}</Alert>}
-      {errMsg && <Alert variant="danger" dismissible onClose={() => setErrMsg(null)}>{errMsg}</Alert>}
+      {successMsg && (
+        <Alert variant="success" dismissible onClose={() => setSuccessMsg(null)} className="d-flex align-items-center gap-2">
+          <Icon icon="solar:check-circle-bold-duotone" className="fs-20" />
+          {successMsg}
+        </Alert>
+      )}
+      {errMsg && (
+        <Alert variant="danger" dismissible onClose={() => setErrMsg(null)}>
+          {errMsg}
+        </Alert>
+      )}
 
       <Tabs defaultActiveKey="compose" className="mb-4 border-bottom">
-        <Tab eventKey="compose" title={<span className="d-flex align-items-center gap-1"><Icon icon="solar:pen-bold-duotone" />Compose</span>}>
+        <Tab
+          eventKey="compose"
+          title={
+            <span className="d-flex align-items-center gap-1">
+              <Icon icon="solar:pen-bold-duotone" />
+              Compose
+            </span>
+          }>
           <Row className="g-4">
             {/* Left: template + filters */}
             <Col lg={7}>
@@ -230,9 +255,16 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
                 </Card.Header>
                 <Card.Body>
                   <div className="mb-2 d-flex flex-wrap gap-1">
-                    {TEMPLATE_VARS.map(v => (
-                      <Button key={v.key} size="sm" variant="outline-primary" onClick={() => insertVar(v.key)} className="d-flex align-items-center gap-1" style={{ fontSize: '0.7rem' }}>
-                        <Icon icon="solar:add-circle-bold" />{v.label}
+                    {TEMPLATE_VARS.map((v) => (
+                      <Button
+                        key={v.key}
+                        size="sm"
+                        variant="outline-primary"
+                        onClick={() => insertVar(v.key)}
+                        className="d-flex align-items-center gap-1"
+                        style={{ fontSize: '0.7rem' }}>
+                        <Icon icon="solar:add-circle-bold" />
+                        {v.label}
                       </Button>
                     ))}
                   </div>
@@ -241,10 +273,15 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
                     rows={5}
                     placeholder={`Dear {{ownerName}}, your booking {{bookingRef}} for the {{campaignTitle}} on {{sessionDate}} at {{venueName}} is confirmed. Payment: {{paymentStatus}}.`}
                     value={template}
-                    onChange={e => { setTemplate(e.target.value); setPreview(null) }}
+                    onChange={(e) => {
+                      setTemplate(e.target.value)
+                      setPreview(null)
+                    }}
                   />
                   <div className="d-flex justify-content-between mt-1">
-                    <small className="text-muted">{charCount} chars · {smsUnits} SMS unit{smsUnits > 1 ? 's' : ''} per recipient</small>
+                    <small className="text-muted">
+                      {charCount} chars · {smsUnits} SMS unit{smsUnits > 1 ? 's' : ''} per recipient
+                    </small>
                     {charCount > 5000 && <small className="text-danger">Exceeds 5000 character limit</small>}
                   </div>
                 </Card.Body>
@@ -261,7 +298,10 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
                   <Row className="g-3">
                     <Col sm={6}>
                       <Form.Label className="small fw-semibold">Payment Status</Form.Label>
-                      <Form.Select size="sm" value={filters.paymentStatus ?? ''} onChange={e => setFilters(f => ({ ...f, paymentStatus: e.target.value || undefined }))}>
+                      <Form.Select
+                        size="sm"
+                        value={filters.paymentStatus ?? ''}
+                        onChange={(e) => setFilters((f) => ({ ...f, paymentStatus: e.target.value || undefined }))}>
                         <option value="">All</option>
                         <option value="success">Paid</option>
                         <option value="pending">Pending</option>
@@ -271,7 +311,10 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
                     </Col>
                     <Col sm={6}>
                       <Form.Label className="small fw-semibold">Registration Status</Form.Label>
-                      <Form.Select size="sm" value={filters.registrationStatus ?? ''} onChange={e => setFilters(f => ({ ...f, registrationStatus: e.target.value || undefined }))}>
+                      <Form.Select
+                        size="sm"
+                        value={filters.registrationStatus ?? ''}
+                        onChange={(e) => setFilters((f) => ({ ...f, registrationStatus: e.target.value || undefined }))}>
                         <option value="">All</option>
                         <option value="pending_payment">Pending Payment</option>
                         <option value="paid">Paid</option>
@@ -283,11 +326,21 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
                     </Col>
                     <Col sm={6}>
                       <Form.Label className="small fw-semibold">Date From</Form.Label>
-                      <Form.Control size="sm" type="date" value={filters.dateFrom ?? ''} onChange={e => setFilters(f => ({ ...f, dateFrom: e.target.value || undefined }))} />
+                      <Form.Control
+                        size="sm"
+                        type="date"
+                        value={filters.dateFrom ?? ''}
+                        onChange={(e) => setFilters((f) => ({ ...f, dateFrom: e.target.value || undefined }))}
+                      />
                     </Col>
                     <Col sm={6}>
                       <Form.Label className="small fw-semibold">Date To</Form.Label>
-                      <Form.Control size="sm" type="date" value={filters.dateTo ?? ''} onChange={e => setFilters(f => ({ ...f, dateTo: e.target.value || undefined }))} />
+                      <Form.Control
+                        size="sm"
+                        type="date"
+                        value={filters.dateTo ?? ''}
+                        onChange={(e) => setFilters((f) => ({ ...f, dateTo: e.target.value || undefined }))}
+                      />
                     </Col>
                   </Row>
                 </Card.Body>
@@ -304,14 +357,13 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
                   </h5>
                 </Card.Header>
                 <Card.Body className="d-flex flex-column gap-2">
-                  {QUICK_AUDIENCES.map(qa => (
+                  {QUICK_AUDIENCES.map((qa) => (
                     <Button
                       key={qa.label}
                       variant={`outline-${qa.variant}`}
                       size="sm"
                       onClick={() => applyQuickAudience(qa.filters)}
-                      className="d-flex align-items-center gap-2 text-start"
-                    >
+                      className="d-flex align-items-center gap-2 text-start">
                       <Icon icon={qa.icon} className="fs-16 flex-shrink-0" />
                       {qa.label}
                     </Button>
@@ -335,8 +387,7 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
                         variant="outline-primary"
                         onClick={handlePreview}
                         disabled={previewing || !template.trim()}
-                        className="d-flex align-items-center gap-2 mx-auto"
-                      >
+                        className="d-flex align-items-center gap-2 mx-auto">
                         {previewing ? <Spinner size="sm" /> : <Icon icon="solar:eye-bold" />}
                         {previewing ? 'Loading…' : 'Preview Recipients'}
                       </Button>
@@ -357,7 +408,9 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
                             {preview.sampleRecipients.slice(0, 3).map((r, i) => (
                               <div key={i} className="border rounded p-2 small bg-light">
                                 <div className="fw-semibold">{r.ownerName}</div>
-                                <div className="text-muted mt-1" style={{ fontSize: '0.7rem' }}>{r.renderedMessage}</div>
+                                <div className="text-muted mt-1" style={{ fontSize: '0.7rem' }}>
+                                  {r.renderedMessage}
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -373,8 +426,7 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
                             variant="primary"
                             size="sm"
                             className="flex-grow-1 d-flex align-items-center justify-content-center gap-1"
-                            onClick={() => setShowConfirm(true)}
-                          >
+                            onClick={() => setShowConfirm(true)}>
                             <Icon icon="solar:send-bold-duotone" />
                             Send to {preview.recipientCount.toLocaleString()}
                           </Button>
@@ -388,7 +440,14 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
           </Row>
         </Tab>
 
-        <Tab eventKey="history" title={<span className="d-flex align-items-center gap-1"><Icon icon="solar:history-bold-duotone" />History</span>}>
+        <Tab
+          eventKey="history"
+          title={
+            <span className="d-flex align-items-center gap-1">
+              <Icon icon="solar:history-bold-duotone" />
+              History
+            </span>
+          }>
           <Card className="border-0 shadow-sm">
             <Card.Body className="p-0">
               <SmsHistory campaignId={campaignId} />
@@ -398,13 +457,7 @@ export default function BulkSmsCenter({ campaignId }: { campaignId: string }) {
       </Tabs>
 
       {showConfirm && preview && (
-        <ConfirmModal
-          preview={preview}
-          template={template}
-          onConfirm={handleSend}
-          onCancel={() => setShowConfirm(false)}
-          sending={sending}
-        />
+        <ConfirmModal preview={preview} template={template} onConfirm={handleSend} onCancel={() => setShowConfirm(false)} sending={sending} />
       )}
     </div>
   )

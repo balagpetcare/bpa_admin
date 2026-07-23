@@ -22,23 +22,13 @@ interface UsersTableProps {
   onDeleted: () => void
 }
 
-export default function UsersTable({
-  data,
-  loading,
-  onEdit,
-  onToggleActive,
-  onResetPassword,
-  onViewAudit,
-  onDeleted
-}: UsersTableProps) {
+export default function UsersTable({ data, loading, onEdit, onToggleActive, onResetPassword, onViewAudit, onDeleted }: UsersTableProps) {
   const { can } = usePermission()
   const { data: session } = useSession()
 
   // Calculate active Super Admins to protect the last one
   const activeSuperAdmins = useMemo(() => {
-    return data.filter(
-      (u) => u.isActive && u.roles.some((r) => r.name === 'super_admin')
-    )
+    return data.filter((u) => u.isActive && u.roles.some((r) => r.name === 'super_admin'))
   }, [data])
 
   const superAdminCount = activeSuperAdmins.length
@@ -86,7 +76,9 @@ export default function UsersTable({
         cell: ({ row }) => {
           const active = row.original.isActive
           return (
-            <Badge bg={active ? 'success-subtle' : 'danger-subtle'} className={`text-${active ? 'success' : 'danger'} border border-${active ? 'success-subtle' : 'danger-subtle'} fw-semibold`}>
+            <Badge
+              bg={active ? 'success-subtle' : 'danger-subtle'}
+              className={`text-${active ? 'success' : 'danger'} border border-${active ? 'success-subtle' : 'danger-subtle'} fw-semibold`}>
               {active ? 'Active' : 'Suspended'}
             </Badge>
           )
@@ -110,12 +102,7 @@ export default function UsersTable({
             <div className="d-flex gap-1">
               {can('users:update') && (
                 <>
-                  <Button
-                    variant="soft-primary"
-                    size="sm"
-                    onClick={() => onEdit(u)}
-                    title="Edit profile"
-                  >
+                  <Button variant="soft-primary" size="sm" onClick={() => onEdit(u)} title="Edit profile">
                     <Icon icon="solar:pen-bold" />
                   </Button>
                   <Button
@@ -123,26 +110,23 @@ export default function UsersTable({
                     size="sm"
                     disabled={isCurrentUser || isLastSuperAdmin}
                     onClick={() => onToggleActive(u)}
-                    title={isCurrentUser ? 'You cannot suspend yourself' : isLastSuperAdmin ? 'Cannot suspend the last Super Admin' : u.isActive ? 'Suspend User' : 'Activate User'}
-                  >
+                    title={
+                      isCurrentUser
+                        ? 'You cannot suspend yourself'
+                        : isLastSuperAdmin
+                          ? 'Cannot suspend the last Super Admin'
+                          : u.isActive
+                            ? 'Suspend User'
+                            : 'Activate User'
+                    }>
                     <Icon icon={u.isActive ? 'solar:lock-bold' : 'solar:lock-keyhole-minimalistic-bold'} />
                   </Button>
-                  <Button
-                    variant="soft-info"
-                    size="sm"
-                    onClick={() => onResetPassword(u)}
-                    title="Reset Password"
-                  >
+                  <Button variant="soft-info" size="sm" onClick={() => onResetPassword(u)} title="Reset Password">
                     <Icon icon="solar:key-bold" />
                   </Button>
                 </>
               )}
-              <Button
-                variant="soft-secondary"
-                size="sm"
-                onClick={() => onViewAudit(u)}
-                title="View Audit details"
-              >
+              <Button variant="soft-secondary" size="sm" onClick={() => onViewAudit(u)} title="View Audit details">
                 <Icon icon="solar:history-bold" />
               </Button>
               {can('users:delete') && (
@@ -157,8 +141,7 @@ export default function UsersTable({
                       await usersApi.remove(u.id)
                       onDeleted()
                     }
-                  }}
-                >
+                  }}>
                   <Icon icon="solar:trash-bin-trash-bold" />
                 </Button>
               )}
@@ -190,7 +173,9 @@ export default function UsersTable({
               {table.getHeaderGroups().map((hg) => (
                 <tr key={hg.id}>
                   {hg.headers.map((h) => (
-                    <th key={h.id} className="py-3">{flexRender(h.column.columnDef.header, h.getContext())}</th>
+                    <th key={h.id} className="py-3">
+                      {flexRender(h.column.columnDef.header, h.getContext())}
+                    </th>
                   ))}
                 </tr>
               ))}
@@ -210,7 +195,9 @@ export default function UsersTable({
                 table.getRowModel().rows.map((row) => (
                   <tr key={row.id} className="border-bottom border-light">
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="py-3">{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                      <td key={cell.id} className="py-3">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
                     ))}
                   </tr>
                 ))

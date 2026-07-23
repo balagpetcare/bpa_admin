@@ -41,16 +41,12 @@ export const eventsApi = {
 
   update: (id: string, dto: UpdateEventDto) => api.put<EventListItem>(`/events/${id}`, dto),
 
-  publish: (id: string, dto: { status: EventStatus }) =>
-    api.patch<EventListItem>(`/events/${id}/publish`, dto),
+  publish: (id: string, dto: { status: EventStatus }) => api.patch<EventListItem>(`/events/${id}/publish`, dto),
 
   remove: (id: string) => api.delete<void>(`/events/${id}`),
 
   listRegistrations: (id: string, params?: RegistrationListParams) =>
-    api.get<PaginatedResult<EventRegistration>>(
-      `/events/${id}/registrations`,
-      params as Record<string, string | number | boolean | undefined>,
-    ),
+    api.get<PaginatedResult<EventRegistration>>(`/events/${id}/registrations`, params as Record<string, string | number | boolean | undefined>),
 
   updateRegistrationStatus: (eventId: string, regId: string, status: RegistrationStatus) =>
     api.patch<EventRegistration>(`/events/${eventId}/registrations/${regId}/status`, { status }),

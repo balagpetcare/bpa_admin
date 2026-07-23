@@ -34,9 +34,7 @@ export default function AnalyticsOverview() {
 
   // Params helper
   const getParams = useCallback(() => {
-    return useCustom && customFrom && customTo
-      ? { range: 'custom' as const, from: customFrom, to: customTo }
-      : { range: period }
+    return useCustom && customFrom && customTo ? { range: 'custom' as const, from: customFrom, to: customTo } : { range: period }
   }, [period, useCustom, customFrom, customTo])
 
   // Endpoints getters
@@ -61,46 +59,33 @@ export default function AnalyticsOverview() {
   const isConversions = activeTab === 'conversions'
   const isLive = activeTab === 'live'
 
-  const { data: overview, loading: overviewLoading, error: overviewErr, refetch: refetchOverview } = useApi(
-    isOverview ? overviewFn : null,
-    [isOverview, ...paramsDeps],
-  )
-  const { data: traffic, loading: trafficLoading, error: trafficErr, refetch: refetchTraffic } = useApi(
-    isOverview ? trafficFn : null,
-    [isOverview, ...paramsDeps],
-  )
+  const {
+    data: overview,
+    loading: overviewLoading,
+    error: overviewErr,
+    refetch: refetchOverview,
+  } = useApi(isOverview ? overviewFn : null, [isOverview, ...paramsDeps])
+  const {
+    data: traffic,
+    loading: trafficLoading,
+    error: trafficErr,
+    refetch: refetchTraffic,
+  } = useApi(isOverview ? trafficFn : null, [isOverview, ...paramsDeps])
 
-  const { data: membership, loading: memLoading, refetch: refetchMem } = useApi(
-    isOps ? membershipFn : null,
-    [isOps, ...paramsDeps],
-  )
-  const { data: campaigns, loading: campLoading, refetch: refetchCamp } = useApi(
-    isOps ? campaignsFn : null,
-    [isOps, ...paramsDeps],
-  )
-  const { data: petCensus, loading: censusLoading, refetch: refetchCensus } = useApi(
-    isOps ? petCensusFn : null,
-    [isOps, ...paramsDeps],
-  )
+  const { data: membership, loading: memLoading, refetch: refetchMem } = useApi(isOps ? membershipFn : null, [isOps, ...paramsDeps])
+  const { data: campaigns, loading: campLoading, refetch: refetchCamp } = useApi(isOps ? campaignsFn : null, [isOps, ...paramsDeps])
+  const { data: petCensus, loading: censusLoading, refetch: refetchCensus } = useApi(isOps ? petCensusFn : null, [isOps, ...paramsDeps])
 
-  const { data: revenue, loading: revLoading, refetch: refetchRev } = useApi(
-    isFinancials ? revenueFn : null,
-    [isFinancials, ...paramsDeps],
-  )
-  const { data: support, loading: supLoading, refetch: refetchSup } = useApi(
-    isFinancials ? supportFn : null,
-    [isFinancials, ...paramsDeps],
-  )
+  const { data: revenue, loading: revLoading, refetch: refetchRev } = useApi(isFinancials ? revenueFn : null, [isFinancials, ...paramsDeps])
+  const { data: support, loading: supLoading, refetch: refetchSup } = useApi(isFinancials ? supportFn : null, [isFinancials, ...paramsDeps])
 
-  const { data: conversions, loading: convLoading, refetch: refetchConv } = useApi(
-    isConversions ? conversionsFn : null,
-    [isConversions, ...paramsDeps],
-  )
+  const {
+    data: conversions,
+    loading: convLoading,
+    refetch: refetchConv,
+  } = useApi(isConversions ? conversionsFn : null, [isConversions, ...paramsDeps])
 
-  const { data: live, loading: liveLoading, refetch: refetchLive } = useApi(
-    isLive ? liveFn : null,
-    [isLive],
-  )
+  const { data: live, loading: liveLoading, refetch: refetchLive } = useApi(isLive ? liveFn : null, [isLive])
 
   // Real-time automatic polling loop for Live tab (30s)
   useEffect(() => {
@@ -157,8 +142,7 @@ export default function AnalyticsOverview() {
       rows = [[new Date().toISOString(), activeTab]]
     }
 
-    const csvContent =
-      'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n')
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n')
 
     const encodedUri = encodeURI(csvContent)
     const link = document.createElement('a')
@@ -170,7 +154,8 @@ export default function AnalyticsOverview() {
   }
 
   const errorObj = (overviewErr || trafficErr) as ApiError | null
-  const isLoading = overviewLoading || trafficLoading || memLoading || campLoading || censusLoading || revLoading || supLoading || convLoading || liveLoading
+  const isLoading =
+    overviewLoading || trafficLoading || memLoading || campLoading || censusLoading || revLoading || supLoading || convLoading || liveLoading
 
   return (
     <div className="container-fluid py-3">
@@ -207,8 +192,7 @@ export default function AnalyticsOverview() {
                     onClick={() => {
                       setPeriod(p.value)
                       setUseCustom(false)
-                    }}
-                  >
+                    }}>
                     {p.label}
                   </Button>
                 ))}
@@ -223,12 +207,7 @@ export default function AnalyticsOverview() {
                   <InputGroup.Text>To</InputGroup.Text>
                   <Form.Control type="date" value={customTo} onChange={(e) => setCustomTo(e.target.value)} />
                 </InputGroup>
-                <Button
-                  size="sm"
-                  variant={useCustom ? 'primary' : 'outline-primary'}
-                  onClick={applyCustomRange}
-                  disabled={!customFrom || !customTo}
-                >
+                <Button size="sm" variant={useCustom ? 'primary' : 'outline-primary'} onClick={applyCustomRange} disabled={!customFrom || !customTo}>
                   Apply Custom Range
                 </Button>
                 {useCustom && (
@@ -245,31 +224,46 @@ export default function AnalyticsOverview() {
       {/* Tabs Navigation Bar */}
       <Nav variant="tabs" className="mb-4 border-bottom border-light">
         <Nav.Item>
-          <Nav.Link active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} className="d-flex align-items-center gap-2 fw-semibold px-3 py-2 cursor-pointer">
+          <Nav.Link
+            active={activeTab === 'overview'}
+            onClick={() => setActiveTab('overview')}
+            className="d-flex align-items-center gap-2 fw-semibold px-3 py-2 cursor-pointer">
             <Icon icon="solar:chart-square-bold-duotone" />
             <span>Overview & Traffic</span>
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link active={activeTab === 'operations'} onClick={() => setActiveTab('operations')} className="d-flex align-items-center gap-2 fw-semibold px-3 py-2 cursor-pointer">
+          <Nav.Link
+            active={activeTab === 'operations'}
+            onClick={() => setActiveTab('operations')}
+            className="d-flex align-items-center gap-2 fw-semibold px-3 py-2 cursor-pointer">
             <Icon icon="solar:cup-bold-duotone" />
             <span>Operations Hub</span>
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link active={activeTab === 'financials'} onClick={() => setActiveTab('financials')} className="d-flex align-items-center gap-2 fw-semibold px-3 py-2 cursor-pointer">
+          <Nav.Link
+            active={activeTab === 'financials'}
+            onClick={() => setActiveTab('financials')}
+            className="d-flex align-items-center gap-2 fw-semibold px-3 py-2 cursor-pointer">
             <Icon icon="solar:banknote-bold-duotone" />
             <span>Financials & Support</span>
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link active={activeTab === 'conversions'} onClick={() => setActiveTab('conversions')} className="d-flex align-items-center gap-2 fw-semibold px-3 py-2 cursor-pointer">
+          <Nav.Link
+            active={activeTab === 'conversions'}
+            onClick={() => setActiveTab('conversions')}
+            className="d-flex align-items-center gap-2 fw-semibold px-3 py-2 cursor-pointer">
             <Icon icon="solar:filter-bold-duotone" />
             <span>Conversion Funnels</span>
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link active={activeTab === 'live'} onClick={() => setActiveTab('live')} className="d-flex align-items-center gap-2 fw-semibold px-3 py-2 cursor-pointer">
+          <Nav.Link
+            active={activeTab === 'live'}
+            onClick={() => setActiveTab('live')}
+            className="d-flex align-items-center gap-2 fw-semibold px-3 py-2 cursor-pointer">
             <span className="live-dot bg-success rounded-circle" style={{ width: '8px', height: '8px', display: 'inline-block' }} />
             <span>Live Control Room</span>
           </Nav.Link>
@@ -278,21 +272,11 @@ export default function AnalyticsOverview() {
 
       {/* Tab Panels content wrapper */}
       <div className="tab-content">
-        {activeTab === 'overview' && (
-          <OverviewTrafficTab overview={overview} traffic={traffic} loading={isLoading} />
-        )}
-        {activeTab === 'operations' && (
-          <OperationsTab membership={membership} campaigns={campaigns} petCensus={petCensus} loading={isLoading} />
-        )}
-        {activeTab === 'financials' && (
-          <FinancialsSupportTab revenue={revenue} support={support} loading={isLoading} />
-        )}
-        {activeTab === 'conversions' && (
-          <ConversionFunnelTab conversions={conversions} loading={isLoading} />
-        )}
-        {activeTab === 'live' && (
-          <LiveControlTab liveData={live} loading={isLoading} />
-        )}
+        {activeTab === 'overview' && <OverviewTrafficTab overview={overview} traffic={traffic} loading={isLoading} />}
+        {activeTab === 'operations' && <OperationsTab membership={membership} campaigns={campaigns} petCensus={petCensus} loading={isLoading} />}
+        {activeTab === 'financials' && <FinancialsSupportTab revenue={revenue} support={support} loading={isLoading} />}
+        {activeTab === 'conversions' && <ConversionFunnelTab conversions={conversions} loading={isLoading} />}
+        {activeTab === 'live' && <LiveControlTab liveData={live} loading={isLoading} />}
       </div>
 
       <style jsx global>{`
@@ -303,9 +287,15 @@ export default function AnalyticsOverview() {
           animation: blink-dot 1.5s infinite;
         }
         @keyframes blink-dot {
-          0% { opacity: 0.4; }
-          50% { opacity: 1; }
-          100% { opacity: 0.4; }
+          0% {
+            opacity: 0.4;
+          }
+          50% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0.4;
+          }
         }
       `}</style>
     </div>

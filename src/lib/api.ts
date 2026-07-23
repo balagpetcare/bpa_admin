@@ -1,4 +1,4 @@
-import { signOut } from 'next-auth/react'
+import { getSession, signOut } from 'next-auth/react'
 import type { GetTokenParams } from 'next-auth/jwt'
 import type { ApiResponse, ApiErrorResponse } from '@/types/bpa.types'
 import { getApiBase } from '@/lib/utils/api-url'
@@ -16,6 +16,28 @@ export class ApiError extends Error {
 }
 
 const BASE_URL = getApiBase()
+
+// A single 401 from one endpoint (e.g. an optional dashboard widget) must not
+// tear down an otherwise-valid session. useAuthError.ts is the source of truth
+// for "the session itself is dead" (it watches session.error === 'RefreshTokenExpired',
+// set server-side by the NextAuth jwt callback after a failed token refresh).
+// Here we only escalate a 401 into a sign-out if the current session already
+// agrees it's invalid, and we single-flight the sign-out so concurrent 401s
+// from multiple in-flight requests can't trigger more than one logout/redirect.
+let signOutInFlight: Promise<void> | null = null
+
+async function handleUnauthorized(): Promise<void> {
+  const session = await getSession()
+  if (session?.error !== 'RefreshTokenExpired') {
+    // Session looks valid from here — this 401 is endpoint-specific
+    // (e.g. audience/permission mismatch on one route), not a dead session.
+    return
+  }
+  if (!signOutInFlight) {
+    signOutInFlight = signOut({ redirect: true, callbackUrl: '/auth/sign-in?reason=session_expired' }).then(() => undefined)
+  }
+  await signOutInFlight
+}
 
 async function getAccessToken(): Promise<string | null> {
   if (typeof window === 'undefined') {
@@ -43,10 +65,7 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
   isMultipart?: boolean
 }
 
-export async function apiClient<T = unknown>(
-  endpoint: string,
-  opts: RequestOptions = {},
-): Promise<T> {
+export async function apiClient<T = unknown>(endpoint: string, opts: RequestOptions = {}): Promise<T> {
   const { body, params, isMultipart, headers: extraHeaders, ...fetchOpts } = opts
 
   // Build URL with query params
@@ -76,9 +95,11 @@ export async function apiClient<T = unknown>(
     signal: fetchOpts.signal ?? AbortSignal.timeout(15000),
   })
 
-  // 401: token probably expired and refresh failed — force sign-out client-side
+  // 401: only escalate to a global sign-out if the session itself is confirmed
+  // invalid (see handleUnauthorized) — an isolated endpoint 401 just surfaces
+  // as a normal ApiError so the rest of the app keeps working.
   if (res.status === 401 && typeof window !== 'undefined') {
-    await signOut({ redirect: true, callbackUrl: '/auth/sign-in' })
+    await handleUnauthorized()
     throw new ApiError('UNAUTHORIZED', 'Session expired. Please sign in again.', [], 401)
   }
 
@@ -113,10 +134,7 @@ export interface PaginationMeta {
   hasPrev: boolean
 }
 
-export async function apiClientPaginated<T = unknown>(
-  endpoint: string,
-  opts: RequestOptions = {},
-): Promise<PaginatedResponse<T>> {
+export async function apiClientPaginated<T = unknown>(endpoint: string, opts: RequestOptions = {}): Promise<PaginatedResponse<T>> {
   const { body, params, isMultipart, headers: extraHeaders, ...fetchOpts } = opts
 
   const requestBase = typeof window !== 'undefined' ? `${window.location.origin}/api/backend` : BASE_URL
@@ -178,24 +196,17 @@ export async function apiClientPaginated<T = unknown>(
 
 // Convenience wrappers
 export const api = {
-  get: <T>(endpoint: string, params?: RequestOptions['params']) =>
-    apiClient<T>(endpoint, { method: 'GET', params }),
+  get: <T>(endpoint: string, params?: RequestOptions['params']) => apiClient<T>(endpoint, { method: 'GET', params }),
 
-  getPaginated: <T>(endpoint: string, params?: RequestOptions['params']) =>
-    apiClientPaginated<T>(endpoint, { method: 'GET', params }),
+  getPaginated: <T>(endpoint: string, params?: RequestOptions['params']) => apiClientPaginated<T>(endpoint, { method: 'GET', params }),
 
-  post: <T>(endpoint: string, body?: unknown) =>
-    apiClient<T>(endpoint, { method: 'POST', body }),
+  post: <T>(endpoint: string, body?: unknown) => apiClient<T>(endpoint, { method: 'POST', body }),
 
-  put: <T>(endpoint: string, body?: unknown) =>
-    apiClient<T>(endpoint, { method: 'PUT', body }),
+  put: <T>(endpoint: string, body?: unknown) => apiClient<T>(endpoint, { method: 'PUT', body }),
 
-  patch: <T>(endpoint: string, body?: unknown) =>
-    apiClient<T>(endpoint, { method: 'PATCH', body }),
+  patch: <T>(endpoint: string, body?: unknown) => apiClient<T>(endpoint, { method: 'PATCH', body }),
 
-  delete: <T>(endpoint: string) =>
-    apiClient<T>(endpoint, { method: 'DELETE' }),
+  delete: <T>(endpoint: string) => apiClient<T>(endpoint, { method: 'DELETE' }),
 
-  upload: <T>(endpoint: string, formData: FormData) =>
-    apiClient<T>(endpoint, { method: 'POST', body: formData, isMultipart: true }),
+  upload: <T>(endpoint: string, formData: FormData) => apiClient<T>(endpoint, { method: 'POST', body: formData, isMultipart: true }),
 }

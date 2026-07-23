@@ -32,29 +32,30 @@ const useSignIn = () => {
 
   type LoginFormFields = yup.InferType<typeof loginFormSchema>
 
+  // Credentials are verified entirely by Central Auth (see
+  // loginWithCentralAuthPassword in options.ts) — this app never checks a
+  // password itself.
   const login = handleSubmit(async (values: LoginFormFields) => {
     setLoading(true)
-    signIn('credentials', {
-      redirect: false,
-      email: values?.email,
-      password: values?.password,
-    }).then((res) => {
+    try {
+      const res = await signIn('central-auth-password', {
+        redirect: false,
+        email: values.email,
+        password: values.password,
+      })
+
       if (res?.ok) {
         push(queryParams['redirectTo'] ?? '/dashboard')
-        showNotification({ message: 'Successfully logged in. Redirecting....', variant: 'success' })
+        showNotification({ message: 'Successfully logged in. Redirecting...', variant: 'success' })
       } else {
-        showNotification({ message: res?.error ?? '', variant: 'danger' })
+        showNotification({ message: 'Invalid email or password.', variant: 'danger' })
       }
-    })
-    setLoading(false)
+    } finally {
+      setLoading(false)
+    }
   })
 
-  // Generic account SSO via Central Auth (Global Super Admin role, checked
-  // server-side by bpa/api — this button intentionally carries no
-  // "admin-only" branding, matching the rest of the local sign-in form).
-  // next-auth handles the redirect to Central Auth's login page itself; the
-  // `redirectTo` query param is preserved through `callbackUrl` so the user
-  // lands back where they intended after the round trip.
+  // Fallback: full OAuth redirect through Central Auth's hosted login page.
   const loginWithCentralAuth = () => {
     setSsoLoading(true)
     signIn('central-auth', { callbackUrl: queryParams['redirectTo'] ?? '/dashboard' })

@@ -16,8 +16,15 @@ import type { ApiError } from '@/lib/api'
 import type { LocationNode, Venue } from '@/types/bpa.types'
 
 const EMPTY_VENUE_FORM = {
-  name: '', address: '', googleMapsUrl: '', latitude: '', longitude: '',
-  contactPerson: '', contactPhone: '', capacity: '', isActive: true,
+  name: '',
+  address: '',
+  googleMapsUrl: '',
+  latitude: '',
+  longitude: '',
+  contactPerson: '',
+  contactPhone: '',
+  capacity: '',
+  isActive: true,
 }
 
 // Deepest non-empty level chosen in the cascading selector is what the venue
@@ -57,17 +64,21 @@ export default function VenuesContent() {
   }, [search])
 
   useEffect(() => {
-    if (!scopedLocationId) { setScopedLocationLabel(null); return }
+    if (!scopedLocationId) {
+      setScopedLocationLabel(null)
+      return
+    }
     locationTreeApi.getPath(scopedLocationId).then((path) => {
       setScopedLocationLabel(path.map((n) => n.nameEn).join(' › '))
     })
   }, [scopedLocationId])
 
   const venuesFn = useCallback(
-    () => locationsApi.listVenues({
-      search: debouncedSearch || undefined,
-      locationId: scopedLocationId || undefined,
-    }),
+    () =>
+      locationsApi.listVenues({
+        search: debouncedSearch || undefined,
+        locationId: scopedLocationId || undefined,
+      }),
     [debouncedSearch, scopedLocationId],
   )
   const { data: venues, loading, error, refetch } = useApi(venuesFn, [debouncedSearch, scopedLocationId])
@@ -119,26 +130,44 @@ export default function VenuesContent() {
     const address = venueForm.address.trim()
     const locationId = editingVenue ? (deepestLocationId(venueLocation) ?? editingVenue.locationId ?? undefined) : deepestLocationId(venueLocation)
 
-    if (!name) { setFormError('Venue name is required.'); return }
-    if (!address) { setFormError('Full address is required.'); return }
-    if (!locationId) { setFormError('Select a location (Division, District, Upazila, Union, City Corporation, Zone, or Ward) for this venue.'); return }
+    if (!name) {
+      setFormError('Venue name is required.')
+      return
+    }
+    if (!address) {
+      setFormError('Full address is required.')
+      return
+    }
+    if (!locationId) {
+      setFormError('Select a location (Division, District, Upazila, Union, City Corporation, Zone, or Ward) for this venue.')
+      return
+    }
 
     let latitude: number | undefined
     if (venueForm.latitude.trim()) {
       latitude = Number(venueForm.latitude)
-      if (Number.isNaN(latitude)) { setFormError('Latitude must be a valid number.'); return }
+      if (Number.isNaN(latitude)) {
+        setFormError('Latitude must be a valid number.')
+        return
+      }
     }
 
     let longitude: number | undefined
     if (venueForm.longitude.trim()) {
       longitude = Number(venueForm.longitude)
-      if (Number.isNaN(longitude)) { setFormError('Longitude must be a valid number.'); return }
+      if (Number.isNaN(longitude)) {
+        setFormError('Longitude must be a valid number.')
+        return
+      }
     }
 
     let capacity: number | undefined
     if (venueForm.capacity.trim()) {
       capacity = Number(venueForm.capacity)
-      if (Number.isNaN(capacity) || capacity <= 0) { setFormError('Capacity must be a positive number.'); return }
+      if (Number.isNaN(capacity) || capacity <= 0) {
+        setFormError('Capacity must be a positive number.')
+        return
+      }
     }
 
     const dto: CreateVenueDto = {
@@ -188,15 +217,16 @@ export default function VenuesContent() {
       <PageHeader
         title="Venues"
         breadcrumbs={[{ label: 'Campaign Mgmt' }, { label: 'Venues' }]}
-        action={can('locations:create') ? (
-          <Button variant="primary" onClick={openCreateModal}>
-            <Icon icon="solar:add-circle-bold" className="me-1" />Create Venue
-          </Button>
-        ) : undefined}
+        action={
+          can('locations:create') ? (
+            <Button variant="primary" onClick={openCreateModal}>
+              <Icon icon="solar:add-circle-bold" className="me-1" />
+              Create Venue
+            </Button>
+          ) : undefined
+        }
       />
-      <p className="text-muted small mb-3">
-        Reusable venue records that campaign sessions attach to.
-      </p>
+      <p className="text-muted small mb-3">Reusable venue records that campaign sessions attach to.</p>
 
       {/* ── Filter panel ──────────────────────────────────────────── */}
       <Card className="mb-3">
@@ -207,12 +237,10 @@ export default function VenuesContent() {
             <Col xs={12}>
               <Form.Label className="small fw-semibold text-muted">Search</Form.Label>
               <InputGroup>
-                <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
-                <Form.Control
-                  placeholder="Search by venue name…"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
+                <InputGroup.Text>
+                  <Icon icon="solar:magnifer-bold" />
+                </InputGroup.Text>
+                <Form.Control placeholder="Search by venue name…" value={search} onChange={(e) => setSearch(e.target.value)} />
               </InputGroup>
             </Col>
           </Row>
@@ -234,7 +262,8 @@ export default function VenuesContent() {
             <div className="mt-3 pt-3 border-top d-flex align-items-center gap-2">
               <span className="small text-muted">Active filter:</span>
               <Badge bg="primary-subtle" text="primary" className="fw-normal px-2 py-1">
-                <Icon icon="solar:map-point-bold-duotone" className="me-1" />{scopedLocationLabel}
+                <Icon icon="solar:map-point-bold-duotone" className="me-1" />
+                {scopedLocationLabel}
               </Badge>
               <Button variant="link" size="sm" className="p-0 text-decoration-none" onClick={clearFilters}>
                 Clear filters
@@ -250,7 +279,9 @@ export default function VenuesContent() {
       <Card>
         <Card.Header className="d-flex align-items-center justify-content-between bg-white">
           <span className="fw-semibold">Venue List</span>
-          <span className="text-muted small">{venueList.length} venue{venueList.length !== 1 ? 's' : ''} found</span>
+          <span className="text-muted small">
+            {venueList.length} venue{venueList.length !== 1 ? 's' : ''} found
+          </span>
         </Card.Header>
         <Card.Body className="p-0">
           <LoadingOverlay loading={loading}>
@@ -259,75 +290,87 @@ export default function VenuesContent() {
                 icon="solar:buildings-2-bold-duotone"
                 title="No venues found for this area."
                 description="Create a reusable venue and attach it to campaign sessions."
-                action={can('locations:create') ? (
-                  <Button variant="primary" size="sm" onClick={openCreateModal}>
-                    <Icon icon="solar:add-circle-bold" className="me-1" />Create Venue
-                  </Button>
-                ) : undefined}
+                action={
+                  can('locations:create') ? (
+                    <Button variant="primary" size="sm" onClick={openCreateModal}>
+                      <Icon icon="solar:add-circle-bold" className="me-1" />
+                      Create Venue
+                    </Button>
+                  ) : undefined
+                }
               />
             ) : (
-            <div className="table-responsive">
-              <table className="table table-centered align-middle mb-0">
-                <thead className="table-light">
-                  <tr>
-                    <th>Venue</th>
-                    <th>Location</th>
-                    <th>Contact</th>
-                    <th>Capacity</th>
-                    <th>Status</th>
-                    <th className="text-end">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {venueList.map((v) => (
-                    <tr key={v.id}>
-                      <td>
-                        <div className="fw-semibold">
-                          {v.name}
-                          {v.googleMapsUrl && (
-                            <a href={v.googleMapsUrl} target="_blank" rel="noopener noreferrer" className="ms-2">
-                              <Icon icon="solar:map-point-bold" className="text-primary" />
-                            </a>
-                          )}
-                        </div>
-                        <div className="text-muted small">{v.address}</div>
-                      </td>
-                      <td className="text-muted small">
-                        {v.locationId ? (breadcrumbs[v.locationId]?.map((n) => n.nameEn).join(' › ') ?? '…') : '—'}
-                      </td>
-                      <td>
-                        {v.contactPerson || v.contactPhone ? (
-                          <span className="small">
-                            {v.contactPerson}{v.contactPerson && v.contactPhone ? ' · ' : ''}{v.contactPhone}
-                          </span>
-                        ) : <span className="text-muted small">—</span>}
-                      </td>
-                      <td>{v.capacity ?? <span className="text-muted small">—</span>}</td>
-                      <td>
-                        <Badge bg={v.isActive ? 'success' : 'secondary'}>{v.isActive ? 'Active' : 'Inactive'}</Badge>
-                      </td>
-                      <td className="text-end">
-                        {can('locations:update') && (
-                          <>
-                            <Button variant="soft-primary" size="sm" className="me-1" onClick={() => openEditModal(v)} title="Edit">
-                              <Icon icon="solar:pen-bold" />
-                            </Button>
-                            <Button variant="soft-secondary" size="sm" className="me-1" onClick={() => handleDeactivate(v)} title={v.isActive ? 'Deactivate' : 'Activate'}>
-                              <Icon icon={v.isActive ? 'solar:eye-closed-bold' : 'solar:eye-bold'} />
-                            </Button>
-                          </>
-                        )}
-                        {can('locations:delete') && (
-                          <Button variant="soft-danger" size="sm" onClick={() => handleDelete(v.id)} title="Delete">
-                            <Icon icon="solar:trash-bin-trash-bold" />
-                          </Button>
-                        )}
-                      </td>
+              <div className="table-responsive">
+                <table className="table table-centered align-middle mb-0">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Venue</th>
+                      <th>Location</th>
+                      <th>Contact</th>
+                      <th>Capacity</th>
+                      <th>Status</th>
+                      <th className="text-end">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {venueList.map((v) => (
+                      <tr key={v.id}>
+                        <td>
+                          <div className="fw-semibold">
+                            {v.name}
+                            {v.googleMapsUrl && (
+                              <a href={v.googleMapsUrl} target="_blank" rel="noopener noreferrer" className="ms-2">
+                                <Icon icon="solar:map-point-bold" className="text-primary" />
+                              </a>
+                            )}
+                          </div>
+                          <div className="text-muted small">{v.address}</div>
+                        </td>
+                        <td className="text-muted small">
+                          {v.locationId ? (breadcrumbs[v.locationId]?.map((n) => n.nameEn).join(' › ') ?? '…') : '—'}
+                        </td>
+                        <td>
+                          {v.contactPerson || v.contactPhone ? (
+                            <span className="small">
+                              {v.contactPerson}
+                              {v.contactPerson && v.contactPhone ? ' · ' : ''}
+                              {v.contactPhone}
+                            </span>
+                          ) : (
+                            <span className="text-muted small">—</span>
+                          )}
+                        </td>
+                        <td>{v.capacity ?? <span className="text-muted small">—</span>}</td>
+                        <td>
+                          <Badge bg={v.isActive ? 'success' : 'secondary'}>{v.isActive ? 'Active' : 'Inactive'}</Badge>
+                        </td>
+                        <td className="text-end">
+                          {can('locations:update') && (
+                            <>
+                              <Button variant="soft-primary" size="sm" className="me-1" onClick={() => openEditModal(v)} title="Edit">
+                                <Icon icon="solar:pen-bold" />
+                              </Button>
+                              <Button
+                                variant="soft-secondary"
+                                size="sm"
+                                className="me-1"
+                                onClick={() => handleDeactivate(v)}
+                                title={v.isActive ? 'Deactivate' : 'Activate'}>
+                                <Icon icon={v.isActive ? 'solar:eye-closed-bold' : 'solar:eye-bold'} />
+                              </Button>
+                            </>
+                          )}
+                          {can('locations:delete') && (
+                            <Button variant="soft-danger" size="sm" onClick={() => handleDelete(v.id)} title="Delete">
+                              <Icon icon="solar:trash-bin-trash-bold" />
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </LoadingOverlay>
         </Card.Body>
@@ -347,7 +390,9 @@ export default function VenuesContent() {
           )}
 
           <Form.Group className="mb-3">
-            <Form.Label className="fw-semibold">Venue Name <span className="text-danger">*</span></Form.Label>
+            <Form.Label className="fw-semibold">
+              Venue Name <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control
               value={venueForm.name}
               onChange={(e) => setVenueForm((f) => ({ ...f, name: e.target.value }))}
@@ -355,7 +400,9 @@ export default function VenuesContent() {
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label className="fw-semibold">Full Address <span className="text-danger">*</span></Form.Label>
+            <Form.Label className="fw-semibold">
+              Full Address <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control
               as="textarea"
               rows={2}
@@ -386,7 +433,8 @@ export default function VenuesContent() {
             <Col>
               <Form.Label className="fw-semibold">Latitude</Form.Label>
               <Form.Control
-                type="number" step="any"
+                type="number"
+                step="any"
                 value={venueForm.latitude}
                 onChange={(e) => setVenueForm((f) => ({ ...f, latitude: e.target.value }))}
                 placeholder="23.7806"
@@ -395,7 +443,8 @@ export default function VenuesContent() {
             <Col>
               <Form.Label className="fw-semibold">Longitude</Form.Label>
               <Form.Control
-                type="number" step="any"
+                type="number"
+                step="any"
                 value={venueForm.longitude}
                 onChange={(e) => setVenueForm((f) => ({ ...f, longitude: e.target.value }))}
                 placeholder="90.4193"
@@ -424,7 +473,8 @@ export default function VenuesContent() {
             <Col md={6}>
               <Form.Label className="fw-semibold">Capacity</Form.Label>
               <Form.Control
-                type="number" min={1}
+                type="number"
+                min={1}
                 value={venueForm.capacity}
                 onChange={(e) => setVenueForm((f) => ({ ...f, capacity: e.target.value }))}
                 placeholder="e.g. 200"
@@ -439,7 +489,9 @@ export default function VenuesContent() {
           />
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
           <Button variant="primary" onClick={handleSave} disabled={saving}>
             {saving ? 'Saving…' : editingVenue ? 'Update Venue' : 'Create Venue'}
           </Button>

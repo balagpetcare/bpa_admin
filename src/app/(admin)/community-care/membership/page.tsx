@@ -1,25 +1,35 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useCallback } from 'react';
-import { Row, Col, Card, Spinner, Table, Badge, ProgressBar } from 'react-bootstrap';
-import { communityMembershipApi } from '@/lib/api/community-membership.api';
+import { useState, useEffect, useCallback } from 'react'
+import { Row, Col, Card, Spinner, Table, Badge, ProgressBar } from 'react-bootstrap'
+import { communityMembershipApi } from '@/lib/api/community-membership.api'
 
 export default function MembershipDashboardPage() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   const fetchData = useCallback(async () => {
     try {
       // api.get() unwraps json.data, so res is the dashboard object directly
-      const res = await communityMembershipApi.getDashboard();
-      setData(res);
-    } catch { /* noop */ }
-    finally { setLoading(false); }
-  }, []);
+      const res = await communityMembershipApi.getDashboard()
+      setData(res)
+    } catch {
+      /* noop */
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
-  if (loading) return <div className="text-center py-5"><Spinner animation="border" /></div>;
+  if (loading)
+    return (
+      <div className="text-center py-5">
+        <Spinner animation="border" />
+      </div>
+    )
 
   const cards = [
     { label: 'Total Members', value: data?.totalMembers ?? 0, color: 'primary' },
@@ -28,10 +38,10 @@ export default function MembershipDashboardPage() {
     { label: 'Pending Payments', value: data?.pendingPayments ?? 0, color: 'warning' },
     { label: 'Upgrade Requests', value: data?.pendingUpgrades ?? 0, color: 'danger' },
     { label: 'Offer Active', value: data?.offerActive ? 'Yes' : 'No', color: data?.offerActive ? 'success' : 'secondary' },
-  ];
+  ]
 
-  const zoneDemand: any[] = data?.zoneDemand ?? [];
-  const maxScore = zoneDemand[0]?.demandScore ?? 1;
+  const zoneDemand: any[] = data?.zoneDemand ?? []
+  const maxScore = zoneDemand[0]?.demandScore ?? 1
 
   return (
     <>
@@ -71,7 +81,7 @@ export default function MembershipDashboardPage() {
               </thead>
               <tbody>
                 {zoneDemand.map((z: any) => {
-                  const pct = maxScore > 0 ? Math.min(100, Math.round((z.demandScore / maxScore) * 100)) : 0;
+                  const pct = maxScore > 0 ? Math.min(100, Math.round((z.demandScore / maxScore) * 100)) : 0
                   return (
                     <tr key={z.id}>
                       <td>
@@ -80,20 +90,20 @@ export default function MembershipDashboardPage() {
                       <td>
                         <span className="fw-semibold">{z.name}</span>
                         <br />
-                        <small className="text-muted">{z.city}, {z.district}</small>
+                        <small className="text-muted">
+                          {z.city}, {z.district}
+                        </small>
                       </td>
                       <td>{z.paidPurchases}</td>
                       <td>{z.totalPurchases}</td>
-                      <td><strong>{z.demandScore}</strong></td>
+                      <td>
+                        <strong>{z.demandScore}</strong>
+                      </td>
                       <td style={{ minWidth: 120 }}>
-                        <ProgressBar
-                          now={pct}
-                          variant={z.rank === 1 ? 'success' : 'info'}
-                          style={{ height: 8 }}
-                        />
+                        <ProgressBar now={pct} variant={z.rank === 1 ? 'success' : 'info'} style={{ height: 8 }} />
                       </td>
                     </tr>
-                  );
+                  )
                 })}
               </tbody>
             </Table>
@@ -101,5 +111,5 @@ export default function MembershipDashboardPage() {
         </Card>
       )}
     </>
-  );
+  )
 }

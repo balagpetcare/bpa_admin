@@ -82,7 +82,8 @@ export default function PetCensusDetailContent({ id }: { id: string }) {
         breadcrumbs={[{ label: 'Community Care Fund' }, { label: 'Pet Census', href: '/community-care/pet-census' }, { label: 'Detail' }]}
         action={
           <Button variant="outline-secondary" size="sm" onClick={() => router.push('/community-care/pet-census')}>
-            <Icon icon="solar:arrow-left-bold" className="me-1" />Back
+            <Icon icon="solar:arrow-left-bold" className="me-1" />
+            Back
           </Button>
         }
       />
@@ -130,13 +131,22 @@ export default function PetCensusDetailContent({ id }: { id: string }) {
                     <InfoRow label="Pet Type" value={s.petType ?? 'Legacy count submission'} />
                     <InfoRow label="Gender" value={s.petGender} />
                     <InfoRow label="Approx Age" value={s.approxAge} />
-                    <InfoRow label="Pet Count" value={s.petCount || (s.petCountDog + s.petCountCat + s.petCountOther)} />
+                    <InfoRow label="Pet Count" value={s.petCount || s.petCountDog + s.petCountCat + s.petCountOther} />
                     <InfoRow label="Pets in Household" value={s.householdPetCount} />
                     <InfoRow label="Breed" value={s.breed} />
                     <InfoRow label="Vaccination Status" value={labelVaccinationStatus(s.vaccinationStatus)} />
                     <InfoRow label="Neutered / Spayed" value={s.neuteredStatus} />
                     <InfoRow label="Health Issue" value={s.healthIssue} />
-                    <InfoRow label="Photo" value={s.photoUrl ? <a href={s.photoUrl} target="_blank" rel="noreferrer">Open photo</a> : null} />
+                    <InfoRow
+                      label="Photo"
+                      value={
+                        s.photoUrl ? (
+                          <a href={s.photoUrl} target="_blank" rel="noreferrer">
+                            Open photo
+                          </a>
+                        ) : null
+                      }
+                    />
                     <InfoRow label="Legacy Counts" value={`Dogs ${s.petCountDog}, Cats ${s.petCountCat}, Other ${s.petCountOther}`} />
                     <InfoRow label="Consent" value={s.hasConsented ? 'Yes' : 'No'} />
                   </dl>
@@ -173,7 +183,8 @@ export default function PetCensusDetailContent({ id }: { id: string }) {
                         />
                       </Form.Group>
                       <Button size="sm" disabled={mutating} onClick={handleNoteSave}>
-                        <Icon icon="solar:diskette-bold" className="me-1" />Save Note
+                        <Icon icon="solar:diskette-bold" className="me-1" />
+                        Save Note
                       </Button>
                     </>
                   )}
@@ -206,8 +217,7 @@ export default function PetCensusDetailContent({ id }: { id: string }) {
                           variant={s.status === st ? 'primary' : 'outline-secondary'}
                           size="sm"
                           disabled={mutating}
-                          onClick={() => handleStatusChange(st)}
-                        >
+                          onClick={() => handleStatusChange(st)}>
                           {labelStatus(st)}
                         </Button>
                       ))}

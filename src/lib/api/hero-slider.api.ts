@@ -74,10 +74,10 @@ function toBackendDto(dto: HeroSlideWriteDto) {
 }
 
 function computeIsScheduledNow(slide: Pick<HeroSlideListItem, 'startAt' | 'endAt'>): boolean {
-  const now = new Date();
-  const startsOk = !slide.startAt || new Date(slide.startAt) <= now;
-  const endsOk = !slide.endAt || new Date(slide.endAt) >= now;
-  return startsOk && endsOk;
+  const now = new Date()
+  const startsOk = !slide.startAt || new Date(slide.startAt) <= now
+  const endsOk = !slide.endAt || new Date(slide.endAt) >= now
+  return startsOk && endsOk
 }
 
 function normalizeSlide(slide: HeroSlideListItem): HeroSlideListItem {
@@ -94,28 +94,25 @@ function normalizeSlide(slide: HeroSlideListItem): HeroSlideListItem {
 
 export const heroSliderApi = {
   list: (params?: HeroSlidesListParams) =>
-    api.getPaginated<HeroSlideListItem>('/admin/homepage/hero-slides', params as Record<string, string | number | boolean | undefined>)
+    api
+      .getPaginated<HeroSlideListItem>('/admin/homepage/hero-slides', params as Record<string, string | number | boolean | undefined>)
       .then((result) => ({ ...result, data: result.data.map(normalizeSlide) })),
 
   getById: (id: string) =>
-    api.getPaginated<HeroSlideListItem>('/admin/homepage/hero-slides', { limit: 100 })
-      .then((result) => {
-        const slide = result.data.find((item) => item.id === id)
-        if (!slide) throw new Error('Hero slide not found')
-        return normalizeSlide(slide)
-      }),
+    api.getPaginated<HeroSlideListItem>('/admin/homepage/hero-slides', { limit: 100 }).then((result) => {
+      const slide = result.data.find((item) => item.id === id)
+      if (!slide) throw new Error('Hero slide not found')
+      return normalizeSlide(slide)
+    }),
 
-  create: (dto: HeroSlideWriteDto) =>
-    api.post<HeroSlideListItem>('/admin/homepage/hero-slides', toBackendDto(dto)).then(normalizeSlide),
+  create: (dto: HeroSlideWriteDto) => api.post<HeroSlideListItem>('/admin/homepage/hero-slides', toBackendDto(dto)).then(normalizeSlide),
 
   update: (id: string, dto: HeroSlideWriteDto) =>
     api.patch<HeroSlideListItem>(`/admin/homepage/hero-slides/${id}`, toBackendDto(dto)).then(normalizeSlide),
 
-  remove: (id: string) =>
-    api.delete<void>(`/admin/homepage/hero-slides/${id}`),
+  remove: (id: string) => api.delete<void>(`/admin/homepage/hero-slides/${id}`),
 
-  reorder: (ids: string[]) =>
-    Promise.resolve(ids).then(() => [] as HeroSlideListItem[]),
+  reorder: (ids: string[]) => Promise.resolve(ids).then(() => [] as HeroSlideListItem[]),
 
   listPublic: (locale?: 'en' | 'bn') =>
     api.get<HeroSlideListItem[]>('/homepage/public', { locale }).then((payload) => {

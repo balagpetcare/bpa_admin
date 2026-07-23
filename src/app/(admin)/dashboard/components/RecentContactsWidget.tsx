@@ -9,7 +9,9 @@ export default function RecentContactsWidget({ items }: { items: ContactSubmissi
     <Card className="h-100">
       <Card.Header className="d-flex justify-content-between align-items-center">
         <h5 className="mb-0">Recent Contacts</h5>
-        <Link href="/contacts" className="text-muted small">View all →</Link>
+        <Link href="/contacts" className="text-muted small">
+          View all →
+        </Link>
       </Card.Header>
       <Card.Body className="p-0">
         {items.length === 0 ? (
@@ -26,9 +28,7 @@ export default function RecentContactsWidget({ items }: { items: ContactSubmissi
                     </span>
                   </div>
                   <div className="text-end flex-shrink-0">
-                    <Badge bg={c.status === 'unread' ? 'danger' : c.status === 'replied' ? 'success' : 'secondary'}>
-                      {c.status}
-                    </Badge>
+                    <Badge bg={c.status === 'unread' ? 'danger' : c.status === 'replied' ? 'success' : 'secondary'}>{c.status}</Badge>
                     <div className="text-muted" style={{ fontSize: 11 }}>
                       {new Date(c.createdAt).toLocaleDateString()}
                     </div>

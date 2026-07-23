@@ -22,7 +22,9 @@ export default function EmailLogDetailsModal({ log, isOpen, onClose }: EmailLogD
         <Row className="g-3 mb-4">
           <Col md={6}>
             <div className="text-muted small mb-1">Log ID</div>
-            <code className="text-dark" style={{ fontSize: 12 }}>{log.id}</code>
+            <code className="text-dark" style={{ fontSize: 12 }}>
+              {log.id}
+            </code>
           </Col>
           <Col md={6}>
             <div className="text-muted small mb-1">Provider Reference</div>
@@ -38,7 +40,9 @@ export default function EmailLogDetailsModal({ log, isOpen, onClose }: EmailLogD
           </Col>
           <Col md={4}>
             <div className="text-muted small mb-1">Provider</div>
-            <Badge bg="secondary" className="text-uppercase">{log.provider}</Badge>
+            <Badge bg="secondary" className="text-uppercase">
+              {log.provider}
+            </Badge>
           </Col>
           <Col md={4}>
             <div className="text-muted small mb-1">Status</div>
@@ -67,8 +71,7 @@ export default function EmailLogDetailsModal({ log, isOpen, onClose }: EmailLogD
               <div className="text-muted small mb-1">Email Body (preview)</div>
               <pre
                 className="bg-light border rounded p-3 small mb-0"
-                style={{ maxHeight: 200, overflow: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 12 }}
-              >
+                style={{ maxHeight: 200, overflow: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 12 }}>
                 {log.body}
               </pre>
             </Col>
@@ -80,15 +83,16 @@ export default function EmailLogDetailsModal({ log, isOpen, onClose }: EmailLogD
             <div className="text-muted small mb-1">Raw Payload</div>
             <pre
               className="bg-light border rounded p-3 small mb-0"
-              style={{ maxHeight: 250, overflow: 'auto', fontSize: 12, fontFamily: 'monospace' }}
-            >
+              style={{ maxHeight: 250, overflow: 'auto', fontSize: 12, fontFamily: 'monospace' }}>
               {JSON.stringify(log.payload, null, 2)}
             </pre>
           </div>
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>Close</Button>
+        <Button variant="secondary" onClick={onClose}>
+          Close
+        </Button>
       </Modal.Footer>
     </Modal>
   )

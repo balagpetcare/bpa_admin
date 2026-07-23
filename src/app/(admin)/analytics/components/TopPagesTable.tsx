@@ -38,10 +38,7 @@ export default function TopPagesTable({ data, loading }: { data: TrafficPoint[];
                     <td>{row.uniqueVisitors.toLocaleString()}</td>
                     <td>
                       <div className="progress" style={{ height: 6 }}>
-                        <div
-                          className="progress-bar bg-primary"
-                          style={{ width: `${(row.pageViews / maxViews) * 100}%` }}
-                        />
+                        <div className="progress-bar bg-primary" style={{ width: `${(row.pageViews / maxViews) * 100}%` }} />
                       </div>
                     </td>
                   </tr>

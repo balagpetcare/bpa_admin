@@ -26,11 +26,19 @@ export default function ZoneDemandContent() {
     if (!zones || zones.length === 0) return
 
     const headers = [
-      'Rank', 'Zone Name', 'Clinic Status', 'Target Members', 'Paid Members', 
-      'Active Cards', 'Pending Purchases', 'Progress %', 'Revenue (BDT)', 
-      'Priority Score', 'Last Purchase'
+      'Rank',
+      'Zone Name',
+      'Clinic Status',
+      'Target Members',
+      'Paid Members',
+      'Active Cards',
+      'Pending Purchases',
+      'Progress %',
+      'Revenue (BDT)',
+      'Priority Score',
+      'Last Purchase',
     ]
-    
+
     const rows = zones.map((z: ZoneDemandRanking, i: number) => [
       i + 1,
       z.name,
@@ -42,13 +50,10 @@ export default function ZoneDemandContent() {
       ((z.paidPurchases / z.targetMembers) * 100).toFixed(1),
       z.revenueAmount,
       z.priorityScore,
-      z.lastPurchaseDate ? new Date(z.lastPurchaseDate).toLocaleDateString() : 'N/A'
+      z.lastPurchaseDate ? new Date(z.lastPurchaseDate).toLocaleDateString() : 'N/A',
     ])
 
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(r => r.join(','))
-    ].join('\n')
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n')
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
@@ -87,7 +92,9 @@ export default function ZoneDemandContent() {
             <Table responsive hover className="table-centered align-middle mb-0">
               <thead className="table-light">
                 <tr>
-                  <th className="ps-3" style={{ width: '60px' }}>Rank</th>
+                  <th className="ps-3" style={{ width: '60px' }}>
+                    Rank
+                  </th>
                   <th>Zone Name</th>
                   <th>Clinic Status</th>
                   <th className="text-center">Paid / Target</th>
@@ -101,65 +108,71 @@ export default function ZoneDemandContent() {
               </thead>
               <tbody>
                 {zones?.length === 0 ? (
-                  <tr><td colSpan={10} className="text-center py-4 text-muted">No zones found</td></tr>
-                ) : zones?.map((z: ZoneDemandRanking, i: number) => {
-                  const progress = Math.min(100, (z.paidPurchases / z.targetMembers) * 100)
-                  return (
-                    <tr key={z.id}>
-                      <td className="ps-3 font-weight-bold">
-                        {i < 3 ? (
-                          <Badge bg={i === 0 ? 'gold' : i === 1 ? 'silver' : 'bronze'} className={`rank-badge rank-${i + 1}`}>
-                            {i + 1}
+                  <tr>
+                    <td colSpan={10} className="text-center py-4 text-muted">
+                      No zones found
+                    </td>
+                  </tr>
+                ) : (
+                  zones?.map((z: ZoneDemandRanking, i: number) => {
+                    const progress = Math.min(100, (z.paidPurchases / z.targetMembers) * 100)
+                    return (
+                      <tr key={z.id}>
+                        <td className="ps-3 font-weight-bold">
+                          {i < 3 ? (
+                            <Badge bg={i === 0 ? 'gold' : i === 1 ? 'silver' : 'bronze'} className={`rank-badge rank-${i + 1}`}>
+                              {i + 1}
+                            </Badge>
+                          ) : (
+                            <span className="text-muted ms-2">{i + 1}</span>
+                          )}
+                        </td>
+                        <td>
+                          <div className="fw-semibold">{z.name}</div>
+                          <div className="text-muted small text-truncate" style={{ maxWidth: '200px' }}>
+                            {z.description || 'No description'}
+                          </div>
+                        </td>
+                        <td>
+                          <Badge bg={CLINIC_STATUS_COLORS[z.clinicStatus] || 'secondary'} className="text-capitalize">
+                            {z.clinicStatus.replace('_', ' ')}
                           </Badge>
-                        ) : (
-                          <span className="text-muted ms-2">{i + 1}</span>
-                        )}
-                      </td>
-                      <td>
-                        <div className="fw-semibold">{z.name}</div>
-                        <div className="text-muted small text-truncate" style={{ maxWidth: '200px' }}>
-                          {z.description || 'No description'}
-                        </div>
-                      </td>
-                      <td>
-                        <Badge bg={CLINIC_STATUS_COLORS[z.clinicStatus] || 'secondary'} className="text-capitalize">
-                          {z.clinicStatus.replace('_', ' ')}
-                        </Badge>
-                      </td>
-                      <td className="text-center">
-                        <span className="fw-medium">{z.paidPurchases}</span>
-                        <span className="text-muted small"> / {z.targetMembers}</span>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center gap-2">
-                          <ProgressBar now={progress} variant={progress >= 100 ? 'success' : progress >= 50 ? 'primary' : 'warning'} style={{ height: '6px', flex: 1 }} />
-                          <small className="fw-bold" style={{ minWidth: '35px' }}>{progress.toFixed(0)}%</small>
-                        </div>
-                      </td>
-                      <td className="text-center">
-                        <Badge bg="success-subtle" text="success" className="fs-6">
-                          {z.activeCards}
-                        </Badge>
-                      </td>
-                      <td className="text-center text-muted">
-                        {z.pendingPurchases}
-                      </td>
-                      <td className="text-end fw-medium">
-                        ৳{Number(z.revenueAmount).toLocaleString()}
-                      </td>
-                      <td className="text-center">
-                        <div className="bg-light rounded px-2 py-1 fw-bold text-primary">
-                          {z.priorityScore}
-                        </div>
-                      </td>
-                      <td className="pe-3 text-end">
-                        <Link href={`/community-care/zones/${z.id}`} className="btn btn-sm btn-soft-primary">
-                          <Icon icon="solar:pen-bold" />
-                        </Link>
-                      </td>
-                    </tr>
-                  )
-                })}
+                        </td>
+                        <td className="text-center">
+                          <span className="fw-medium">{z.paidPurchases}</span>
+                          <span className="text-muted small"> / {z.targetMembers}</span>
+                        </td>
+                        <td>
+                          <div className="d-flex align-items-center gap-2">
+                            <ProgressBar
+                              now={progress}
+                              variant={progress >= 100 ? 'success' : progress >= 50 ? 'primary' : 'warning'}
+                              style={{ height: '6px', flex: 1 }}
+                            />
+                            <small className="fw-bold" style={{ minWidth: '35px' }}>
+                              {progress.toFixed(0)}%
+                            </small>
+                          </div>
+                        </td>
+                        <td className="text-center">
+                          <Badge bg="success-subtle" text="success" className="fs-6">
+                            {z.activeCards}
+                          </Badge>
+                        </td>
+                        <td className="text-center text-muted">{z.pendingPurchases}</td>
+                        <td className="text-end fw-medium">৳{Number(z.revenueAmount).toLocaleString()}</td>
+                        <td className="text-center">
+                          <div className="bg-light rounded px-2 py-1 fw-bold text-primary">{z.priorityScore}</div>
+                        </td>
+                        <td className="pe-3 text-end">
+                          <Link href={`/community-care/zones/${z.id}`} className="btn btn-sm btn-soft-primary">
+                            <Icon icon="solar:pen-bold" />
+                          </Link>
+                        </td>
+                      </tr>
+                    )
+                  })
+                )}
               </tbody>
             </Table>
           </LoadingOverlay>
@@ -177,9 +190,18 @@ export default function ZoneDemandContent() {
           padding: 0;
           font-size: 12px;
         }
-        :global(.bg-gold) { background-color: #FFD700 !important; color: #000 !important; }
-        :global(.bg-silver) { background-color: #C0C0C0 !important; color: #000 !important; }
-        :global(.bg-bronze) { background-color: #CD7F32 !important; color: #fff !important; }
+        :global(.bg-gold) {
+          background-color: #ffd700 !important;
+          color: #000 !important;
+        }
+        :global(.bg-silver) {
+          background-color: #c0c0c0 !important;
+          color: #000 !important;
+        }
+        :global(.bg-bronze) {
+          background-color: #cd7f32 !important;
+          color: #fff !important;
+        }
       `}</style>
     </div>
   )

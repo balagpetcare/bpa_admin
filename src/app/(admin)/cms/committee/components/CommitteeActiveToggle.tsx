@@ -14,10 +14,7 @@ export default function CommitteeActiveToggle({ member, onToggled }: CommitteeAc
   const { mutate, loading } = useApiMutation<CommitteeMember, boolean>()
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    await mutate(
-      (isActive) => committeeApi.update(member.id, { isActive }),
-      e.target.checked,
-    )
+    await mutate((isActive) => committeeApi.update(member.id, { isActive }), e.target.checked)
     onToggled()
   }
 

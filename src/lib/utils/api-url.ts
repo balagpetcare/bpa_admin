@@ -11,13 +11,11 @@
 export function getApiOrigin(): string {
   const raw =
     process.env['NEXT_PUBLIC_API_URL'] ||
-    (process.env['NODE_ENV'] === 'production'
-      ? 'https://api.bangladeshpetassociation.com'
-      : 'http://localhost:4000');
+    (process.env['NODE_ENV'] === 'production' ? 'https://api.bangladeshpetassociation.com' : 'http://localhost:4000')
 
-  return raw.replace(/\/api\/v1\/?$/, '').replace(/\/$/, '');
+  return raw.replace(/\/api\/v1\/?$/, '').replace(/\/$/, '')
 }
 
 export function getApiBase(): string {
-  return `${getApiOrigin()}/api/v1`;
+  return `${getApiOrigin()}/api/v1`
 }

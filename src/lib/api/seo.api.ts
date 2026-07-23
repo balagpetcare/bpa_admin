@@ -13,12 +13,9 @@ export interface UpsertSeoDto {
 export const seoApi = {
   list: () => api.get<SeoMetadata[]>('/admin/seo'),
 
-  getByRoute: (route: string) =>
-    api.get<SeoMetadata | null>(`/admin/seo/${encodeURIComponent(route)}`),
+  getByRoute: (route: string) => api.get<SeoMetadata | null>(`/admin/seo/${encodeURIComponent(route)}`),
 
-  upsert: (route: string, dto: UpsertSeoDto) =>
-    api.put<SeoMetadata>(`/admin/seo/${encodeURIComponent(route)}`, dto),
+  upsert: (route: string, dto: UpsertSeoDto) => api.put<SeoMetadata>(`/admin/seo/${encodeURIComponent(route)}`, dto),
 
-  remove: (route: string) =>
-    api.delete<void>(`/admin/seo/${encodeURIComponent(route)}`),
+  remove: (route: string) => api.delete<void>(`/admin/seo/${encodeURIComponent(route)}`),
 }

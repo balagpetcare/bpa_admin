@@ -15,7 +15,7 @@ export default function CommentsPage() {
   const [comments, setComments] = useState<ContentComment[]>()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<ApiError | null>(null)
-  
+
   // Filters
   const [status, setStatus] = useState<string>('')
   const [reported, setReported] = useState<boolean>(false)
@@ -31,14 +31,14 @@ export default function CommentsPage() {
         status: status || undefined,
         reported: reported ? true : undefined,
         page,
-        limit: 20
+        limit: 20,
       })
       // Adapt array/pagination from backend listComments endpoint if it wraps array
       if (Array.isArray(res)) {
         setComments(res)
       } else {
         // Safe check
-        const responseData = (res as any)
+        const responseData = res as any
         setComments(responseData.data || responseData.items || [])
         setMeta(responseData.meta || null)
       }
@@ -89,10 +89,7 @@ export default function CommentsPage() {
 
   return (
     <div className="container-fluid py-4">
-      <PageHeader
-        title="Comment Moderation"
-        breadcrumbs={[{ label: 'Content Hub' }, { label: 'Comments' }]}
-      />
+      <PageHeader title="Comment Moderation" breadcrumbs={[{ label: 'Content Hub' }, { label: 'Comments' }]} />
 
       <ApiErrorAlert error={error} onDismiss={() => setError(null)} />
 
@@ -101,7 +98,12 @@ export default function CommentsPage() {
           <Row className="g-2 items-center">
             <Col md={3}>
               <Form.Label className="fw-semibold small">Status Filter</Form.Label>
-              <Form.Select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1) }}>
+              <Form.Select
+                value={status}
+                onChange={(e) => {
+                  setStatus(e.target.value)
+                  setPage(1)
+                }}>
                 <option value="">All Statuses</option>
                 <option value="approved">Approved</option>
                 <option value="pending">Pending</option>
@@ -116,7 +118,10 @@ export default function CommentsPage() {
                 id="reported-checkbox"
                 label="Only Show Reported Comments"
                 checked={reported}
-                onChange={(e) => { setReported(e.target.checked); setPage(1) }}
+                onChange={(e) => {
+                  setReported(e.target.checked)
+                  setPage(1)
+                }}
                 className="fw-semibold text-secondary"
               />
             </Col>
@@ -215,8 +220,12 @@ export default function CommentsPage() {
                   {meta.total} comment{meta.total !== 1 ? 's' : ''} · Page {meta.page} of {meta.totalPages}
                 </small>
                 <div className="d-flex gap-1">
-                  <Button size="sm" variant="outline-secondary" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>‹</Button>
-                  <Button size="sm" variant="outline-secondary" disabled={page >= meta.totalPages} onClick={() => setPage(p => p + 1)}>›</Button>
+                  <Button size="sm" variant="outline-secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+                    ‹
+                  </Button>
+                  <Button size="sm" variant="outline-secondary" disabled={page >= meta.totalPages} onClick={() => setPage((p) => p + 1)}>
+                    ›
+                  </Button>
                 </div>
               </div>
             )}

@@ -14,10 +14,7 @@ import * as yup from 'yup'
 import { apiClient } from '@/lib/api'
 
 const schema = yup.object({
-  password: yup
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .required('Please enter a new password'),
+  password: yup.string().min(8, 'Password must be at least 8 characters').required('Please enter a new password'),
   confirmPassword: yup
     .string()
     .oneOf([yup.ref('password')], 'Passwords do not match')
@@ -75,15 +72,9 @@ const NewPassword = () => {
                     </Link>
                   </div>
                   <h2 className="fw-bold fs-24">Set New Password</h2>
-                  <p className="text-muted mt-1 mb-4">
-                    Enter and confirm your new password below.
-                  </p>
+                  <p className="text-muted mt-1 mb-4">Enter and confirm your new password below.</p>
 
-                  {!token && (
-                    <Alert variant="danger">
-                      Invalid reset link. Please go back and request a new password reset email.
-                    </Alert>
-                  )}
+                  {!token && <Alert variant="danger">Invalid reset link. Please go back and request a new password reset email.</Alert>}
 
                   {success ? (
                     <Alert variant="success">

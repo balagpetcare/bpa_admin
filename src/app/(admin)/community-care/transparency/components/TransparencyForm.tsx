@@ -41,14 +41,14 @@ export default function TransparencyForm({ reportId, initialValues, initialCover
     coverImageId: initialValues?.coverImageId ?? null,
   })
 
-  function set<K extends keyof typeof form>(key: K, value: typeof form[K]) {
-    setForm(f => ({ ...f, [key]: value }))
+  function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
+    setForm((f) => ({ ...f, [key]: value }))
   }
 
   useEffect(() => {
     const collected = Number(form.totalCollectedBdt) || 0
     const spent = Number(form.totalSpentBdt) || 0
-    setForm(f => ({ ...f, balanceBdt: String(Number((collected - spent).toFixed(2))) }))
+    setForm((f) => ({ ...f, balanceBdt: String(Number((collected - spent).toFixed(2))) }))
   }, [form.totalCollectedBdt, form.totalSpentBdt])
 
   function handleCoverChange(fileId: string | null, file: MediaFile | null) {
@@ -72,10 +72,7 @@ export default function TransparencyForm({ reportId, initialValues, initialCover
       attachmentUrl: form.attachmentUrl || undefined,
       coverImageId: form.coverImageId || null,
     }
-    const result = await mutate(
-      () => isEdit ? transparencyReportsApi.update(reportId, payload) : transparencyReportsApi.create(payload),
-      undefined,
-    )
+    const result = await mutate(() => (isEdit ? transparencyReportsApi.update(reportId, payload) : transparencyReportsApi.create(payload)), undefined)
     if (result) router.push('/community-care/transparency')
   }
 
@@ -83,7 +80,11 @@ export default function TransparencyForm({ reportId, initialValues, initialCover
     <div className="container-fluid">
       <PageHeader
         title={isEdit ? 'Edit Report' : 'New Report'}
-        breadcrumbs={[{ label: 'Community Care Fund' }, { label: 'Transparency', href: '/community-care/transparency' }, { label: isEdit ? 'Edit' : 'New' }]}
+        breadcrumbs={[
+          { label: 'Community Care Fund' },
+          { label: 'Transparency', href: '/community-care/transparency' },
+          { label: isEdit ? 'Edit' : 'New' },
+        ]}
       />
       <ApiErrorAlert error={error as ApiError | null} />
       <Card>
@@ -92,7 +93,9 @@ export default function TransparencyForm({ reportId, initialValues, initialCover
             <Row className="g-3">
               <Col md={8}>
                 <Form.Group>
-                  <Form.Label>Title <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Title <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control value={form.title} onChange={(e) => set('title', e.target.value)} required />
                 </Form.Group>
               </Col>
@@ -100,32 +103,48 @@ export default function TransparencyForm({ reportId, initialValues, initialCover
                 <Form.Group>
                   <Form.Label>Report Type</Form.Label>
                   <Form.Select value={form.reportType} onChange={(e) => set('reportType', e.target.value)}>
-                    {REPORT_TYPES.map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
+                    {REPORT_TYPES.map((t) => (
+                      <option key={t} value={t}>
+                        {t.charAt(0).toUpperCase() + t.slice(1)}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Slug <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Slug <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control value={form.slug} onChange={(e) => set('slug', e.target.value)} required />
                 </Form.Group>
               </Col>
               <Col md={3}>
                 <Form.Group>
-                  <Form.Label>Period Start <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Period Start <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control type="date" value={form.periodStart} onChange={(e) => set('periodStart', e.target.value)} required />
                 </Form.Group>
               </Col>
               <Col md={3}>
                 <Form.Group>
-                  <Form.Label>Period End <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Period End <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control type="date" value={form.periodEnd} onChange={(e) => set('periodEnd', e.target.value)} required />
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group>
                   <Form.Label>Total Collected (BDT)</Form.Label>
-                  <Form.Control type="number" min={0} step="0.01" value={form.totalCollectedBdt} onChange={(e) => set('totalCollectedBdt', e.target.value)} />
+                  <Form.Control
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={form.totalCollectedBdt}
+                    onChange={(e) => set('totalCollectedBdt', e.target.value)}
+                  />
                 </Form.Group>
               </Col>
               <Col md={4}>
@@ -172,7 +191,12 @@ export default function TransparencyForm({ reportId, initialValues, initialCover
               <Col md={12}>
                 <Form.Group>
                   <Form.Label>Downloadable File URL</Form.Label>
-                  <Form.Control type="url" value={form.attachmentUrl} onChange={(e) => set('attachmentUrl', e.target.value)} placeholder="https://..." />
+                  <Form.Control
+                    type="url"
+                    value={form.attachmentUrl}
+                    onChange={(e) => set('attachmentUrl', e.target.value)}
+                    placeholder="https://..."
+                  />
                   <Form.Text className="text-muted">
                     Use this for a public PDF or file link when the report has a separate downloadable attachment.
                   </Form.Text>
@@ -185,7 +209,9 @@ export default function TransparencyForm({ reportId, initialValues, initialCover
                 <Icon icon="solar:check-circle-bold" className="me-1" />
                 {isEdit ? 'Save Changes' : 'Create Report'}
               </Button>
-              <Button variant="outline-secondary" onClick={() => router.push('/community-care/transparency')}>Cancel</Button>
+              <Button variant="outline-secondary" onClick={() => router.push('/community-care/transparency')}>
+                Cancel
+              </Button>
             </div>
           </Form>
         </Card.Body>

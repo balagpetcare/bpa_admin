@@ -50,12 +50,20 @@ function WizardContent() {
   )
 }
 
-function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { campaign?: MembershipCampaign | null; campaignId?: string; refetch: () => void }) {
+function MembershipCampaignWizardInner({
+  campaign,
+  campaignId,
+  refetch,
+}: {
+  campaign?: MembershipCampaign | null
+  campaignId?: string
+  refetch: () => void
+}) {
   const router = useRouter()
   const { can } = usePermission()
   const wizard = useCampaignWizard(campaign)
   const [deleteError, setDeleteError] = useState<ApiError | null>(null)
-  
+
   const { mutate, loading: saving, error: mutError } = useApiMutation<MembershipCampaign, CampaignWizardFormValues>()
   const isEdit = Boolean(campaignId)
 
@@ -131,21 +139,19 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
       payloadToSubmit = dirtyPayload
     }
 
-    const result = await mutate(async () => (
-      campaignId
-        ? membershipCampaignApi.updateCampaign(campaignId, payloadToSubmit)
-        : membershipCampaignApi.createCampaign(payloadToSubmit)
-    ), values)
-    
+    const result = await mutate(
+      async () =>
+        campaignId ? membershipCampaignApi.updateCampaign(campaignId, payloadToSubmit) : membershipCampaignApi.createCampaign(payloadToSubmit),
+      values,
+    )
+
     if (!result) return
 
     // Clear dirty state on save
     wizard.form.reset(values, { keepValues: true, keepDirty: false })
-    
+
     if (!campaignId) {
-      const step = continueToNextStep && !wizard.isLastStep 
-        ? wizard.steps[wizard.currentStepIndex + 1].id 
-        : wizard.currentStepId
+      const step = continueToNextStep && !wizard.isLastStep ? wizard.steps[wizard.currentStepIndex + 1].id : wizard.currentStepId
       router.push(`/community-care/membership/campaigns/${result.id}/edit?step=${step}`)
     } else {
       if (continueToNextStep && !wizard.isLastStep) {
@@ -179,17 +185,17 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
       if (!isValid) {
         // focus first error
         const errors = wizard.form.formState.errors
-        const firstErrorField = currentStepFields.find(f => errors[f as keyof typeof errors])
+        const firstErrorField = currentStepFields.find((f) => errors[f as keyof typeof errors])
         if (firstErrorField) wizard.form.setFocus(firstErrorField as any)
         return
       }
-      
+
       const values = wizard.form.getValues()
       // If we are creating, default to draft so it doesn't accidentally publish early
       if (!campaignId && values.status !== 'draft') {
         values.status = 'draft'
       }
-      
+
       await submitForm(values, false, true)
     }
   }
@@ -198,7 +204,7 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
     if (!campaignId) return
     const title = campaign?.titleEn ?? 'this campaign'
     if (!(await confirmDelete(title))) return
-    
+
     // We should use a mutation or try-catch to show backend relation/conflict errors
     try {
       await membershipCampaignApi.deleteCampaign(campaignId)
@@ -228,10 +234,13 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
             <div className="d-flex gap-2">
               {isEdit && can('membership_campaigns:delete') && (
                 <Button variant="outline-danger" onClick={handleDelete}>
-                  <Icon icon="solar:trash-bin-trash-bold" className="me-1" />Delete
+                  <Icon icon="solar:trash-bin-trash-bold" className="me-1" />
+                  Delete
                 </Button>
               )}
-              <Button variant="light" onClick={() => router.push('/community-care/membership/campaigns')}>Back</Button>
+              <Button variant="light" onClick={() => router.push('/community-care/membership/campaigns')}>
+                Back
+              </Button>
             </div>
           }
         />
@@ -241,11 +250,7 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
         <LoadingOverlay loading={saving}>
           <MembershipCampaignWizardHeader />
           <WizardContent />
-          <MembershipCampaignWizardFooter
-            onSaveAsDraft={handleSaveAsDraft}
-            onSubmit={handleSaveAndContinue}
-            isSaving={saving}
-          />
+          <MembershipCampaignWizardFooter onSaveAsDraft={handleSaveAsDraft} onSubmit={handleSaveAndContinue} isSaving={saving} />
         </LoadingOverlay>
       </div>
     </wizard.Provider>
@@ -256,17 +261,16 @@ function MembershipCampaignWizardInner({ campaign, campaignId, refetch }: { camp
 import { useWizardContext } from './useCampaignWizard'
 
 export default function MembershipCampaignWizard({ campaignId }: { campaignId?: string }) {
-  const { data: campaign, loading, error, refetch } = useApi(
-    campaignId ? () => membershipCampaignApi.getCampaign(campaignId) : null,
-    [campaignId],
-  )
+  const { data: campaign, loading, error, refetch } = useApi(campaignId ? () => membershipCampaignApi.getCampaign(campaignId) : null, [campaignId])
 
-  const isHydrating = !!campaignId && (!campaign && !error)
+  const isHydrating = !!campaignId && !campaign && !error
 
   if (loading || isHydrating) {
     return (
       <div className="container-fluid mt-4">
-        <LoadingOverlay loading={true}><div style={{ height: '300px' }} /></LoadingOverlay>
+        <LoadingOverlay loading={true}>
+          <div style={{ height: '300px' }} />
+        </LoadingOverlay>
       </div>
     )
   }

@@ -14,7 +14,9 @@ export default function HeroSlidePreviewCard({ form }: HeroSlidePreviewCardProps
     <Card className="shadow-sm">
       <Card.Header className="d-flex justify-content-between align-items-center">
         <span className="fw-semibold">Slide Preview</span>
-        <Badge bg="primary-subtle" text="primary">{form.mediaType}</Badge>
+        <Badge bg="primary-subtle" text="primary">
+          {form.mediaType}
+        </Badge>
       </Card.Header>
       <Card.Body>
         <div
@@ -24,8 +26,7 @@ export default function HeroSlidePreviewCard({ form }: HeroSlidePreviewCardProps
             backgroundImage: background ? `linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.55)), url(${background})` : undefined,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-          }}
-        >
+          }}>
           {form.mediaType === 'video' && form.video?.url && (
             <div className="position-absolute top-0 end-0 m-3">
               <Badge bg="danger">Video</Badge>
@@ -39,8 +40,7 @@ export default function HeroSlidePreviewCard({ form }: HeroSlidePreviewCardProps
                 : form.overlayPosition === 'center'
                   ? 'justify-content-center text-center'
                   : 'justify-content-end text-end'
-            }`}
-          >
+            }`}>
             <div style={{ maxWidth: 420 }}>
               {form.badgeText && (
                 <div className="mb-2">
@@ -52,10 +52,14 @@ export default function HeroSlidePreviewCard({ form }: HeroSlidePreviewCardProps
               {form.body && <p className="mb-3">{form.body}</p>}
               <div className="d-flex flex-wrap gap-2">
                 {form.ctaType !== 'none' && form.ctaLabel && (
-                  <Button variant="light" size="sm">{form.ctaLabel}</Button>
+                  <Button variant="light" size="sm">
+                    {form.ctaLabel}
+                  </Button>
                 )}
                 {form.secondaryCtaType !== 'none' && form.secondaryCtaLabel && (
-                  <Button variant="outline-light" size="sm">{form.secondaryCtaLabel}</Button>
+                  <Button variant="outline-light" size="sm">
+                    {form.secondaryCtaLabel}
+                  </Button>
                 )}
               </div>
               {form.stats && form.stats.length > 0 && (

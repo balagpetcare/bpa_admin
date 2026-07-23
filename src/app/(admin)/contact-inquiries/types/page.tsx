@@ -20,8 +20,16 @@ export default function ContactTypesPage() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
 
-  const openCreate = () => { setEditing(EMPTY); setSaveError(''); setModalOpen(true) }
-  const openEdit = (t: ContactType) => { setEditing({ ...t }); setSaveError(''); setModalOpen(true) }
+  const openCreate = () => {
+    setEditing(EMPTY)
+    setSaveError('')
+    setModalOpen(true)
+  }
+  const openEdit = (t: ContactType) => {
+    setEditing({ ...t })
+    setSaveError('')
+    setModalOpen(true)
+  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -55,10 +63,7 @@ export default function ContactTypesPage() {
     <div className="container-fluid">
       <PageHeader
         title="Contact Types"
-        breadcrumbs={[
-          { label: 'Contact Inquiries', href: '/contact-inquiries' },
-          { label: 'Contact Types' },
-        ]}
+        breadcrumbs={[{ label: 'Contact Inquiries', href: '/contact-inquiries' }, { label: 'Contact Types' }]}
         action={
           <Button size="sm" onClick={openCreate}>
             <Icon icon="solar:add-circle-bold" className="me-1" /> Add Type
@@ -71,7 +76,9 @@ export default function ContactTypesPage() {
       <Card>
         <Card.Body>
           {loading ? (
-            <div className="text-center py-4"><Spinner /></div>
+            <div className="text-center py-4">
+              <Spinner />
+            </div>
           ) : !types?.length ? (
             <p className="text-muted text-center py-4">No contact types yet. Add one to get started.</p>
           ) : (
@@ -90,11 +97,15 @@ export default function ContactTypesPage() {
                 <tbody>
                   {types.map((t) => (
                     <tr key={t.id}>
-                      <td><code>{t.slug}</code></td>
+                      <td>
+                        <code>{t.slug}</code>
+                      </td>
                       <td>{t.labelEn}</td>
                       <td className="text-muted">{t.labelBn ?? '—'}</td>
                       <td>{t.sortOrder}</td>
-                      <td><Badge bg={t.isActive ? 'success' : 'secondary'}>{t.isActive ? 'Active' : 'Inactive'}</Badge></td>
+                      <td>
+                        <Badge bg={t.isActive ? 'success' : 'secondary'}>{t.isActive ? 'Active' : 'Inactive'}</Badge>
+                      </td>
                       <td>
                         <div className="d-flex gap-1">
                           <Button size="sm" variant="outline-primary" onClick={() => openEdit(t)}>
@@ -121,7 +132,9 @@ export default function ContactTypesPage() {
         <Modal.Body>
           {saveError && <div className="alert alert-danger">{saveError}</div>}
           <Form.Group className="mb-3">
-            <Form.Label>Slug <span className="text-danger">*</span></Form.Label>
+            <Form.Label>
+              Slug <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control
               value={editing.slug ?? ''}
               onChange={(e) => setEditing((d) => ({ ...d, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') }))}
@@ -130,7 +143,9 @@ export default function ContactTypesPage() {
             <Form.Text>Lowercase letters, numbers, hyphens only</Form.Text>
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Label (English) <span className="text-danger">*</span></Form.Label>
+            <Form.Label>
+              Label (English) <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control value={editing.labelEn ?? ''} onChange={(e) => setEditing((d) => ({ ...d, labelEn: e.target.value }))} />
           </Form.Group>
           <Form.Group className="mb-3">
@@ -139,13 +154,22 @@ export default function ContactTypesPage() {
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Description</Form.Label>
-            <Form.Control as="textarea" rows={2} value={editing.description ?? ''} onChange={(e) => setEditing((d) => ({ ...d, description: e.target.value }))} />
+            <Form.Control
+              as="textarea"
+              rows={2}
+              value={editing.description ?? ''}
+              onChange={(e) => setEditing((d) => ({ ...d, description: e.target.value }))}
+            />
           </Form.Group>
           <div className="row g-3">
             <div className="col">
               <Form.Group>
                 <Form.Label>Sort Order</Form.Label>
-                <Form.Control type="number" value={editing.sortOrder ?? 0} onChange={(e) => setEditing((d) => ({ ...d, sortOrder: parseInt(e.target.value) || 0 }))} />
+                <Form.Control
+                  type="number"
+                  value={editing.sortOrder ?? 0}
+                  onChange={(e) => setEditing((d) => ({ ...d, sortOrder: parseInt(e.target.value) || 0 }))}
+                />
               </Form.Group>
             </div>
             <div className="col d-flex align-items-end pb-1">
@@ -159,7 +183,9 @@ export default function ContactTypesPage() {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={() => setModalOpen(false)}>
+            Cancel
+          </Button>
           <Button onClick={handleSave} disabled={saving}>
             {saving ? <Spinner size="sm" /> : 'Save'}
           </Button>

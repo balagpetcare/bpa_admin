@@ -14,7 +14,15 @@ import type { CommunityZone, CommunityZoneStatus, ZoneClinicStatus } from '@/typ
 
 interface ZoneFormProps {
   zoneId?: string
-  initialValues?: Partial<ZoneCreatePayload & { publicVisible?: boolean, targetMembers?: number, priorityOrder?: number, clinicStatus?: string, expectedLaunchNote?: string }>
+  initialValues?: Partial<
+    ZoneCreatePayload & {
+      publicVisible?: boolean
+      targetMembers?: number
+      priorityOrder?: number
+      clinicStatus?: string
+      expectedLaunchNote?: string
+    }
+  >
 }
 
 const STATUS_OPTIONS: { value: CommunityZoneStatus; label: string }[] = [
@@ -63,8 +71,8 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
     status: (initialValues?.status ?? 'active') as CommunityZoneStatus,
   })
 
-  function set<K extends keyof typeof form>(key: K, value: typeof form[K]) {
-    setForm(f => ({ ...f, [key]: value }))
+  function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
+    setForm((f) => ({ ...f, [key]: value }))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -92,10 +100,7 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
       sortOrder: Number(form.sortOrder),
       status: form.status,
     }
-    const result = await mutate(
-      () => isEdit ? communityZonesApi.update(zoneId, payload) : communityZonesApi.create(payload),
-      undefined,
-    )
+    const result = await mutate(() => (isEdit ? communityZonesApi.update(zoneId, payload) : communityZonesApi.create(payload)), undefined)
     if (result) router.push('/community-care/zones')
   }
 
@@ -109,24 +114,36 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
       <Card>
         <Card.Body>
           <Form onSubmit={handleSubmit}>
-            <h5 className="mb-3 text-uppercase bg-light p-2"><Icon icon="solar:info-circle-bold" className="me-1" /> Basic Information</h5>
+            <h5 className="mb-3 text-uppercase bg-light p-2">
+              <Icon icon="solar:info-circle-bold" className="me-1" /> Basic Information
+            </h5>
             <Row className="g-3 mb-4">
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Zone Name <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Zone Name <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control value={form.name} onChange={(e) => set('name', e.target.value)} required />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Slug <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Slug <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control value={form.slug} onChange={(e) => set('slug', e.target.value)} required placeholder="e.g. dhaka-north" />
                 </Form.Group>
               </Col>
               <Col md={12}>
                 <Form.Group>
                   <Form.Label>Description / Covered Areas</Form.Label>
-                  <Form.Control as="textarea" rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="List major areas covered by this zone..." />
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={form.description}
+                    onChange={(e) => set('description', e.target.value)}
+                    placeholder="List major areas covered by this zone..."
+                  />
                 </Form.Group>
               </Col>
               <Col md={12}>
@@ -144,30 +161,40 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
               </Col>
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>City (text fallback) <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    City (text fallback) <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control value={form.city} onChange={(e) => set('city', e.target.value)} required placeholder="e.g. Dhaka" />
                   <Form.Text className="text-muted">Keep for legacy display</Form.Text>
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>District (text fallback) <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    District (text fallback) <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control value={form.district} onChange={(e) => set('district', e.target.value)} required placeholder="e.g. Dhaka District" />
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>Division (text fallback) <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Division (text fallback) <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control value={form.division} onChange={(e) => set('division', e.target.value)} required placeholder="e.g. Dhaka" />
                 </Form.Group>
               </Col>
             </Row>
 
-            <h5 className="mb-3 text-uppercase bg-light p-2"><Icon icon="solar:stethoscope-bold" className="me-1" /> Clinic & Demand Settings</h5>
+            <h5 className="mb-3 text-uppercase bg-light p-2">
+              <Icon icon="solar:stethoscope-bold" className="me-1" /> Clinic & Demand Settings
+            </h5>
             <Row className="g-3 mb-4">
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>Target Members (Card Holders) <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Target Members (Card Holders) <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control type="number" min={1} value={form.targetMembers} onChange={(e) => set('targetMembers', e.target.value)} required />
                   <Form.Text className="text-muted">Used for progress tracking</Form.Text>
                 </Form.Group>
@@ -176,7 +203,11 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
                 <Form.Group>
                   <Form.Label>Clinic Status</Form.Label>
                   <Form.Select value={form.clinicStatus} onChange={(e) => set('clinicStatus', e.target.value as ZoneClinicStatus)}>
-                    {CLINIC_STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    {CLINIC_STATUS_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -190,11 +221,15 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
               <Col md={12}>
                 <Form.Group>
                   <Form.Label>Expected Launch Note</Form.Label>
-                  <Form.Control value={form.expectedLaunchNote} onChange={(e) => set('expectedLaunchNote', e.target.value)} placeholder="e.g. Launching in Q3 2026" />
+                  <Form.Control
+                    value={form.expectedLaunchNote}
+                    onChange={(e) => set('expectedLaunchNote', e.target.value)}
+                    placeholder="e.g. Launching in Q3 2026"
+                  />
                 </Form.Group>
               </Col>
               <Col md={12}>
-                <Form.Check 
+                <Form.Check
                   type="switch"
                   id="public-visible-switch"
                   label="Visible in Public Purchase Flow"
@@ -204,23 +239,40 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
               </Col>
             </Row>
 
-            <h5 className="mb-3 text-uppercase bg-light p-2"><Icon icon="solar:wad-of-money-bold" className="me-1" /> Legacy Fund Tracking</h5>
+            <h5 className="mb-3 text-uppercase bg-light p-2">
+              <Icon icon="solar:wad-of-money-bold" className="me-1" /> Legacy Fund Tracking
+            </h5>
             <Row className="g-3 mb-4">
               <Col md={6}>
                 <Form.Group>
                   <Form.Label>Target Contributors (Legacy)</Form.Label>
-                  <Form.Control type="number" min={1} value={form.targetContributors} onChange={(e) => set('targetContributors', e.target.value)} required />
+                  <Form.Control
+                    type="number"
+                    min={1}
+                    value={form.targetContributors}
+                    onChange={(e) => set('targetContributors', e.target.value)}
+                    required
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
                   <Form.Label>Target Amount (BDT) (Legacy)</Form.Label>
-                  <Form.Control type="number" min={0} step="0.01" value={form.targetAmountBdt} onChange={(e) => set('targetAmountBdt', e.target.value)} required />
+                  <Form.Control
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={form.targetAmountBdt}
+                    onChange={(e) => set('targetAmountBdt', e.target.value)}
+                    required
+                  />
                 </Form.Group>
               </Col>
             </Row>
 
-            <h5 className="mb-3 text-uppercase bg-light p-2"><Icon icon="solar:map-point-bold" className="me-1" /> Location & Contact</h5>
+            <h5 className="mb-3 text-uppercase bg-light p-2">
+              <Icon icon="solar:map-point-bold" className="me-1" /> Location & Contact
+            </h5>
             <Row className="g-3">
               <Col md={6}>
                 <Form.Group>
@@ -237,7 +289,11 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
               <Col md={12}>
                 <Form.Group>
                   <Form.Label>Map Embed URL</Form.Label>
-                  <Form.Control value={form.mapEmbedUrl} onChange={(e) => set('mapEmbedUrl', e.target.value)} placeholder="Google Maps embed iframe src" />
+                  <Form.Control
+                    value={form.mapEmbedUrl}
+                    onChange={(e) => set('mapEmbedUrl', e.target.value)}
+                    placeholder="Google Maps embed iframe src"
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
@@ -250,7 +306,11 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
                 <Form.Group>
                   <Form.Label>Admin Status</Form.Label>
                   <Form.Select value={form.status} onChange={(e) => set('status', e.target.value as CommunityZoneStatus)}>
-                    {STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    {STATUS_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -261,7 +321,9 @@ export default function ZoneForm({ zoneId, initialValues }: ZoneFormProps) {
                 <Icon icon="solar:check-circle-bold" className="me-1" />
                 {isEdit ? 'Update Zone Demand & Priority' : 'Create Zone'}
               </Button>
-              <Button variant="outline-secondary" size="lg" onClick={() => router.push('/community-care/zones')}>Cancel</Button>
+              <Button variant="outline-secondary" size="lg" onClick={() => router.push('/community-care/zones')}>
+                Cancel
+              </Button>
             </div>
           </Form>
         </Card.Body>

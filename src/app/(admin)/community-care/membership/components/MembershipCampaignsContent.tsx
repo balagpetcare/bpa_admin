@@ -110,8 +110,12 @@ function CampaignListSkeleton() {
             <div className="placeholder col-7 mb-2" />
             <div className="placeholder col-8" />
           </td>
-          <td><div className="placeholder col-7" /></td>
-          <td><div className="placeholder col-8 ms-auto" /></td>
+          <td>
+            <div className="placeholder col-7" />
+          </td>
+          <td>
+            <div className="placeholder col-8 ms-auto" />
+          </td>
         </tr>
       ))}
     </>
@@ -179,7 +183,10 @@ function CampaignActions({
             </Dropdown.Item>
           )}
           {canRead && (
-            <Dropdown.Item as={Link} href={`/community-care/membership/campaigns/${campaign.id}/edit?step=review`} className="d-flex align-items-center gap-2">
+            <Dropdown.Item
+              as={Link}
+              href={`/community-care/membership/campaigns/${campaign.id}/edit?step=review`}
+              className="d-flex align-items-center gap-2">
               <Icon icon="solar:eye-bold" className="text-info" />
               Preview
             </Dropdown.Item>
@@ -236,16 +243,19 @@ export default function MembershipCampaignsContent() {
   const canDelete = can('membership_campaigns:delete')
   const visibleRange = data?.meta ? getVisibleRange(data.meta.page, data.meta.limit, data.meta.total) : '0 of 0'
   const totalLabel = `${total ?? 0} campaign${total === 1 ? '' : 's'}`
-  const statusOptions = useMemo(() => ([
-    { value: '', label: 'All Statuses' },
-    { value: 'draft', label: 'Draft' },
-    { value: 'scheduled', label: 'Scheduled' },
-    { value: 'application_open', label: 'Application Open' },
-    { value: 'application_closed', label: 'Paused' },
-    { value: 'published', label: 'Published' },
-    { value: 'archived', label: 'Archived' },
-    { value: 'cancelled', label: 'Cancelled' },
-  ]), [])
+  const statusOptions = useMemo(
+    () => [
+      { value: '', label: 'All Statuses' },
+      { value: 'draft', label: 'Draft' },
+      { value: 'scheduled', label: 'Scheduled' },
+      { value: 'application_open', label: 'Application Open' },
+      { value: 'application_closed', label: 'Paused' },
+      { value: 'published', label: 'Published' },
+      { value: 'archived', label: 'Archived' },
+      { value: 'cancelled', label: 'Cancelled' },
+    ],
+    [],
+  )
 
   async function handleDelete(campaign: MembershipCampaign) {
     if (!(await confirmDelete('this campaign'))) return
@@ -278,13 +288,22 @@ export default function MembershipCampaignsContent() {
       <PageHeader
         title="Campaign Plans & Offers"
         breadcrumbs={[{ label: 'Membership Management' }, { label: 'Campaign Plans & Offers' }]}
-        action={can('membership_campaigns:create') ? <Link href="/community-care/membership/campaigns/create" className="btn btn-primary"><Icon icon="solar:add-circle-bold" className="me-1" />New Campaign</Link> : undefined}
+        action={
+          can('membership_campaigns:create') ? (
+            <Link href="/community-care/membership/campaigns/create" className="btn btn-primary">
+              <Icon icon="solar:add-circle-bold" className="me-1" />
+              New Campaign
+            </Link>
+          ) : undefined
+        }
       />
       {hasApiError && (
         <div className="mb-3">
           <ApiErrorAlert error={error as ApiError | null} />
           <div className="mt-2">
-            <Button variant="outline-danger" size="sm" onClick={refetch}>Retry</Button>
+            <Button variant="outline-danger" size="sm" onClick={refetch}>
+              Retry
+            </Button>
           </div>
         </div>
       )}
@@ -299,18 +318,32 @@ export default function MembershipCampaignsContent() {
             <Row className="g-2 align-items-center">
               <Col xs={12} lg={5}>
                 <InputGroup>
-                  <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
+                  <InputGroup.Text>
+                    <Icon icon="solar:magnifer-bold" />
+                  </InputGroup.Text>
                   <Form.Control
                     value={search}
-                    onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+                    onChange={(e) => {
+                      setSearch(e.target.value)
+                      setPage(1)
+                    }}
                     placeholder="Search by title or slug..."
                     aria-label="Search campaigns by English title, Bangla title, or slug"
                   />
                 </InputGroup>
               </Col>
               <Col xs={12} sm={6} lg={3}>
-                <Form.Select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1) }}>
-                  {statusOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                <Form.Select
+                  value={status}
+                  onChange={(e) => {
+                    setStatus(e.target.value)
+                    setPage(1)
+                  }}>
+                  {statusOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </Form.Select>
               </Col>
               <Col xs={12} sm={6} lg={2}>
@@ -327,7 +360,8 @@ export default function MembershipCampaignsContent() {
                 )}
                 {can('membership_campaigns:create') && (
                   <Link href="/community-care/membership/campaigns/create" className="btn btn-primary btn-sm">
-                    <Icon icon="solar:add-circle-bold" className="me-1" />New Campaign
+                    <Icon icon="solar:add-circle-bold" className="me-1" />
+                    New Campaign
                   </Link>
                 )}
               </Col>
@@ -369,26 +403,19 @@ export default function MembershipCampaignsContent() {
             ) : showEmptyState ? (
               <div className="text-center py-5">
                 <Icon icon="solar:megaphone-bold-duotone" width="64" height="64" className="text-muted mb-3" style={{ opacity: 0.5 }} />
-                <h5 className="fw-semibold text-dark mb-2">
-                  {hasFilters ? 'No campaigns match your filters' : 'No membership campaigns found'}
-                </h5>
+                <h5 className="fw-semibold text-dark mb-2">{hasFilters ? 'No campaigns match your filters' : 'No membership campaigns found'}</h5>
                 <p className="text-muted mb-4">
-                  {hasFilters
-                    ? 'Try adjusting your search or filter criteria.'
-                    : 'Create your first membership campaign to get started.'}
+                  {hasFilters ? 'Try adjusting your search or filter criteria.' : 'Create your first membership campaign to get started.'}
                 </p>
                 {hasFilters ? (
-                  <Button
-                    variant="outline-secondary"
-                    size="sm"
-                    onClick={clearFilters}
-                  >
+                  <Button variant="outline-secondary" size="sm" onClick={clearFilters}>
                     Clear Filters
                   </Button>
                 ) : (
                   can('membership_campaigns:create') && (
                     <Link href="/community-care/membership/campaigns/create" className="btn btn-primary btn-sm">
-                      <Icon icon="solar:add-circle-bold" className="me-1" />Create New Campaign
+                      <Icon icon="solar:add-circle-bold" className="me-1" />
+                      Create New Campaign
                     </Link>
                   )
                 )}
@@ -404,12 +431,19 @@ export default function MembershipCampaignsContent() {
                           <th style={{ width: '26%' }}>Schedule</th>
                           <th style={{ width: '18%' }}>Status</th>
                           <th style={{ width: '12%' }}>Updated</th>
-                          <th className="text-end" style={{ width: '10%' }}>Actions</th>
+                          <th className="text-end" style={{ width: '10%' }}>
+                            Actions
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
                         {campaigns.map((item) => {
-                          const offerState = getScheduleState(item.offerStartAt, item.offerEndAt, { active: 'Active', upcoming: 'Upcoming', expired: 'Expired' }, new Date())
+                          const offerState = getScheduleState(
+                            item.offerStartAt,
+                            item.offerEndAt,
+                            { active: 'Active', upcoming: 'Upcoming', expired: 'Expired' },
+                            new Date(),
+                          )
                           const applicationState = getApplicationState(item.applicationStartAt, item.applicationEndAt)
                           const isRowActionLoading = actionLoading && actionTargetId === item.id
 
@@ -419,11 +453,7 @@ export default function MembershipCampaignsContent() {
                                 <div className="fw-semibold text-dark">{item.titleEn}</div>
                                 <div className="small text-muted mb-1">{item.titleBn || 'No Bangla title'}</div>
                                 <div className="small text-muted d-flex align-items-center gap-2">
-                                  <code
-                                    className="text-secondary d-inline-block text-truncate"
-                                    style={{ maxWidth: '100%' }}
-                                    title={item.slug}
-                                  >
+                                  <code className="text-secondary d-inline-block text-truncate" style={{ maxWidth: '100%' }} title={item.slug}>
                                     {item.slug}
                                   </code>
                                 </div>
@@ -431,11 +461,15 @@ export default function MembershipCampaignsContent() {
                               <td>
                                 <div className="d-grid gap-2">
                                   <div>
-                                    <div className="text-muted text-uppercase fw-semibold" style={{ fontSize: '0.7rem', letterSpacing: '0.04em' }}>Offer</div>
+                                    <div className="text-muted text-uppercase fw-semibold" style={{ fontSize: '0.7rem', letterSpacing: '0.04em' }}>
+                                      Offer
+                                    </div>
                                     <div className="small">{formatDateRange(item.offerStartAt, item.offerEndAt)}</div>
                                   </div>
                                   <div>
-                                    <div className="text-muted text-uppercase fw-semibold" style={{ fontSize: '0.7rem', letterSpacing: '0.04em' }}>Apply</div>
+                                    <div className="text-muted text-uppercase fw-semibold" style={{ fontSize: '0.7rem', letterSpacing: '0.04em' }}>
+                                      Apply
+                                    </div>
                                     <div className="small">{formatDateRange(item.applicationStartAt, item.applicationEndAt)}</div>
                                   </div>
                                 </div>
@@ -449,8 +483,12 @@ export default function MembershipCampaignsContent() {
                                       variant={getStatusTone(item.status)}
                                     />
                                   </div>
-                                  <div className="small text-muted">Offer: <span className={`fw-semibold text-${offerState.tone}`}>{offerState.label}</span></div>
-                                  <div className="small text-muted">Applications: <span className={`fw-semibold text-${applicationState.tone}`}>{applicationState.label}</span></div>
+                                  <div className="small text-muted">
+                                    Offer: <span className={`fw-semibold text-${offerState.tone}`}>{offerState.label}</span>
+                                  </div>
+                                  <div className="small text-muted">
+                                    Applications: <span className={`fw-semibold text-${applicationState.tone}`}>{applicationState.label}</span>
+                                  </div>
                                 </div>
                               </td>
                               <td>
@@ -479,7 +517,12 @@ export default function MembershipCampaignsContent() {
 
                 <div className="d-grid gap-3 d-md-none">
                   {campaigns.map((item) => {
-                    const offerState = getScheduleState(item.offerStartAt, item.offerEndAt, { active: 'Active', upcoming: 'Upcoming', expired: 'Expired' }, new Date())
+                    const offerState = getScheduleState(
+                      item.offerStartAt,
+                      item.offerEndAt,
+                      { active: 'Active', upcoming: 'Upcoming', expired: 'Expired' },
+                      new Date(),
+                    )
                     const applicationState = getApplicationState(item.applicationStartAt, item.applicationEndAt)
                     const isCardActionLoading = actionLoading && actionTargetId === item.id
 
@@ -490,7 +533,9 @@ export default function MembershipCampaignsContent() {
                             <div className="min-w-0">
                               <div className="fw-semibold text-dark">{item.titleEn}</div>
                               <div className="small text-muted">{item.titleBn || 'No Bangla title'}</div>
-                              <code className="text-secondary d-block text-truncate mt-1" title={item.slug}>{item.slug}</code>
+                              <code className="text-secondary d-block text-truncate mt-1" title={item.slug}>
+                                {item.slug}
+                              </code>
                             </div>
                             <Dropdown align="end">
                               <Dropdown.Toggle size="sm" variant="outline-secondary" className="no-caret" disabled={isCardActionLoading}>
@@ -498,25 +543,37 @@ export default function MembershipCampaignsContent() {
                               </Dropdown.Toggle>
                               <Dropdown.Menu>
                                 {(canUpdate || canRead) && (
-                                  <Dropdown.Item as={Link} href={`/community-care/membership/campaigns/${item.id}/edit`} className="d-flex align-items-center gap-2">
+                                  <Dropdown.Item
+                                    as={Link}
+                                    href={`/community-care/membership/campaigns/${item.id}/edit`}
+                                    className="d-flex align-items-center gap-2">
                                     <Icon icon={canUpdate ? 'solar:pen-bold' : 'solar:eye-bold'} className="text-primary" />
                                     {canUpdate ? 'Edit campaign' : 'Open campaign'}
                                   </Dropdown.Item>
                                 )}
                                 {canRead && (
-                                  <Dropdown.Item as={Link} href={`/community-care/membership/campaigns/${item.id}/edit?step=review`} className="d-flex align-items-center gap-2">
+                                  <Dropdown.Item
+                                    as={Link}
+                                    href={`/community-care/membership/campaigns/${item.id}/edit?step=review`}
+                                    className="d-flex align-items-center gap-2">
                                     <Icon icon="solar:eye-bold" className="text-info" />
                                     Preview
                                   </Dropdown.Item>
                                 )}
-                                <Dropdown.Item className="d-flex align-items-center gap-2" onClick={() => handleCopySlug(item.slug)} disabled={isCardActionLoading}>
+                                <Dropdown.Item
+                                  className="d-flex align-items-center gap-2"
+                                  onClick={() => handleCopySlug(item.slug)}
+                                  disabled={isCardActionLoading}>
                                   <Icon icon="solar:copy-bold" className="text-secondary" />
                                   Copy slug
                                 </Dropdown.Item>
                                 {canDelete && (
                                   <>
                                     <Dropdown.Divider />
-                                    <Dropdown.Item className="d-flex align-items-center gap-2 text-danger" onClick={() => handleDelete(item)} disabled={isCardActionLoading}>
+                                    <Dropdown.Item
+                                      className="d-flex align-items-center gap-2 text-danger"
+                                      onClick={() => handleDelete(item)}
+                                      disabled={isCardActionLoading}>
                                       <Icon icon="solar:trash-bin-trash-bold" className="text-danger" />
                                       Delete
                                     </Dropdown.Item>
@@ -528,17 +585,25 @@ export default function MembershipCampaignsContent() {
 
                           <div className="d-flex align-items-center gap-2 flex-wrap">
                             <StatusBadge status={item.status} label={getPrimaryStatusLabel(item.status)} variant={getStatusTone(item.status)} />
-                            <span className="small text-muted">Offer: <span className={`fw-semibold text-${offerState.tone}`}>{offerState.label}</span></span>
-                            <span className="small text-muted">Applications: <span className={`fw-semibold text-${applicationState.tone}`}>{applicationState.label}</span></span>
+                            <span className="small text-muted">
+                              Offer: <span className={`fw-semibold text-${offerState.tone}`}>{offerState.label}</span>
+                            </span>
+                            <span className="small text-muted">
+                              Applications: <span className={`fw-semibold text-${applicationState.tone}`}>{applicationState.label}</span>
+                            </span>
                           </div>
 
                           <div className="small d-grid gap-2">
                             <div>
-                              <div className="text-muted text-uppercase fw-semibold" style={{ fontSize: '0.7rem', letterSpacing: '0.04em' }}>Offer</div>
+                              <div className="text-muted text-uppercase fw-semibold" style={{ fontSize: '0.7rem', letterSpacing: '0.04em' }}>
+                                Offer
+                              </div>
                               <div>{formatDateRange(item.offerStartAt, item.offerEndAt)}</div>
                             </div>
                             <div>
-                              <div className="text-muted text-uppercase fw-semibold" style={{ fontSize: '0.7rem', letterSpacing: '0.04em' }}>Applications</div>
+                              <div className="text-muted text-uppercase fw-semibold" style={{ fontSize: '0.7rem', letterSpacing: '0.04em' }}>
+                                Applications
+                              </div>
                               <div>{formatDateRange(item.applicationStartAt, item.applicationEndAt)}</div>
                             </div>
                             <div className="text-muted" title={formatDateTime(item.updatedAt)}>
@@ -549,10 +614,13 @@ export default function MembershipCampaignsContent() {
                           {(canUpdate || canRead) && (
                             <div className="d-grid">
                               <Link
-                                href={canUpdate ? `/community-care/membership/campaigns/${item.id}/edit` : `/community-care/membership/campaigns/${item.id}/edit?step=review`}
+                                href={
+                                  canUpdate
+                                    ? `/community-care/membership/campaigns/${item.id}/edit`
+                                    : `/community-care/membership/campaigns/${item.id}/edit?step=review`
+                                }
                                 className={`btn btn-soft-primary btn-sm${isCardActionLoading ? ' disabled' : ''}`}
-                                aria-disabled={isCardActionLoading}
-                              >
+                                aria-disabled={isCardActionLoading}>
                                 {canUpdate ? 'Edit Campaign' : 'View Campaign'}
                               </Link>
                             </div>
@@ -573,7 +641,7 @@ export default function MembershipCampaignsContent() {
                     hasNext={data.meta.hasNext}
                     onPageChange={setPage}
                     onLimitChange={(nextLimit) => {
-                      if (!PAGE_SIZE_OPTIONS.includes(nextLimit as typeof PAGE_SIZE_OPTIONS[number])) return
+                      if (!PAGE_SIZE_OPTIONS.includes(nextLimit as (typeof PAGE_SIZE_OPTIONS)[number])) return
                       setLimit(nextLimit)
                       setPage(1)
                     }}
@@ -588,4 +656,3 @@ export default function MembershipCampaignsContent() {
     </div>
   )
 }
-

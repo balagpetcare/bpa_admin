@@ -42,7 +42,7 @@ export default function PaymentDetailsModal({ payment, isOpen, onClose, onSynced
     }
   }
 
-  const canSync = payment.merchantTxnId && (payment.status === 'pending')
+  const canSync = payment.merchantTxnId && payment.status === 'pending'
 
   return (
     <Modal show={isOpen} onHide={onClose} size="lg" centered>
@@ -53,11 +53,15 @@ export default function PaymentDetailsModal({ payment, isOpen, onClose, onSynced
         <Row className="g-3 mb-4">
           <Col md={6}>
             <div className="text-muted small mb-1">Payment ID</div>
-            <code className="text-dark" style={{ fontSize: 12 }}>{payment.id}</code>
+            <code className="text-dark" style={{ fontSize: 12 }}>
+              {payment.id}
+            </code>
           </Col>
           <Col md={6}>
             <div className="text-muted small mb-1">Purpose</div>
-            <Badge bg="info" className="text-capitalize">{payment.purpose}</Badge>
+            <Badge bg="info" className="text-capitalize">
+              {payment.purpose}
+            </Badge>
           </Col>
 
           <Col md={6}>
@@ -92,17 +96,14 @@ export default function PaymentDetailsModal({ payment, isOpen, onClose, onSynced
           </Col>
         </Row>
 
-        {syncError && (
-          <div className="alert alert-danger py-2 small mb-3">{syncError}</div>
-        )}
+        {syncError && <div className="alert alert-danger py-2 small mb-3">{syncError}</div>}
 
         {payment.payload && (
           <div>
             <div className="text-muted small mb-1">Payload / Application Data</div>
             <pre
               className="bg-light border rounded p-3 small mb-0"
-              style={{ maxHeight: 250, overflow: 'auto', fontSize: 12, fontFamily: 'monospace' }}
-            >
+              style={{ maxHeight: 250, overflow: 'auto', fontSize: 12, fontFamily: 'monospace' }}>
               {JSON.stringify(payment.payload, null, 2)}
             </pre>
           </div>
@@ -110,20 +111,21 @@ export default function PaymentDetailsModal({ payment, isOpen, onClose, onSynced
       </Modal.Body>
       <Modal.Footer>
         {canSync && (
-          <Button
-            variant="outline-primary"
-            size="sm"
-            onClick={handleSync}
-            disabled={syncing}
-            className="me-auto"
-          >
-            {syncing
-              ? <><Spinner size="sm" className="me-1" /> Syncing…</>
-              : <><Icon icon="solar:refresh-bold" className="me-1" /> Sync with EPS</>
-            }
+          <Button variant="outline-primary" size="sm" onClick={handleSync} disabled={syncing} className="me-auto">
+            {syncing ? (
+              <>
+                <Spinner size="sm" className="me-1" /> Syncing…
+              </>
+            ) : (
+              <>
+                <Icon icon="solar:refresh-bold" className="me-1" /> Sync with EPS
+              </>
+            )}
           </Button>
         )}
-        <Button variant="secondary" onClick={onClose}>Close</Button>
+        <Button variant="secondary" onClick={onClose}>
+          Close
+        </Button>
       </Modal.Footer>
     </Modal>
   )

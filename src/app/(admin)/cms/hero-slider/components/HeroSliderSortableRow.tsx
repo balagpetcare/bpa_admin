@@ -33,16 +33,14 @@ export default function HeroSliderSortableRow({ slide, onDelete, onToggleActive 
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.55 : 1,
-      }}
-    >
+      }}>
       <td className="text-muted" style={{ width: 42 }}>
         <span
           {...attributes}
           {...listeners}
           className="d-inline-flex align-items-center justify-content-center"
           style={{ cursor: 'grab' }}
-          aria-label={`Reorder ${slide.title}`}
-        >
+          aria-label={`Reorder ${slide.title}`}>
           <Icon icon="solar:sort-vertical-bold" />
         </span>
       </td>
@@ -68,10 +66,16 @@ export default function HeroSliderSortableRow({ slide, onDelete, onToggleActive 
         </div>
       </td>
       <td>
-        <Badge bg="primary-subtle" text="primary" className="me-2">{slide.locale.toUpperCase()}</Badge>
-        <Badge bg="info-subtle" text="info">{slide.mediaType}</Badge>
+        <Badge bg="primary-subtle" text="primary" className="me-2">
+          {slide.locale.toUpperCase()}
+        </Badge>
+        <Badge bg="info-subtle" text="info">
+          {slide.mediaType}
+        </Badge>
       </td>
-      <td><HeroSlideStatusBadge status={slide.status} /></td>
+      <td>
+        <HeroSlideStatusBadge status={slide.status} />
+      </td>
       <td>
         <div className="small">{formatSchedule(slide.startAt, slide.endAt)}</div>
         <div className={`small ${slide.isScheduledNow ? 'text-success' : 'text-muted'}`}>

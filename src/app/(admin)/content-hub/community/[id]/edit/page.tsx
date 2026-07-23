@@ -19,7 +19,8 @@ export default function EditCommunityPostPage() {
   useEffect(() => {
     if (!id) return
     setLoading(true)
-    contentApi.getPostById(id)
+    contentApi
+      .getPostById(id)
       .then(setPost)
       .catch((err) => setError(err as ApiError))
       .finally(() => setLoading(false))

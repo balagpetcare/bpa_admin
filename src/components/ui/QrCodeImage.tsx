@@ -18,27 +18,25 @@ export default function QrCodeImage({ value, size = 200, className }: Props) {
 
   useEffect(() => {
     let cancelled = false
-    import('qrcode').then((mod) => {
-      return mod.default.toDataURL(value, { width: size, margin: 2, color: { dark: '#000000', light: '#ffffff' } })
-    }).then((url) => {
-      if (!cancelled) setDataUrl(url)
-    }).catch(() => {
-      if (!cancelled) setError(true)
-    })
-    return () => { cancelled = true }
+    import('qrcode')
+      .then((mod) => {
+        return mod.default.toDataURL(value, { width: size, margin: 2, color: { dark: '#000000', light: '#ffffff' } })
+      })
+      .then((url) => {
+        if (!cancelled) setDataUrl(url)
+      })
+      .catch(() => {
+        if (!cancelled) setError(true)
+      })
+    return () => {
+      cancelled = true
+    }
   }, [value, size])
 
   if (error) return <p className="text-danger small">QR generation failed</p>
   if (!dataUrl) return <div className="spinner-border spinner-border-sm text-secondary" role="status" />
 
   return (
-    <img
-      src={dataUrl}
-      alt="QR Code"
-      width={size}
-      height={size}
-      style={{ imageRendering: 'pixelated', display: 'block' }}
-      className={className}
-    />
+    <img src={dataUrl} alt="QR Code" width={size} height={size} style={{ imageRendering: 'pixelated', display: 'block' }} className={className} />
   )
 }

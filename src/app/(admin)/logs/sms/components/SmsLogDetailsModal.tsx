@@ -51,7 +51,9 @@ export default function SmsLogDetailsModal({ log, isOpen, onClose, onResend }: P
         <Row className="g-3 mb-4">
           <Col md={6}>
             <div className="text-muted small mb-1">Log ID</div>
-            <code className="text-dark" style={{ fontSize: 12 }}>{log.id}</code>
+            <code className="text-dark" style={{ fontSize: 12 }}>
+              {log.id}
+            </code>
           </Col>
           <Col md={6}>
             <div className="text-muted small mb-1">Idempotency Key</div>
@@ -71,7 +73,9 @@ export default function SmsLogDetailsModal({ log, isOpen, onClose, onResend }: P
           </Col>
           <Col md={4}>
             <div className="text-muted small mb-1">Module</div>
-            <Badge bg="light" text="dark">{log.module ?? '—'}</Badge>
+            <Badge bg="light" text="dark">
+              {log.module ?? '—'}
+            </Badge>
           </Col>
           <Col md={4}>
             <div className="text-muted small mb-1">Message Type</div>
@@ -83,11 +87,15 @@ export default function SmsLogDetailsModal({ log, isOpen, onClose, onResend }: P
           </Col>
           <Col md={4}>
             <div className="text-muted small mb-1">Attempts</div>
-            <span className="small">{log.attemptCount} / {log.maxAttempts}</span>
+            <span className="small">
+              {log.attemptCount} / {log.maxAttempts}
+            </span>
           </Col>
           <Col md={4}>
             <div className="text-muted small mb-1">Provider</div>
-            <Badge bg="secondary" className="text-uppercase">{log.provider}</Badge>
+            <Badge bg="secondary" className="text-uppercase">
+              {log.provider}
+            </Badge>
           </Col>
           <Col md={4}>
             <div className="text-muted small mb-1">Provider Ref</div>
@@ -141,7 +149,11 @@ export default function SmsLogDetailsModal({ log, isOpen, onClose, onResend }: P
                   <Badge bg={attempt.status === 'sent' ? 'success' : 'danger'}>{attempt.status}</Badge>
                 </div>
                 <div className="text-muted">{new Date(attempt.attemptedAt).toLocaleString()}</div>
-                {attempt.errorCode && <div className="text-danger mt-1">Error: {attempt.errorCode} — {attempt.errorMessage}</div>}
+                {attempt.errorCode && (
+                  <div className="text-danger mt-1">
+                    Error: {attempt.errorCode} — {attempt.errorMessage}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -155,8 +167,7 @@ export default function SmsLogDetailsModal({ log, isOpen, onClose, onResend }: P
               size="sm"
               disabled={resending || maxReached}
               onClick={() => handleResend(false)}
-              title={maxReached ? 'Max attempts reached. Use force resend.' : 'Resend this SMS'}
-            >
+              title={maxReached ? 'Max attempts reached. Use force resend.' : 'Resend this SMS'}>
               {resending ? <Spinner size="sm" className="me-1" /> : <Icon icon="solar:refresh-bold" className="me-1" />}
               Resend
             </Button>
@@ -166,17 +177,16 @@ export default function SmsLogDetailsModal({ log, isOpen, onClose, onResend }: P
                 size="sm"
                 disabled={resending}
                 onClick={() => handleResend(true)}
-                title="Force resend ignoring max attempts limit"
-              >
+                title="Force resend ignoring max attempts limit">
                 Force Resend
               </Button>
             )}
           </>
         )}
-        {log.isOtp && (
-          <span className="text-muted small me-auto">OTP messages cannot be resent by admin.</span>
-        )}
-        <Button variant="secondary" onClick={onClose}>Close</Button>
+        {log.isOtp && <span className="text-muted small me-auto">OTP messages cannot be resent by admin.</span>}
+        <Button variant="secondary" onClick={onClose}>
+          Close
+        </Button>
       </Modal.Footer>
     </Modal>
   )

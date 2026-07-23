@@ -29,15 +29,11 @@ export const usersApi = {
   list: (params?: UserListParams) =>
     api.get<PaginatedResult<AdminUser>>('/admin/users', params as Record<string, string | number | boolean | undefined>),
 
-  getById: (id: string) =>
-    api.get<AdminUser>(`/admin/users/${id}`),
+  getById: (id: string) => api.get<AdminUser>(`/admin/users/${id}`),
 
-  create: (dto: CreateUserDto) =>
-    api.post<AdminUser>('/admin/users', dto),
+  create: (dto: CreateUserDto) => api.post<AdminUser>('/admin/users', dto),
 
-  update: (id: string, dto: UpdateUserDto) =>
-    api.put<AdminUser>(`/admin/users/${id}`, dto),
+  update: (id: string, dto: UpdateUserDto) => api.put<AdminUser>(`/admin/users/${id}`, dto),
 
-  remove: (id: string) =>
-    api.delete<void>(`/admin/users/${id}`),
+  remove: (id: string) => api.delete<void>(`/admin/users/${id}`),
 }

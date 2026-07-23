@@ -1,89 +1,21 @@
 import type { NextAuthOptions } from 'next-auth'
 import type { OAuthConfig } from 'next-auth/providers/oauth'
 import type { TokenSet } from 'openid-client'
-import CredentialsProvider from 'next-auth/providers/credentials'
 import type { JWT } from 'next-auth/jwt'
-
-const BACKEND_API_URL = process.env['BACKEND_API_URL']
-
-if (!BACKEND_API_URL && process.env['NODE_ENV'] === 'production') {
-  throw new Error(
-    'BACKEND_API_URL environment variable must be set in production. ' +
-    'Example: https://api.bpa.org.bd/api/v1',
-  )
-}
-
-const BACKEND_API = BACKEND_API_URL ?? 'http://localhost:4000/api/v1'
-
-/**
- * The backend never returns a ready-made expiry timestamp — both
- * /auth/login and /auth/refresh send `expiresIn` as an env-style duration
- * string (e.g. "15m", "7d"; see bpa/api's JWT_ACCESS_EXPIRY and
- * src/modules/auth/utils/duration.util.ts parseDurationMs, which this
- * mirrors). Compute the absolute epoch-ms expiry ourselves from it.
- */
-const DURATION_UNIT_MS: Record<string, number> = {
-  ms: 1,
-  s: 1000,
-  m: 60_000,
-  h: 3_600_000,
-  d: 86_400_000,
-  w: 604_800_000,
-}
-
-function expiryFromNow(expiresIn: unknown): number {
-  const spec = String(expiresIn ?? '').trim()
-  const match = /^(\d+)(ms|s|m|h|d|w)$/i.exec(spec)
-  if (match) {
-    const amount = parseInt(match[1], 10)
-    const unit = DURATION_UNIT_MS[match[2].toLowerCase()]
-    if (unit) return Date.now() + amount * unit
-  }
-  // Fallback: treat as already-expired rather than silently caching forever.
-  return Date.now()
-}
-
-async function refreshAccessToken(token: JWT): Promise<JWT> {
-  try {
-    const res = await fetch(`${BACKEND_API}/auth/refresh`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken: token.refreshToken }),
-    })
-
-    const json = await res.json()
-
-    if (!res.ok || !json.success) {
-      return { ...token, error: 'RefreshTokenExpired' }
-    }
-
-    // /auth/refresh returns tokens flat on `data` (unlike /auth/login, which
-    // nests them under `data.tokens` — see authorize() below).
-    return {
-      ...token,
-      accessToken: json.data.accessToken,
-      refreshToken: json.data.refreshToken ?? token.refreshToken,
-      accessTokenExpires: expiryFromNow(json.data.expiresIn),
-      error: undefined,
-    }
-  } catch {
-    return { ...token, error: 'RefreshTokenExpired' }
-  }
-}
+import CredentialsProvider from 'next-auth/providers/credentials'
+import { randomBytes, createHash } from 'crypto'
 
 // ─── WPA Central Auth (Global Super Admin SSO) ──────────────────────────────
 //
 // Central Auth's public OAuth surface is split across two hosts/paths:
 //  - the *browser-facing* authorization page (a real login UI, not JSON):
-//    https://auth.worldpetsassociation.com/oauth/authorize
+//    {CENTRAL_AUTH_WEB_BASE}/oauth/authorize
 //  - the *server-to-server* API, under /api/v1/oauth/*, used for the token
 //    exchange, refresh, userinfo lookup and revoke.
-// These are fixed, publicly documented endpoints of the central identity
-// service (not per-deployment config), so they're hardcoded here rather than
-// pulled from env — only the client_id/client_secret for *this* registered
-// OAuth client are environment-specific.
-const CENTRAL_AUTH_WEB_BASE = 'https://auth.worldpetsassociation.com'
-const CENTRAL_AUTH_API_BASE = `${CENTRAL_AUTH_WEB_BASE}/api/v1`
+// Defaults to the production identity service, but overridable via env so
+// local dev can point at a locally running wpa_auth_web/wpa_auth_api.
+const CENTRAL_AUTH_WEB_BASE = process.env['CENTRAL_AUTH_WEB_URL'] || 'https://auth.worldpetsassociation.com'
+const CENTRAL_AUTH_API_BASE = process.env['CENTRAL_AUTH_API_URL'] || `${CENTRAL_AUTH_WEB_BASE}/api/v1`
 const CENTRAL_AUTH_AUTHORIZATION_URL = `${CENTRAL_AUTH_WEB_BASE}/oauth/authorize`
 const CENTRAL_AUTH_TOKEN_URL = `${CENTRAL_AUTH_API_BASE}/oauth/token`
 const CENTRAL_AUTH_USERINFO_URL = `${CENTRAL_AUTH_API_BASE}/oauth/userinfo`
@@ -115,11 +47,7 @@ interface CentralAuthProfile {
  * src/modules/oauth/oauth.service.ts — snake_case, expires_in as an integer
  * number of seconds (not a duration string like bpa/api's own tokens).
  */
-async function exchangeCentralAuthCode(
-  code: string,
-  redirectUri: string,
-  codeVerifier: string | undefined,
-): Promise<Record<string, unknown>> {
+async function exchangeCentralAuthCode(code: string, redirectUri: string, codeVerifier: string | undefined): Promise<Record<string, unknown>> {
   const res = await fetch(CENTRAL_AUTH_TOKEN_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -201,6 +129,99 @@ async function revokeCentralAuthToken(refreshToken: string | undefined): Promise
   }
 }
 
+const CENTRAL_AUTH_LOGIN_URL = `${CENTRAL_AUTH_API_BASE}/auth/login`
+const CENTRAL_AUTH_AUTHORIZE_API_URL = `${CENTRAL_AUTH_API_BASE}/oauth/authorize`
+
+function base64url(input: Buffer): string {
+  return input.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+/**
+ * Inline email/password sign-in. This does NOT re-implement credential
+ * checking in bpa_admin — it relays the credentials, server-side only, to
+ * Central Auth's own `/auth/login`, then drives the *same* OAuth
+ * authorization-code + PKCE exchange the "Continue with Central
+ * Authentication" button uses, just without a browser redirect through the
+ * hosted login page:
+ *
+ *   1. POST /auth/login {emailOrUsername, password, clientId} — Central Auth
+ *      verifies the password and returns a short-lived bearer accessToken.
+ *      This token is used for exactly one request (step 2, below) and is
+ *      never persisted or returned to the browser.
+ *   2. GET /oauth/authorize?...&code_challenge=...  with
+ *      `Authorization: Bearer <accessToken from step 1>` — for a
+ *      FIRST_PARTY_APP client (bpa-admin is registered as one) this
+ *      returns `{ code, state }` directly as JSON (see oauth.service.ts's
+ *      startAuthorization: first-party clients skip the consent screen).
+ *   3. POST /oauth/token — exchange that code the normal way (identical to
+ *      exchangeCentralAuthCode below), yielding the real client-bound
+ *      access/refresh tokens this app actually uses going forward.
+ *
+ * The end result is indistinguishable from a normal OAuth code-flow
+ * session: same client_id/redirect_uri/PKCE binding, same token shape. The
+ * password itself only ever travels browser -> this Next.js server ->
+ * Central Auth's API, is never logged, and is discarded once step 1
+ * returns.
+ */
+async function loginWithCentralAuthPassword(emailOrUsername: string, password: string) {
+  // Deliberately omit `clientId` here (unlike the comment above once
+  // suggested) — passing this app's client_id makes Central Auth sign the
+  // step-1 access token's audience as this client's own admin audience
+  // (e.g. "bpa-admin") for Global Super Admin principals, which excludes
+  // the default "bpa-mobile" audience and gets rejected by every OTHER
+  // endpoint's audience check, including the very next /oauth/authorize
+  // call below. wpa_auth_web's own hosted login never passes a downstream
+  // clientId to /auth/login either — this mirrors that working pattern.
+  const loginRes = await fetch(CENTRAL_AUTH_LOGIN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      emailOrUsername,
+      password,
+    }),
+  })
+  const loginJson = await loginRes.json()
+  if (!loginRes.ok || !loginJson.accessToken) {
+    throw new Error('Invalid email or password.')
+  }
+
+  const codeVerifier = base64url(randomBytes(32))
+  const codeChallenge = base64url(createHash('sha256').update(codeVerifier).digest())
+  const state = base64url(randomBytes(24))
+  const redirectUri = `${process.env['ADMIN_PANEL_URL'] || process.env['NEXTAUTH_URL'] || 'http://localhost:3001'}/api/auth/callback/central-auth`
+
+  const authorizeUrl = new URL(CENTRAL_AUTH_AUTHORIZE_API_URL)
+  authorizeUrl.searchParams.set('client_id', process.env['CENTRAL_AUTH_CLIENT_ID'] ?? '')
+  authorizeUrl.searchParams.set('redirect_uri', redirectUri)
+  authorizeUrl.searchParams.set('response_type', 'code')
+  authorizeUrl.searchParams.set('scope', 'openid')
+  authorizeUrl.searchParams.set('state', state)
+  authorizeUrl.searchParams.set('code_challenge', codeChallenge)
+  authorizeUrl.searchParams.set('code_challenge_method', 'S256')
+
+  const authorizeRes = await fetch(authorizeUrl, {
+    headers: { Authorization: `Bearer ${loginJson.accessToken}` },
+  })
+  const authorizeJson = await authorizeRes.json()
+  if (!authorizeRes.ok || authorizeJson.requiresConsent || !authorizeJson.code) {
+    // Never surface backend detail — this is an unexpected server-side
+    // condition, not a credential problem (those already threw above).
+    throw new Error('Central Auth sign-in could not be completed.')
+  }
+
+  const tokenJson = await exchangeCentralAuthCode(authorizeJson.code, redirectUri, codeVerifier)
+
+  const userinfoRes = await fetch(CENTRAL_AUTH_USERINFO_URL, {
+    headers: { Authorization: `Bearer ${tokenJson.access_token}` },
+  })
+  const profile: CentralAuthProfile = await userinfoRes.json()
+  if (!userinfoRes.ok || !profile.sub) {
+    throw new Error('Central Auth sign-in could not be completed.')
+  }
+
+  return { tokenJson, profile }
+}
+
 const centralAuthProvider: OAuthConfig<CentralAuthProfile> = {
   id: 'central-auth',
   name: 'WPA Central Auth',
@@ -242,8 +263,18 @@ const centralAuthProvider: OAuthConfig<CentralAuthProfile> = {
 
 export const options: NextAuthOptions = {
   providers: [
+    // Global Super Admin SSO — the only credential entry point for this
+    // admin panel. See the "WPA Central Auth" comment block above for the
+    // endpoint layout and why the token exchange is hand-rolled.
+    centralAuthProvider,
+
+    // Inline email/password form on this app's own sign-in page. Credential
+    // verification still happens entirely inside Central Auth (see
+    // loginWithCentralAuthPassword above) — this provider only relays the
+    // request and completes the same OAuth code+PKCE exchange server-side.
     CredentialsProvider({
-      name: 'BPA Admin',
+      id: 'central-auth-password',
+      name: 'Central Authentication',
       credentials: {
         email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' },
@@ -251,58 +282,19 @@ export const options: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null
 
-        const res = await fetch(`${BACKEND_API}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: credentials.email,
-            password: credentials.password,
-          }),
-        })
+        const { tokenJson, profile } = await loginWithCentralAuthPassword(credentials.email, credentials.password)
 
-        const json = await res.json()
-
-        if (!res.ok || !json.success) {
-          throw new Error(json.error?.message ?? 'Invalid credentials')
-        }
-
-        // /auth/login nests tokens under `data.tokens` and returns a single
-        // `role` string (not `roles`, not a top-level `name`) — see
-        // AuthResponse / AuthUserResponse / AuthTokensResponse in
-        // bpa/api's src/modules/auth/types/auth.interfaces.ts. The previous
-        // version of this code destructured accessToken/refreshToken/
-        // accessTokenExpires straight off `data`, which don't exist there,
-        // so every login silently produced a session with no real tokens —
-        // the very next jwt() callback treated it as already expired and
-        // tried to refresh with an undefined refresh token, which fails
-        // immediately (confirmed live: /api/auth/session showed
-        // error: "RefreshTokenExpired" seconds after a correct-password
-        // login). This is the confirmed root cause of the reported
-        // login/session-expiry issue.
-        const { user, tokens } = json.data
-        const { accessToken, refreshToken, expiresIn } = tokens
-
-        // Permissions are intentionally excluded from the session token.
-        // Including them (~32 KB for super_admin) produces a JWT that exceeds
-        // the 4 KB cookie limit, causing Nginx 502 errors.
-        // Permissions are loaded on-demand via /api/proxy/permissions when needed.
         return {
-          id: user.id,
-          name: [user.firstName, user.lastName].filter(Boolean).join(' '),
-          email: user.email,
-          roles: user.role ? [user.role] : [],
-          accessToken,
-          refreshToken,
-          accessTokenExpires: expiryFromNow(expiresIn),
+          id: profile.sub,
+          name: profile.name || profile.preferred_username || profile.email || 'WPA Central Auth User',
+          email: profile.email ?? '',
+          roles: Array.isArray(profile.roles) ? profile.roles : [],
+          accessToken: tokenJson.access_token as string,
+          refreshToken: tokenJson.refresh_token as string,
+          accessTokenExpires: expiryFromSeconds(tokenJson.expires_in),
         }
       },
     }),
-
-    // Global Super Admin SSO. Purely additive: local email/password sign-in
-    // above is untouched and remains the required fallback. See the
-    // "WPA Central Auth" comment block above for the endpoint layout and why
-    // the token exchange is hand-rolled.
-    centralAuthProvider,
   ],
 
   secret: process.env['NEXTAUTH_SECRET'],
@@ -340,10 +332,10 @@ export const options: NextAuthOptions = {
         }
       }
 
-      if (account?.provider === 'credentials' && user) {
+      if (account?.provider === 'central-auth-password' && user) {
         return {
           ...token,
-          authProvider: 'local',
+          authProvider: 'central-auth',
           accessToken: user.accessToken ?? '',
           refreshToken: user.refreshToken ?? '',
           accessTokenExpires: user.accessTokenExpires ?? Date.now(),
@@ -361,7 +353,7 @@ export const options: NextAuthOptions = {
         return token
       }
 
-      return token.authProvider === 'central-auth' ? refreshCentralAuthToken(token) : refreshAccessToken(token)
+      return refreshCentralAuthToken(token)
     },
 
     async session({ session, token }) {
@@ -376,13 +368,9 @@ export const options: NextAuthOptions = {
 
   events: {
     // Revoke the Central Auth refresh token server-side before the
-    // NextAuth session cookie is cleared. Local-login sessions have nothing
-    // to revoke on this side (bpa/api has no equivalent revoke endpoint),
-    // so this is a no-op for them.
+    // NextAuth session cookie is cleared.
     async signOut({ token }) {
-      if (token?.authProvider === 'central-auth') {
-        await revokeCentralAuthToken(token.refreshToken)
-      }
+      await revokeCentralAuthToken(token?.refreshToken)
     },
   },
 }

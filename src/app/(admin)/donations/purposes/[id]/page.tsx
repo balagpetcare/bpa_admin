@@ -12,7 +12,12 @@ export default function EditPurposePage() {
   const { data: purposes, loading } = useApi(fn, [id])
   const purpose = purposes?.find((p) => p.id === id)
 
-  if (loading) return <div className="d-flex justify-content-center p-5"><div className="spinner-border text-primary" /></div>
+  if (loading)
+    return (
+      <div className="d-flex justify-content-center p-5">
+        <div className="spinner-border text-primary" />
+      </div>
+    )
   if (!purpose) return null
 
   return <PurposeForm purposeId={id} initial={purpose} />

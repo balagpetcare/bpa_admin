@@ -63,12 +63,26 @@ export default function SeoRoutesTable({ data, loading, onEdit, onDelete }: SeoR
         cell: ({ row }) => (
           <div className="d-flex gap-1">
             {can('seo:update') && (
-              <Button variant="soft-primary" size="sm" title="Edit" onClick={(e) => { e.stopPropagation(); onEdit(row.original) }}>
+              <Button
+                variant="soft-primary"
+                size="sm"
+                title="Edit"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onEdit(row.original)
+                }}>
                 <Icon icon="solar:pen-bold" />
               </Button>
             )}
             {can('seo:delete') && (
-              <Button variant="soft-danger" size="sm" title="Delete" onClick={(e) => { e.stopPropagation(); onDelete(row.original) }}>
+              <Button
+                variant="soft-danger"
+                size="sm"
+                title="Delete"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onDelete(row.original)
+                }}>
                 <Icon icon="solar:trash-bin-trash-bold" />
               </Button>
             )}
@@ -98,11 +112,7 @@ export default function SeoRoutesTable({ data, loading, onEdit, onDelete }: SeoR
             {data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length}>
-                  <EmptyState
-                    icon="solar:global-bold-duotone"
-                    title="No SEO entries yet"
-                    description="Add SEO metadata for your site's pages."
-                  />
+                  <EmptyState icon="solar:global-bold-duotone" title="No SEO entries yet" description="Add SEO metadata for your site's pages." />
                 </td>
               </tr>
             ) : (

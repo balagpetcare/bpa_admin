@@ -5,8 +5,8 @@ import type { FileCategory, MediaFile } from '@/types/bpa.types'
  * Shared utility for resolving media URLs consistently across the admin panel.
  */
 export function getMediaImageUrl(media: any): string {
-  if (!media) return 'https://placehold.co/600x400?text=No+Media';
-  return resolveMediaSource(media) ?? 'https://placehold.co/600x400?text=Invalid+Media';
+  if (!media) return 'https://placehold.co/600x400?text=No+Media'
+  return resolveMediaSource(media) ?? 'https://placehold.co/600x400?text=Invalid+Media'
 }
 
 // ─── File-type classification (images, docs, archives, video) ─────
@@ -19,10 +19,7 @@ export function getMediaImageUrl(media: any): string {
 export type MediaPreviewType = 'image' | 'svg' | 'video' | 'pdf' | 'document' | 'archive' | 'unknown'
 
 /** Any object that carries enough info to classify — a MediaFile, a CampaignMedia item, or a loose shape from an older API response. */
-type MediaLike =
-  | (Partial<MediaFile> & { mediaFile?: Partial<MediaFile> })
-  | null
-  | undefined
+type MediaLike = (Partial<MediaFile> & { mediaFile?: Partial<MediaFile> }) | null | undefined
 
 function resolveFile(media: MediaLike): Partial<MediaFile> | undefined {
   if (!media) return undefined
@@ -122,9 +119,13 @@ export function getFileTypeLabel(media: MediaLike): string {
   const type = getMediaPreviewType(media)
   if (ext) return `${ext.toUpperCase()} file`
   switch (type) {
-    case 'archive': return 'Archive file'
-    case 'document': return 'Document'
-    case 'video': return 'Video'
-    default: return 'File'
+    case 'archive':
+      return 'Archive file'
+    case 'document':
+      return 'Document'
+    case 'video':
+      return 'Video'
+    default:
+      return 'File'
   }
 }

@@ -36,11 +36,17 @@ const EMPTY: Partial<DonationQrCode> = {
 }
 
 const TYPE_VARIANT: Record<string, string> = {
-  general: 'primary', purpose: 'success', campaign: 'info', source: 'warning',
+  general: 'primary',
+  purpose: 'success',
+  campaign: 'info',
+  source: 'warning',
 }
 
 function slugify(s: string) {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 
 export default function QrCodesContent() {
@@ -91,7 +97,8 @@ export default function QrCodesContent() {
         breadcrumbs={[{ label: 'Donations' }, { label: 'QR Codes' }]}
         action={
           <Button variant="primary" size="sm" onClick={() => setShowCreate(true)}>
-            <Icon icon="solar:add-circle-bold" className="me-1" />Create QR Code
+            <Icon icon="solar:add-circle-bold" className="me-1" />
+            Create QR Code
           </Button>
         }
       />
@@ -107,7 +114,8 @@ export default function QrCodesContent() {
                   <h5 className="text-muted">No QR codes yet</h5>
                   <p className="text-muted small">Create your first QR code to start tracking donations by source.</p>
                   <Button variant="primary" size="sm" onClick={() => setShowCreate(true)}>
-                    <Icon icon="solar:add-circle-bold" className="me-1" />Create QR Code
+                    <Icon icon="solar:add-circle-bold" className="me-1" />
+                    Create QR Code
                   </Button>
                 </Card.Body>
               </Card>
@@ -126,7 +134,11 @@ export default function QrCodesContent() {
                       <small className="text-muted font-monospace">{code.slug}</small>
                     </div>
                     <div className="d-flex gap-1">
-                      <Button variant={code.isActive ? 'soft-success' : 'soft-secondary'} size="sm" title="Toggle Active" onClick={() => toggleActive(code)}>
+                      <Button
+                        variant={code.isActive ? 'soft-success' : 'soft-secondary'}
+                        size="sm"
+                        title="Toggle Active"
+                        onClick={() => toggleActive(code)}>
                         <Icon icon={code.isActive ? 'solar:check-circle-bold' : 'solar:close-circle-bold'} />
                       </Button>
                       <Button variant="soft-primary" size="sm" title="View QR" onClick={() => setQrPreview(code)}>
@@ -139,23 +151,44 @@ export default function QrCodesContent() {
                   </div>
 
                   {/* Target */}
-                  {code.campaign && <div className="text-muted small mb-1"><Icon icon="solar:target-bold" className="me-1" />Campaign: {code.campaign.titleEn}</div>}
-                  {code.purpose && <div className="text-muted small mb-1"><Icon icon="solar:heart-bold" className="me-1" />Purpose: {code.purpose.titleEn}</div>}
-                  {code.sourceTag && <div className="text-muted small mb-1"><Icon icon="solar:tag-bold" className="me-1" />Source: {code.sourceTag}</div>}
+                  {code.campaign && (
+                    <div className="text-muted small mb-1">
+                      <Icon icon="solar:target-bold" className="me-1" />
+                      Campaign: {code.campaign.titleEn}
+                    </div>
+                  )}
+                  {code.purpose && (
+                    <div className="text-muted small mb-1">
+                      <Icon icon="solar:heart-bold" className="me-1" />
+                      Purpose: {code.purpose.titleEn}
+                    </div>
+                  )}
+                  {code.sourceTag && (
+                    <div className="text-muted small mb-1">
+                      <Icon icon="solar:tag-bold" className="me-1" />
+                      Source: {code.sourceTag}
+                    </div>
+                  )}
 
                   {/* Stats */}
                   <div className="d-flex gap-3 mt-3 pt-3 border-top">
                     <div className="text-center flex-1">
                       <div className="fw-bold">{code.scanCount}</div>
-                      <div className="text-muted" style={{ fontSize: '11px' }}>Scans</div>
+                      <div className="text-muted" style={{ fontSize: '11px' }}>
+                        Scans
+                      </div>
                     </div>
                     <div className="text-center flex-1">
                       <div className="fw-bold">{code.donationCount}</div>
-                      <div className="text-muted" style={{ fontSize: '11px' }}>Donations</div>
+                      <div className="text-muted" style={{ fontSize: '11px' }}>
+                        Donations
+                      </div>
                     </div>
                     <div className="text-center flex-1">
                       <div className="fw-bold text-success">৳{Number(code.totalRaised || 0).toLocaleString()}</div>
-                      <div className="text-muted" style={{ fontSize: '11px' }}>Raised</div>
+                      <div className="text-muted" style={{ fontSize: '11px' }}>
+                        Raised
+                      </div>
                     </div>
                   </div>
                 </Card.Body>
@@ -173,27 +206,35 @@ export default function QrCodesContent() {
           </Modal.Header>
           <Modal.Body className="d-flex flex-column gap-3">
             <Form.Group>
-              <Form.Label>Label <span className="text-danger">*</span></Form.Label>
+              <Form.Label>
+                Label <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 value={form.label ?? ''}
-                onChange={(e) => { set('label', e.target.value); set('slug', slugify(e.target.value)) }}
+                onChange={(e) => {
+                  set('label', e.target.value)
+                  set('slug', slugify(e.target.value))
+                }}
                 placeholder="e.g. Clinic Poster April 2026"
                 required
               />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Slug (tracking key) <span className="text-danger">*</span></Form.Label>
-              <Form.Control
-                className="font-monospace"
-                value={form.slug ?? ''}
-                onChange={(e) => set('slug', slugify(e.target.value))}
-                required
-              />
+              <Form.Label>
+                Slug (tracking key) <span className="text-danger">*</span>
+              </Form.Label>
+              <Form.Control className="font-monospace" value={form.slug ?? ''} onChange={(e) => set('slug', slugify(e.target.value))} required />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Type <span className="text-danger">*</span></Form.Label>
+              <Form.Label>
+                Type <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Select value={form.type ?? 'general'} onChange={(e) => set('type', e.target.value)}>
-                {TYPE_OPTS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                {TYPE_OPTS.map((t) => (
+                  <option key={t.value} value={t.value}>
+                    {t.label}
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
             {form.type === 'purpose' && (
@@ -201,7 +242,11 @@ export default function QrCodesContent() {
                 <Form.Label>Purpose</Form.Label>
                 <Form.Select value={form.purposeId ?? ''} onChange={(e) => set('purposeId', e.target.value)}>
                   <option value="">— Select purpose —</option>
-                  {(purposes ?? []).map((p) => <option key={p.id} value={p.id}>{p.titleEn}</option>)}
+                  {(purposes ?? []).map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.titleEn}
+                    </option>
+                  ))}
                 </Form.Select>
               </Form.Group>
             )}
@@ -210,7 +255,11 @@ export default function QrCodesContent() {
                 <Form.Label>Campaign</Form.Label>
                 <Form.Select value={form.campaignId ?? ''} onChange={(e) => set('campaignId', e.target.value)}>
                   <option value="">— Select campaign —</option>
-                  {(campaigns ?? []).map((c) => <option key={c.id} value={c.id}>{c.titleEn}</option>)}
+                  {(campaigns ?? []).map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.titleEn}
+                    </option>
+                  ))}
                 </Form.Select>
               </Form.Group>
             )}
@@ -226,9 +275,18 @@ export default function QrCodesContent() {
             )}
           </Modal.Body>
           <Modal.Footer>
-            <Button type="button" variant="outline-secondary" size="sm" onClick={() => setShowCreate(false)}>Cancel</Button>
+            <Button type="button" variant="outline-secondary" size="sm" onClick={() => setShowCreate(false)}>
+              Cancel
+            </Button>
             <Button type="submit" variant="primary" size="sm" disabled={saving}>
-              {saving ? <><span className="spinner-border spinner-border-sm me-1" />Creating…</> : 'Create QR Code'}
+              {saving ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-1" />
+                  Creating…
+                </>
+              ) : (
+                'Create QR Code'
+              )}
             </Button>
           </Modal.Footer>
         </Form>
@@ -248,20 +306,28 @@ export default function QrCodesContent() {
             <div className="d-flex gap-3 justify-content-center mt-3 pt-3 border-top">
               <div>
                 <div className="fw-bold">{qrPreview.scanCount}</div>
-                <div className="text-muted" style={{ fontSize: '11px' }}>Scans</div>
+                <div className="text-muted" style={{ fontSize: '11px' }}>
+                  Scans
+                </div>
               </div>
               <div>
                 <div className="fw-bold">{qrPreview.donationCount}</div>
-                <div className="text-muted" style={{ fontSize: '11px' }}>Donations</div>
+                <div className="text-muted" style={{ fontSize: '11px' }}>
+                  Donations
+                </div>
               </div>
               <div>
                 <div className="fw-bold text-success">৳{Number(qrPreview.totalRaised || 0).toLocaleString()}</div>
-                <div className="text-muted" style={{ fontSize: '11px' }}>Raised</div>
+                <div className="text-muted" style={{ fontSize: '11px' }}>
+                  Raised
+                </div>
               </div>
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="outline-secondary" size="sm" onClick={() => setQrPreview(null)}>Close</Button>
+            <Button variant="outline-secondary" size="sm" onClick={() => setQrPreview(null)}>
+              Close
+            </Button>
             <a
               href={`data:image/png;base64,`}
               download={`qr-${qrPreview.slug}.png`}
@@ -274,9 +340,9 @@ export default function QrCodesContent() {
                   link.download = `bpa-qr-${qrPreview.slug}.png`
                   link.click()
                 }
-              }}
-            >
-              <Icon icon="solar:download-bold" className="me-1" />Download PNG
+              }}>
+              <Icon icon="solar:download-bold" className="me-1" />
+              Download PNG
             </a>
           </Modal.Footer>
         </Modal>

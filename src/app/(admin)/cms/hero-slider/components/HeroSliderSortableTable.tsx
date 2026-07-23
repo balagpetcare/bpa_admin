@@ -2,15 +2,7 @@
 
 import { useCallback, useState } from 'react'
 import { Alert, Table } from 'react-bootstrap'
-import {
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from '@dnd-kit/core'
+import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import LoadingOverlay from '@/components/ui/LoadingOverlay'
@@ -27,47 +19,41 @@ interface HeroSliderSortableTableProps {
   onReordered: (items: HeroSlideListItem[]) => void
 }
 
-export default function HeroSliderSortableTable({
-  data,
-  loading,
-  onDeleted,
-  onToggled,
-  onReordered,
-}: HeroSliderSortableTableProps) {
+export default function HeroSliderSortableTable({ data, loading, onDeleted, onToggled, onReordered }: HeroSliderSortableTableProps) {
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))
+
+  const handleDragEnd = useCallback(
+    async (event: DragEndEvent) => {
+      const { active, over } = event
+      if (!over || active.id === over.id) return
+
+      const oldIndex = data.findIndex((slide) => slide.id === active.id)
+      const newIndex = data.findIndex((slide) => slide.id === over.id)
+      if (oldIndex === -1 || newIndex === -1) return
+
+      const reordered = arrayMove(data, oldIndex, newIndex).map((slide, index) => ({
+        ...slide,
+        sortOrder: index,
+      }))
+
+      onReordered(reordered)
+      setSaving(true)
+      setSaveError(null)
+
+      try {
+        await heroSliderApi.reorder(reordered.map((slide) => slide.id))
+      } catch {
+        setSaveError('Failed to save the new order. Please try again.')
+        onReordered(data)
+      } finally {
+        setSaving(false)
+      }
+    },
+    [data, onReordered],
   )
-
-  const handleDragEnd = useCallback(async (event: DragEndEvent) => {
-    const { active, over } = event
-    if (!over || active.id === over.id) return
-
-    const oldIndex = data.findIndex((slide) => slide.id === active.id)
-    const newIndex = data.findIndex((slide) => slide.id === over.id)
-    if (oldIndex === -1 || newIndex === -1) return
-
-    const reordered = arrayMove(data, oldIndex, newIndex).map((slide, index) => ({
-      ...slide,
-      sortOrder: index,
-    }))
-
-    onReordered(reordered)
-    setSaving(true)
-    setSaveError(null)
-
-    try {
-      await heroSliderApi.reorder(reordered.map((slide) => slide.id))
-    } catch {
-      setSaveError('Failed to save the new order. Please try again.')
-      onReordered(data)
-    } finally {
-      setSaving(false)
-    }
-  }, [data, onReordered])
 
   return (
     <div>
@@ -80,12 +66,7 @@ export default function HeroSliderSortableTable({
 
       <LoadingOverlay loading={loading}>
         <div className="table-responsive">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-            modifiers={[restrictToVerticalAxis]}
-          >
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} modifiers={[restrictToVerticalAxis]}>
             <Table hover className="table-centered align-middle mb-0">
               <thead className="table-light">
                 <tr>
@@ -112,12 +93,7 @@ export default function HeroSliderSortableTable({
                 ) : (
                   <SortableContext items={data.map((slide) => slide.id)} strategy={verticalListSortingStrategy}>
                     {data.map((slide) => (
-                      <HeroSliderSortableRow
-                        key={slide.id}
-                        slide={slide}
-                        onDelete={onDeleted}
-                        onToggleActive={onToggled}
-                      />
+                      <HeroSliderSortableRow key={slide.id} slide={slide} onDelete={onDeleted} onToggleActive={onToggled} />
                     ))}
                   </SortableContext>
                 )}

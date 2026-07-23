@@ -71,19 +71,25 @@ export default function MembershipCampaignWizardFooter({ onSaveAsDraft, onSubmit
     <div className="position-sticky bottom-0 p-3 bg-white border-top shadow-sm mt-4" style={{ zIndex: 1000 }}>
       {shouldShowPublishBlockers && (publishBlockers.length > 0 || publishWarnings.length > 0) ? (
         <Alert variant={publishBlockers.length > 0 ? 'danger' : 'warning'} className="small mb-3">
-          <div className="fw-semibold mb-1">
-            {publishBlockers.length > 0 ? `${publishBlockers.length} blocker(s)` : 'Publish warnings'}
-          </div>
+          <div className="fw-semibold mb-1">{publishBlockers.length > 0 ? `${publishBlockers.length} blocker(s)` : 'Publish warnings'}</div>
           <div>{publishIssues[0]?.message}</div>
-          {publishIssues.length > 1 && <div className="small mt-1">{publishIssues.length - 1} additional issue(s) are listed in Review & Publish.</div>}
+          {publishIssues.length > 1 && (
+            <div className="small mt-1">{publishIssues.length - 1} additional issue(s) are listed in Review & Publish.</div>
+          )}
         </Alert>
       ) : (
         <div className="small text-muted mb-3 d-flex align-items-center">
           <Icon icon="solar:info-circle-outline" className="me-1" />
           Current publish state:{' '}
-          {(currentStatus === 'published' || currentStatus === 'application_open') 
-            ? (publishBlockers.length > 0 ? <span className="text-danger ms-1 fw-bold">Published, but configuration invalid</span> : 'Published') 
-            : 'Draft'}
+          {currentStatus === 'published' || currentStatus === 'application_open' ? (
+            publishBlockers.length > 0 ? (
+              <span className="text-danger ms-1 fw-bold">Published, but configuration invalid</span>
+            ) : (
+              'Published'
+            )
+          ) : (
+            'Draft'
+          )}
         </div>
       )}
 
@@ -119,14 +125,20 @@ export default function MembershipCampaignWizardFooter({ onSaveAsDraft, onSubmit
               )}
 
               {formStatus === 'published' ? (
-                <Button variant="warning" onClick={() => guardSubmit('application_closed')} disabled={isSaving || !can('membership_campaigns:update')}>
+                <Button
+                  variant="warning"
+                  onClick={() => guardSubmit('application_closed')}
+                  disabled={isSaving || !can('membership_campaigns:update')}>
                   Pause Campaign
                 </Button>
               ) : null}
 
               {formStatus === 'draft' && (
-                <Button variant="success" onClick={() => guardSubmit(isScheduled ? 'scheduled' : 'published')} disabled={isSaving || !can('membership_campaigns:update')}>
-                  {isSaving ? 'Publishing...' : (isScheduled ? 'Schedule Publication' : 'Publish Now')}
+                <Button
+                  variant="success"
+                  onClick={() => guardSubmit(isScheduled ? 'scheduled' : 'published')}
+                  disabled={isSaving || !can('membership_campaigns:update')}>
+                  {isSaving ? 'Publishing...' : isScheduled ? 'Schedule Publication' : 'Publish Now'}
                 </Button>
               )}
 
@@ -137,7 +149,10 @@ export default function MembershipCampaignWizardFooter({ onSaveAsDraft, onSubmit
               )}
 
               {formStatus === 'application_closed' && (
-                <Button variant="warning" onClick={() => guardSubmit('application_closed')} disabled={isSaving || !can('membership_campaigns:update')}>
+                <Button
+                  variant="warning"
+                  onClick={() => guardSubmit('application_closed')}
+                  disabled={isSaving || !can('membership_campaigns:update')}>
                   {isSaving ? 'Saving...' : 'Save Paused Campaign'}
                 </Button>
               )}
@@ -150,10 +165,16 @@ export default function MembershipCampaignWizardFooter({ onSaveAsDraft, onSubmit
             </>
           ) : (
             <>
-              <Button variant="outline-primary" onClick={onSaveAsDraft} disabled={isSaving || !can(isEdit ? 'membership_campaigns:update' : 'membership_campaigns:create')}>
+              <Button
+                variant="outline-primary"
+                onClick={onSaveAsDraft}
+                disabled={isSaving || !can(isEdit ? 'membership_campaigns:update' : 'membership_campaigns:create')}>
                 {isSaving ? 'Saving...' : 'Save Draft'}
               </Button>
-              <Button variant="primary" onClick={() => guardSubmit(formStatus)} disabled={isSaving || !can(isEdit ? 'membership_campaigns:update' : 'membership_campaigns:create')}>
+              <Button
+                variant="primary"
+                onClick={() => guardSubmit(formStatus)}
+                disabled={isSaving || !can(isEdit ? 'membership_campaigns:update' : 'membership_campaigns:create')}>
                 {isSaving ? 'Saving...' : 'Save & Continue'}
               </Button>
             </>

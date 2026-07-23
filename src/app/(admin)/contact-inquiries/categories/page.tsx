@@ -20,8 +20,16 @@ export default function InquiryCategoriesPage() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
 
-  const openCreate = () => { setEditing(EMPTY); setSaveError(''); setModalOpen(true) }
-  const openEdit = (c: InquiryCategory) => { setEditing({ ...c }); setSaveError(''); setModalOpen(true) }
+  const openCreate = () => {
+    setEditing(EMPTY)
+    setSaveError('')
+    setModalOpen(true)
+  }
+  const openEdit = (c: InquiryCategory) => {
+    setEditing({ ...c })
+    setSaveError('')
+    setModalOpen(true)
+  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -55,10 +63,7 @@ export default function InquiryCategoriesPage() {
     <div className="container-fluid">
       <PageHeader
         title="Inquiry Categories"
-        breadcrumbs={[
-          { label: 'Contact Inquiries', href: '/contact-inquiries' },
-          { label: 'Categories' },
-        ]}
+        breadcrumbs={[{ label: 'Contact Inquiries', href: '/contact-inquiries' }, { label: 'Categories' }]}
         action={
           <Button size="sm" onClick={openCreate}>
             <Icon icon="solar:add-circle-bold" className="me-1" /> Add Category
@@ -71,7 +76,9 @@ export default function InquiryCategoriesPage() {
       <Card>
         <Card.Body>
           {loading ? (
-            <div className="text-center py-4"><Spinner /></div>
+            <div className="text-center py-4">
+              <Spinner />
+            </div>
           ) : !categories?.length ? (
             <p className="text-muted text-center py-4">No categories yet.</p>
           ) : (
@@ -90,11 +97,15 @@ export default function InquiryCategoriesPage() {
                 <tbody>
                   {categories.map((c) => (
                     <tr key={c.id}>
-                      <td><code>{c.slug}</code></td>
+                      <td>
+                        <code>{c.slug}</code>
+                      </td>
                       <td>{c.labelEn}</td>
                       <td className="text-muted">{c.labelBn ?? '—'}</td>
                       <td>{c.sortOrder}</td>
-                      <td><Badge bg={c.isActive ? 'success' : 'secondary'}>{c.isActive ? 'Active' : 'Inactive'}</Badge></td>
+                      <td>
+                        <Badge bg={c.isActive ? 'success' : 'secondary'}>{c.isActive ? 'Active' : 'Inactive'}</Badge>
+                      </td>
                       <td>
                         <div className="d-flex gap-1">
                           <Button size="sm" variant="outline-primary" onClick={() => openEdit(c)}>
@@ -121,7 +132,9 @@ export default function InquiryCategoriesPage() {
         <Modal.Body>
           {saveError && <div className="alert alert-danger">{saveError}</div>}
           <Form.Group className="mb-3">
-            <Form.Label>Slug <span className="text-danger">*</span></Form.Label>
+            <Form.Label>
+              Slug <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control
               value={editing.slug ?? ''}
               onChange={(e) => setEditing((d) => ({ ...d, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') }))}
@@ -129,7 +142,9 @@ export default function InquiryCategoriesPage() {
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Label (English) <span className="text-danger">*</span></Form.Label>
+            <Form.Label>
+              Label (English) <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control value={editing.labelEn ?? ''} onChange={(e) => setEditing((d) => ({ ...d, labelEn: e.target.value }))} />
           </Form.Group>
           <Form.Group className="mb-3">
@@ -138,22 +153,38 @@ export default function InquiryCategoriesPage() {
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Description</Form.Label>
-            <Form.Control as="textarea" rows={2} value={editing.description ?? ''} onChange={(e) => setEditing((d) => ({ ...d, description: e.target.value }))} />
+            <Form.Control
+              as="textarea"
+              rows={2}
+              value={editing.description ?? ''}
+              onChange={(e) => setEditing((d) => ({ ...d, description: e.target.value }))}
+            />
           </Form.Group>
           <div className="row g-3">
             <div className="col">
               <Form.Group>
                 <Form.Label>Sort Order</Form.Label>
-                <Form.Control type="number" value={editing.sortOrder ?? 0} onChange={(e) => setEditing((d) => ({ ...d, sortOrder: parseInt(e.target.value) || 0 }))} />
+                <Form.Control
+                  type="number"
+                  value={editing.sortOrder ?? 0}
+                  onChange={(e) => setEditing((d) => ({ ...d, sortOrder: parseInt(e.target.value) || 0 }))}
+                />
               </Form.Group>
             </div>
             <div className="col d-flex align-items-end pb-1">
-              <Form.Check type="switch" label="Active" checked={editing.isActive ?? true} onChange={(e) => setEditing((d) => ({ ...d, isActive: e.target.checked }))} />
+              <Form.Check
+                type="switch"
+                label="Active"
+                checked={editing.isActive ?? true}
+                onChange={(e) => setEditing((d) => ({ ...d, isActive: e.target.checked }))}
+              />
             </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={() => setModalOpen(false)}>
+            Cancel
+          </Button>
           <Button onClick={handleSave} disabled={saving}>
             {saving ? <Spinner size="sm" /> : 'Save'}
           </Button>

@@ -19,8 +19,8 @@ export default function FinancialsSupportTab({ revenue, support, loading }: Fina
   const s = support ?? { supportPoints: [], categoryBreakdown: [], replied: 0, pending: 0 }
 
   // 1. Revenue Chart Config
-  const revDates = r.revenuePoints.map(pt => pt.date)
-  const revAmounts = r.revenuePoints.map(pt => pt.amount)
+  const revDates = r.revenuePoints.map((pt) => pt.date)
+  const revAmounts = r.revenuePoints.map((pt) => pt.amount)
   const revenueOptions: ApexOptions = {
     chart: { type: 'area', height: 220, toolbar: { show: false }, zoom: { enabled: false } },
     stroke: { curve: 'smooth', width: 2 },
@@ -30,31 +30,31 @@ export default function FinancialsSupportTab({ revenue, support, loading }: Fina
     colors: ['#198754'],
     grid: { borderColor: '#f1f1f1', strokeDashArray: 3 },
     dataLabels: { enabled: false },
-    tooltip: { y: { formatter: (val) => `৳${val.toLocaleString()}` } }
+    tooltip: { y: { formatter: (val) => `৳${val.toLocaleString()}` } },
   }
   const revenueSeries = [{ name: 'Revenue amount', data: revAmounts }]
 
   // 2. Support Chart Config
-  const supDates = s.supportPoints.map(pt => pt.date)
-  const supCounts = s.supportPoints.map(pt => pt.count)
+  const supDates = s.supportPoints.map((pt) => pt.date)
+  const supCounts = s.supportPoints.map((pt) => pt.count)
   const supportOptions: ApexOptions = {
     chart: { type: 'line', height: 200, toolbar: { show: false } },
     stroke: { width: 2, curve: 'smooth' },
     xaxis: { categories: supDates, labels: { rotate: -30, style: { fontSize: '9px', colors: '#6c757d' } } },
     colors: ['#dc3545'],
     grid: { borderColor: '#f1f1f1', strokeDashArray: 3 },
-    dataLabels: { enabled: false }
+    dataLabels: { enabled: false },
   }
   const supportSeries = [{ name: 'Tickets Opened', data: supCounts }]
 
   // Rates math
-  const payTotal = (r.rates.success + r.rates.failed + r.rates.pending) || 1
+  const payTotal = r.rates.success + r.rates.failed + r.rates.pending || 1
   const successRate = Math.round((r.rates.success / payTotal) * 100)
   const failedRate = Math.round((r.rates.failed / payTotal) * 100)
   const pendingRate = Math.round((r.rates.pending / payTotal) * 100)
 
   // Support resolution math
-  const supportTotal = (s.replied + s.pending) || 1
+  const supportTotal = s.replied + s.pending || 1
   const resolvedRate = Math.round((s.replied / supportTotal) * 100)
 
   if (loading) {
@@ -97,21 +97,27 @@ export default function FinancialsSupportTab({ revenue, support, loading }: Fina
               <div>
                 <div className="d-flex justify-content-between mb-1 small">
                   <span className="fw-semibold text-success">Successful Payments</span>
-                  <span>{successRate}% ({r.rates.success})</span>
+                  <span>
+                    {successRate}% ({r.rates.success})
+                  </span>
                 </div>
                 <ProgressBar now={successRate} variant="success" style={{ height: '6px' }} />
               </div>
               <div>
                 <div className="d-flex justify-content-between mb-1 small">
                   <span className="fw-semibold text-warning">Pending Review</span>
-                  <span>{pendingRate}% ({r.rates.pending})</span>
+                  <span>
+                    {pendingRate}% ({r.rates.pending})
+                  </span>
                 </div>
                 <ProgressBar now={pendingRate} variant="warning" style={{ height: '6px' }} />
               </div>
               <div>
                 <div className="d-flex justify-content-between mb-1 small">
                   <span className="fw-semibold text-danger">Failed Payments</span>
-                  <span>{failedRate}% ({r.rates.failed})</span>
+                  <span>
+                    {failedRate}% ({r.rates.failed})
+                  </span>
                 </div>
                 <ProgressBar now={failedRate} variant="danger" style={{ height: '6px' }} />
               </div>
@@ -140,7 +146,9 @@ export default function FinancialsSupportTab({ revenue, support, loading }: Fina
                   {r.methodBreakdown.map((m) => (
                     <tr key={m.method} className="border-bottom border-light">
                       <td className="ps-3 small fw-bold text-dark">
-                        <Badge bg="success-subtle" className="text-success border border-success-subtle text-uppercase me-2">{m.method}</Badge>
+                        <Badge bg="success-subtle" className="text-success border border-success-subtle text-uppercase me-2">
+                          {m.method}
+                        </Badge>
                         Payment Channel
                       </td>
                       <td className="text-center small">{m.count} txs</td>
@@ -149,7 +157,9 @@ export default function FinancialsSupportTab({ revenue, support, loading }: Fina
                   ))}
                   {r.methodBreakdown.length === 0 && (
                     <tr>
-                      <td colSpan={3} className="text-center text-muted py-4">No gateway shares.</td>
+                      <td colSpan={3} className="text-center text-muted py-4">
+                        No gateway shares.
+                      </td>
                     </tr>
                   )}
                 </tbody>
@@ -186,8 +196,12 @@ export default function FinancialsSupportTab({ revenue, support, loading }: Fina
               <h6 className="mb-0 fw-bold text-dark">Inquiry Backlog & Categories</h6>
               <div className="d-flex align-items-center gap-2 small">
                 <span className="text-muted">Resolution Rate:</span>
-                <Badge bg="success-subtle" className="text-success border border-success-subtle fw-bold">{resolvedRate}% Resolved</Badge>
-                <span className="text-dark fw-semibold">({s.replied} solved / {s.pending} pending)</span>
+                <Badge bg="success-subtle" className="text-success border border-success-subtle fw-bold">
+                  {resolvedRate}% Resolved
+                </Badge>
+                <span className="text-dark fw-semibold">
+                  ({s.replied} solved / {s.pending} pending)
+                </span>
               </div>
             </Card.Header>
             <Card.Body>
@@ -197,12 +211,16 @@ export default function FinancialsSupportTab({ revenue, support, loading }: Fina
                   <Col key={cat.name} xs={6} md={4} lg={3}>
                     <div className="p-3 bg-light rounded border border-light text-center">
                       <div className="fs-5 fw-bold text-dark">{cat.count}</div>
-                      <div className="text-muted small text-truncate mt-1" title={cat.name}>{cat.name}</div>
+                      <div className="text-muted small text-truncate mt-1" title={cat.name}>
+                        {cat.name}
+                      </div>
                     </div>
                   </Col>
                 ))}
                 {s.categoryBreakdown.length === 0 && (
-                  <Col xs={12} className="text-center text-muted py-2 small">No categories registered.</Col>
+                  <Col xs={12} className="text-center text-muted py-2 small">
+                    No categories registered.
+                  </Col>
                 )}
               </Row>
             </Card.Body>

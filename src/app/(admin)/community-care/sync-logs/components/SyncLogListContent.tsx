@@ -49,10 +49,7 @@ export default function SyncLogListContent() {
 
   return (
     <div className="container-fluid">
-      <PageHeader
-        title="PSS Sync Logs"
-        breadcrumbs={[{ label: 'Community Care Fund' }, { label: 'Sync Logs' }]}
-      />
+      <PageHeader title="PSS Sync Logs" breadcrumbs={[{ label: 'Community Care Fund' }, { label: 'Sync Logs' }]} />
       <ApiErrorAlert error={error as ApiError | null} />
       <Card>
         <Card.Body>
@@ -63,8 +60,7 @@ export default function SyncLogListContent() {
                 onChange={(e) => {
                   setStatus(e.target.value as PetSmartSyncStatus | '')
                   setPage(1)
-                }}
-              >
+                }}>
                 {STATUS_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -78,8 +74,7 @@ export default function SyncLogListContent() {
                 onChange={(e) => {
                   setSyncType(e.target.value)
                   setPage(1)
-                }}
-              >
+                }}>
                 {SYNC_TYPE_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -104,41 +99,51 @@ export default function SyncLogListContent() {
               <tbody>
                 {logs.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-4 text-muted">No sync logs found</td>
-                  </tr>
-                ) : logs.map((log: PetSmartSyncLog) => (
-                  <tr key={log.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/community-care/sync-logs/${log.id}`)}>
-                    <td className="small text-capitalize">{log.syncType.replace(/_/g, ' ')}</td>
-                    <td>
-                      <div className="small text-capitalize">{log.entityType.replace(/_/g, ' ')}</div>
-                      <div className="text-muted font-monospace" style={{ fontSize: '0.7rem' }}>
-                        {log.entityId.slice(0, 12)}...
-                      </div>
-                    </td>
-                    <td onClick={(e) => e.stopPropagation()}>
-                      <Badge bg={`${STATUS_VARIANTS[log.status]}-subtle`} text={STATUS_VARIANTS[log.status]}>
-                        {log.status}
-                      </Badge>
-                    </td>
-                    <td className="small">{new Date(log.startedAt).toLocaleString()}</td>
-                    <td className="small">{log.finishedAt ? new Date(log.finishedAt).toLocaleString() : 'In progress'}</td>
-                    <td className="text-end" onClick={(e) => e.stopPropagation()}>
-                      <Button variant="soft-primary" size="sm" onClick={() => router.push(`/community-care/sync-logs/${log.id}`)}>
-                        View
-                      </Button>
+                    <td colSpan={6} className="text-center py-4 text-muted">
+                      No sync logs found
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  logs.map((log: PetSmartSyncLog) => (
+                    <tr key={log.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/community-care/sync-logs/${log.id}`)}>
+                      <td className="small text-capitalize">{log.syncType.replace(/_/g, ' ')}</td>
+                      <td>
+                        <div className="small text-capitalize">{log.entityType.replace(/_/g, ' ')}</div>
+                        <div className="text-muted font-monospace" style={{ fontSize: '0.7rem' }}>
+                          {log.entityId.slice(0, 12)}...
+                        </div>
+                      </td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <Badge bg={`${STATUS_VARIANTS[log.status]}-subtle`} text={STATUS_VARIANTS[log.status]}>
+                          {log.status}
+                        </Badge>
+                      </td>
+                      <td className="small">{new Date(log.startedAt).toLocaleString()}</td>
+                      <td className="small">{log.finishedAt ? new Date(log.finishedAt).toLocaleString() : 'In progress'}</td>
+                      <td className="text-end" onClick={(e) => e.stopPropagation()}>
+                        <Button variant="soft-primary" size="sm" onClick={() => router.push(`/community-care/sync-logs/${log.id}`)}>
+                          View
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </Table>
           </LoadingOverlay>
 
           {meta && meta.totalPages > 1 && (
             <div className="d-flex justify-content-between align-items-center mt-3">
-              <small className="text-muted">{meta.total} logs - Page {meta.page} of {meta.totalPages}</small>
+              <small className="text-muted">
+                {meta.total} logs - Page {meta.page} of {meta.totalPages}
+              </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>Prev</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>Next</Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                  Prev
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  Next
+                </Button>
               </div>
             </div>
           )}

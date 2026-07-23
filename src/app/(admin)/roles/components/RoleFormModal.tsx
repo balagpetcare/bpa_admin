@@ -54,16 +54,16 @@ export default function RoleFormModal({ isOpen, onClose, onSuccess, role }: Role
   const permissionIds = watch('permissionIds') ?? []
 
   const onSubmit = async (values: FormValues) => {
-    const result = await mutate(
-      async (vals) => {
-        if (isEdit) {
-          return rolesApi.update(role!.id, { name: vals.name, description: vals.description ?? undefined, permissionIds: vals.permissionIds })
-        }
-        return rolesApi.create({ name: vals.name, description: vals.description ?? undefined, permissionIds: vals.permissionIds })
-      },
-      values,
-    )
-    if (result) { onSuccess(); onClose() }
+    const result = await mutate(async (vals) => {
+      if (isEdit) {
+        return rolesApi.update(role!.id, { name: vals.name, description: vals.description ?? undefined, permissionIds: vals.permissionIds })
+      }
+      return rolesApi.create({ name: vals.name, description: vals.description ?? undefined, permissionIds: vals.permissionIds })
+    }, values)
+    if (result) {
+      onSuccess()
+      onClose()
+    }
   }
 
   return (
@@ -79,7 +79,13 @@ export default function RoleFormModal({ isOpen, onClose, onSuccess, role }: Role
               <TextFormInput name="name" label="Role Name" placeholder="e.g. content_editor" containerClassName="mb-0" control={control} />
             </Col>
             <Col md={6}>
-              <TextFormInput name="description" label="Description (optional)" placeholder="Brief description" containerClassName="mb-0" control={control} />
+              <TextFormInput
+                name="description"
+                label="Description (optional)"
+                placeholder="Brief description"
+                containerClassName="mb-0"
+                control={control}
+              />
             </Col>
           </Row>
           <div>
@@ -88,17 +94,17 @@ export default function RoleFormModal({ isOpen, onClose, onSuccess, role }: Role
             {permsLoading ? (
               <p className="text-muted small">Loading permissions...</p>
             ) : (
-              <PermissionMatrix
-                permissions={permissions ?? []}
-                selected={permissionIds}
-                onChange={(ids) => setValue('permissionIds', ids)}
-              />
+              <PermissionMatrix permissions={permissions ?? []} selected={permissionIds} onChange={(ids) => setValue('permissionIds', ids)} />
             )}
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="light" onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="primary" disabled={loading}>{loading ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Role'}</Button>
+          <Button variant="light" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit" variant="primary" disabled={loading}>
+            {loading ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Role'}
+          </Button>
         </Modal.Footer>
       </Form>
     </Modal>

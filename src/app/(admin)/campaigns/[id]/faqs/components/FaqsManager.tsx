@@ -32,7 +32,11 @@ export default function FaqsManager({ campaignId }: { campaignId: string }) {
   const faqsFn = useCallback(() => campaignsApi.listCampaignFaqs(campaignId), [campaignId])
   const { data: faqs, loading, error, refetch } = useApi(faqsFn, [campaignId])
 
-  function openCreate() { setEditing(null); setForm(EMPTY_FORM); setShowModal(true) }
+  function openCreate() {
+    setEditing(null)
+    setForm(EMPTY_FORM)
+    setShowModal(true)
+  }
   function openEdit(f: CampaignFaq) {
     setEditing(f)
     setForm({
@@ -68,10 +72,7 @@ export default function FaqsManager({ campaignId }: { campaignId: string }) {
   }
 
   async function handleToggleActive(f: CampaignFaq) {
-    await mutate(
-      () => campaignsApi.updateCampaignFaq(campaignId, f.id, { isActive: !f.isActive }),
-      undefined,
-    )
+    await mutate(() => campaignsApi.updateCampaignFaq(campaignId, f.id, { isActive: !f.isActive }), undefined)
     refetch()
   }
 
@@ -105,11 +106,7 @@ export default function FaqsManager({ campaignId }: { campaignId: string }) {
     <div className="container-fluid">
       <PageHeader
         title="Campaign FAQs"
-        breadcrumbs={[
-          { label: 'Campaigns', href: '/campaigns' },
-          { label: 'Detail', href: `/campaigns/${campaignId}` },
-          { label: 'FAQs' },
-        ]}
+        breadcrumbs={[{ label: 'Campaigns', href: '/campaigns' }, { label: 'Detail', href: `/campaigns/${campaignId}` }, { label: 'FAQs' }]}
         action={
           can('campaign_faqs:create') ? (
             <Button variant="primary" onClick={openCreate}>
@@ -132,7 +129,9 @@ export default function FaqsManager({ campaignId }: { campaignId: string }) {
                   <th>Question (BN)</th>
                   <th>Category</th>
                   <th style={{ width: 100 }}>Status</th>
-                  <th style={{ width: 160 }} className="text-end">Actions</th>
+                  <th style={{ width: 160 }} className="text-end">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -147,13 +146,7 @@ export default function FaqsManager({ campaignId }: { campaignId: string }) {
                     <tr key={f.id}>
                       <td>
                         <div className="d-flex flex-column align-items-center gap-1">
-                          <Button
-                            variant="link"
-                            size="sm"
-                            className="p-0 text-muted"
-                            disabled={i === 0}
-                            onClick={() => handleMoveUp(i)}
-                          >
+                          <Button variant="link" size="sm" className="p-0 text-muted" disabled={i === 0} onClick={() => handleMoveUp(i)}>
                             <Icon icon="solar:arrow-up-bold" width={14} />
                           </Button>
                           <span className="small fw-medium">{f.sortOrder}</span>
@@ -162,8 +155,7 @@ export default function FaqsManager({ campaignId }: { campaignId: string }) {
                             size="sm"
                             className="p-0 text-muted"
                             disabled={i === faqList.length - 1}
-                            onClick={() => handleMoveDown(i)}
-                          >
+                            onClick={() => handleMoveDown(i)}>
                             <Icon icon="solar:arrow-down-bold" width={14} />
                           </Button>
                         </div>
@@ -205,21 +197,12 @@ export default function FaqsManager({ campaignId }: { campaignId: string }) {
                       </td>
                       <td className="text-end">
                         {can('campaign_faqs:update') && (
-                          <Button
-                            variant="soft-primary"
-                            size="sm"
-                            className="me-1"
-                            onClick={() => openEdit(f)}
-                          >
+                          <Button variant="soft-primary" size="sm" className="me-1" onClick={() => openEdit(f)}>
                             <Icon icon="solar:pen-bold" />
                           </Button>
                         )}
                         {can('campaign_faqs:delete') && (
-                          <Button
-                            variant="soft-danger"
-                            size="sm"
-                            onClick={() => handleDelete(f.id)}
-                          >
+                          <Button variant="soft-danger" size="sm" onClick={() => handleDelete(f.id)}>
                             <Icon icon="solar:trash-bin-trash-bold" />
                           </Button>
                         )}
@@ -244,18 +227,11 @@ export default function FaqsManager({ campaignId }: { campaignId: string }) {
               <Form.Label>
                 Question (English) <span className="text-danger">*</span>
               </Form.Label>
-              <Form.Control
-                value={form.questionEn}
-                onChange={(e) => setForm((f) => ({ ...f, questionEn: e.target.value }))}
-                required
-              />
+              <Form.Control value={form.questionEn} onChange={(e) => setForm((f) => ({ ...f, questionEn: e.target.value }))} required />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Question (Bangla)</Form.Label>
-              <Form.Control
-                value={form.questionBn}
-                onChange={(e) => setForm((f) => ({ ...f, questionBn: e.target.value }))}
-              />
+              <Form.Control value={form.questionBn} onChange={(e) => setForm((f) => ({ ...f, questionBn: e.target.value }))} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>
@@ -271,12 +247,7 @@ export default function FaqsManager({ campaignId }: { campaignId: string }) {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Answer (Bangla)</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                value={form.answerBn}
-                onChange={(e) => setForm((f) => ({ ...f, answerBn: e.target.value }))}
-              />
+              <Form.Control as="textarea" rows={3} value={form.answerBn} onChange={(e) => setForm((f) => ({ ...f, answerBn: e.target.value }))} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Category</Form.Label>
@@ -288,12 +259,7 @@ export default function FaqsManager({ campaignId }: { campaignId: string }) {
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Sort Order</Form.Label>
-              <Form.Control
-                type="number"
-                min="0"
-                value={form.sortOrder}
-                onChange={(e) => setForm((f) => ({ ...f, sortOrder: e.target.value }))}
-              />
+              <Form.Control type="number" min="0" value={form.sortOrder} onChange={(e) => setForm((f) => ({ ...f, sortOrder: e.target.value }))} />
             </Form.Group>
             <Form.Check
               type="switch"

@@ -4,17 +4,34 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { api } from '@/lib/api'
 
+// bpa_api's own authorize() middleware (src/middlewares/authorize.ts) bypasses
+// all permission checks for any of these three role strings — 'super_admin'
+// is this app's local convention, 'SUPER_ADMIN'/'GLOBAL_SUPER_ADMIN' are what
+// Central Auth actually issues for its highest-privilege principals. Before
+// this fix, usePermission only recognized the lowercase form, so a real
+// Central-Auth super admin got `can(...) === false` for every action even
+// though the backend would have allowed it — the entire edit UI rendered as
+// permanently disabled/read-only with no indication why.
+export const SUPER_ADMIN_ROLES = ['super_admin', 'SUPER_ADMIN', 'GLOBAL_SUPER_ADMIN']
+
+// Exported standalone so it's unit-testable without rendering the hook
+// (this repo has no React component test renderer).
+export function isSuperAdminRole(roles: string[]): boolean {
+  return roles.some((r) => SUPER_ADMIN_ROLES.includes(r))
+}
+
 // Returns helpers for checking the current user's permissions and roles.
 export function usePermission() {
   const { data: session } = useSession()
   const roles: string[] = session?.user?.roles ?? []
+  const isSuperAdmin = isSuperAdminRole(roles)
   const [fetchedPermissions, setFetchedPermissions] = useState<string[] | null>(null)
 
   useEffect(() => {
     let cancelled = false
 
     async function loadPermissions() {
-      if (!session || roles.includes('super_admin')) {
+      if (!session || isSuperAdmin) {
         setFetchedPermissions([])
         return
       }
@@ -36,16 +53,13 @@ export function usePermission() {
     return () => {
       cancelled = true
     }
-  }, [roles, session])
+  }, [isSuperAdmin, session])
 
-  const permissions = useMemo(
-    () => (session?.user as any)?.permissions ?? fetchedPermissions ?? [],
-    [fetchedPermissions, session?.user],
-  )
+  const permissions = useMemo(() => (session?.user as any)?.permissions ?? fetchedPermissions ?? [], [fetchedPermissions, session?.user])
 
   // Check a single permission string like "news:publish"
   const can = (permission: string): boolean => {
-    if (roles.includes('super_admin')) return true
+    if (isSuperAdmin) return true
     const resource = permission.split(':')[0]
     return permissions.includes(permission) || permissions.includes(`${resource}:manage`)
   }
@@ -57,8 +71,6 @@ export function usePermission() {
   const canAll = (...perms: string[]): boolean => perms.every(can)
 
   const hasRole = (role: string): boolean => roles.includes(role)
-
-  const isSuperAdmin = roles.includes('super_admin')
 
   return { can, canAny, canAll, hasRole, isSuperAdmin, permissions, roles }
 }

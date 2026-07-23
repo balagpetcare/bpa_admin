@@ -37,7 +37,8 @@ export default function ImpactStoryList() {
         breadcrumbs={[{ label: 'Donations' }, { label: 'Impact Stories' }]}
         action={
           <Link href="/donations/impact-stories/create" className="btn btn-primary btn-sm">
-            <Icon icon="solar:add-circle-bold" className="me-1" />New Story
+            <Icon icon="solar:add-circle-bold" className="me-1" />
+            New Story
           </Link>
         }
       />
@@ -48,7 +49,9 @@ export default function ImpactStoryList() {
           <Row className="g-2 mb-3">
             <Col md={5}>
               <InputGroup size="sm">
-                <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
+                <InputGroup.Text>
+                  <Icon icon="solar:magnifer-bold" />
+                </InputGroup.Text>
                 <Form.Control placeholder="Search stories..." value={search} onChange={(e) => setSearch(e.target.value)} />
               </InputGroup>
             </Col>
@@ -77,7 +80,11 @@ export default function ImpactStoryList() {
               </thead>
               <tbody>
                 {(stories ?? []).length === 0 ? (
-                  <tr><td colSpan={8} className="text-center py-4 text-muted">No stories found.</td></tr>
+                  <tr>
+                    <td colSpan={8} className="text-center py-4 text-muted">
+                      No stories found.
+                    </td>
+                  </tr>
                 ) : (
                   (stories ?? []).map((s: DonationImpactStory) => (
                     <tr key={s.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/donations/impact-stories/${s.id}`)}>
@@ -85,7 +92,12 @@ export default function ImpactStoryList() {
                         <div className="d-flex align-items-center gap-2">
                           {(s.afterImageUrl || s.beforeImageUrl) && (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={s.afterImageUrl || s.beforeImageUrl || ''} alt="" className="rounded" style={{ width: 40, height: 40, objectFit: 'cover' }} />
+                            <img
+                              src={s.afterImageUrl || s.beforeImageUrl || ''}
+                              alt=""
+                              className="rounded"
+                              style={{ width: 40, height: 40, objectFit: 'cover' }}
+                            />
                           )}
                           <div>
                             <div className="fw-semibold">{s.titleEn}</div>
@@ -93,11 +105,30 @@ export default function ImpactStoryList() {
                           </div>
                         </div>
                       </td>
-                      <td><Badge bg="primary-subtle" text="primary">{s.storyType}</Badge></td>
-                      <td className="text-muted small">{s.animalType || '—'}{s.animalName ? ` (${s.animalName})` : ''}</td>
                       <td>
-                        {s.campaign && <div><Badge bg="info-subtle" text="info" style={{ fontSize: '10px' }}>{s.campaign.titleEn}</Badge></div>}
-                        {s.purpose && <div><Badge bg="success-subtle" text="success" style={{ fontSize: '10px' }}>{s.purpose.titleEn}</Badge></div>}
+                        <Badge bg="primary-subtle" text="primary">
+                          {s.storyType}
+                        </Badge>
+                      </td>
+                      <td className="text-muted small">
+                        {s.animalType || '—'}
+                        {s.animalName ? ` (${s.animalName})` : ''}
+                      </td>
+                      <td>
+                        {s.campaign && (
+                          <div>
+                            <Badge bg="info-subtle" text="info" style={{ fontSize: '10px' }}>
+                              {s.campaign.titleEn}
+                            </Badge>
+                          </div>
+                        )}
+                        {s.purpose && (
+                          <div>
+                            <Badge bg="success-subtle" text="success" style={{ fontSize: '10px' }}>
+                              {s.purpose.titleEn}
+                            </Badge>
+                          </div>
+                        )}
                         {!s.campaign && !s.purpose && <span className="text-muted">—</span>}
                       </td>
                       <td onClick={(e) => e.stopPropagation()}>
@@ -106,9 +137,7 @@ export default function ImpactStoryList() {
                         </Badge>
                       </td>
                       <td>{s.isFeatured ? <Icon icon="solar:star-bold" className="text-warning" /> : null}</td>
-                      <td className="text-muted small">
-                        {s.storyDate ? new Date(s.storyDate).toLocaleDateString('en-GB') : '—'}
-                      </td>
+                      <td className="text-muted small">{s.storyDate ? new Date(s.storyDate).toLocaleDateString('en-GB') : '—'}</td>
                       <td className="text-end" onClick={(e) => e.stopPropagation()}>
                         <div className="d-flex gap-1 justify-content-end">
                           <Link href={`/donations/impact-stories/${s.id}`} className="btn btn-soft-primary btn-sm">

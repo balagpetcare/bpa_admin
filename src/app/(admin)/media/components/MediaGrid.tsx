@@ -21,28 +21,23 @@ export default function MediaGrid({ files, meta, loading, onView, onDeleted, onP
   return (
     <div>
       <LoadingOverlay loading={loading}>
-      <div>
-        {files.length === 0 && !loading ? (
-          <EmptyState
-            icon="solar:gallery-wide-bold-duotone"
-            title="No files found"
-            description="Upload files to start building your media library."
-          />
-        ) : (
-          <Row xs={2} sm={3} md={4} lg={5} xl={6} className="g-3">
-            {files.map((file) => (
-              <Col key={file.id}>
-                <MediaCard
-                  file={file}
-                  onView={onView}
-                  onDeleted={onDeleted}
-                  onDeleteError={onDeleteError}
-                />
-              </Col>
-            ))}
-          </Row>
-        )}
-      </div>
+        <div>
+          {files.length === 0 && !loading ? (
+            <EmptyState
+              icon="solar:gallery-wide-bold-duotone"
+              title="No files found"
+              description="Upload files to start building your media library."
+            />
+          ) : (
+            <Row xs={2} sm={3} md={4} lg={5} xl={6} className="g-3">
+              {files.map((file) => (
+                <Col key={file.id}>
+                  <MediaCard file={file} onView={onView} onDeleted={onDeleted} onDeleteError={onDeleteError} />
+                </Col>
+              ))}
+            </Row>
+          )}
+        </div>
       </LoadingOverlay>
 
       {meta && meta.totalPages > 1 && (

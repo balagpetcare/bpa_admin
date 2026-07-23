@@ -1,5 +1,5 @@
 'use client'
-import Flatpickr from "react-flatpickr";
+import Flatpickr from 'react-flatpickr'
 
 type FlatpickrProps = {
   className?: string
@@ -12,14 +12,7 @@ type FlatpickrProps = {
 const CustomFlatpickr = ({ className, value, options, placeholder, onChange }: FlatpickrProps) => {
   return (
     <>
-      <Flatpickr
-        className={className}
-        data-enable-time
-        value={value ?? ''}
-        options={options}
-        placeholder={placeholder}
-        onChange={onChange}
-      />
+      <Flatpickr className={className} data-enable-time value={value ?? ''} options={options} placeholder={placeholder} onChange={onChange} />
     </>
   )
 }

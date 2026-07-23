@@ -37,18 +37,14 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       label: 'Contact Inquiries',
       icon: 'solar:inbox-unread-bold-duotone',
       url: '/contact-inquiries',
-      badge: badges.newInquiries
-        ? { text: String(badges.newInquiries), variant: 'danger' }
-        : undefined,
+      badge: badges.newInquiries ? { text: String(badges.newInquiries), variant: 'danger' } : undefined,
     },
     {
       key: 'volunteers',
       label: 'Volunteers',
       icon: 'solar:hand-heart-bold-duotone',
       url: '/volunteers',
-      badge: badges.pendingVolunteers
-        ? { text: String(badges.pendingVolunteers), variant: 'warning' }
-        : undefined,
+      badge: badges.pendingVolunteers ? { text: String(badges.pendingVolunteers), variant: 'warning' } : undefined,
     },
     {
       key: 'notifications',
@@ -429,6 +425,31 @@ export function getMenuItems(badges: MenuBadges = {}): MenuItemType[] {
       label: 'Future Roadmap',
       icon: 'solar:map-arrow-right-bold-duotone',
       url: '/community-care/roadmap',
+    },
+
+    // ─── CLINIC DIRECTORY ─────────────────────────────────────────
+    {
+      key: 'clinic-directory-title',
+      label: 'CLINIC DIRECTORY',
+      isTitle: true,
+    },
+    {
+      key: 'clinics',
+      label: 'Clinics & Branches',
+      icon: 'solar:hospital-bold-duotone',
+      url: '/clinics',
+    },
+    {
+      key: 'clinic-organizations',
+      label: 'Organizations',
+      icon: 'solar:buildings-bold-duotone',
+      url: '/clinics/organizations',
+    },
+    {
+      key: 'clinics-import',
+      label: 'Import Directory',
+      icon: 'solar:file-download-bold-duotone',
+      url: '/clinics/import',
     },
 
     // ─── DONATIONS ────────────────────────────────────────────────

@@ -25,9 +25,18 @@ export default function SeoContent() {
   const { data, loading, error, refetch } = useApi(fetchFn, [])
   const entries = data ?? []
 
-  const handleEdit = (entry: SeoMetadata) => { setEditing(entry); setView('edit') }
-  const handleNew = () => { setEditing(null); setView('new') }
-  const handleCancel = () => { setView('list'); setEditing(null) }
+  const handleEdit = (entry: SeoMetadata) => {
+    setEditing(entry)
+    setView('edit')
+  }
+  const handleNew = () => {
+    setEditing(null)
+    setView('new')
+  }
+  const handleCancel = () => {
+    setView('list')
+    setEditing(null)
+  }
 
   const handleSaved = () => {
     refetch()
@@ -51,18 +60,11 @@ export default function SeoContent() {
       <div className="container-fluid">
         <PageHeader
           title={view === 'new' ? 'New SEO Entry' : `Edit SEO: ${editing?.route}`}
-          breadcrumbs={[
-            { label: 'SEO', href: '/seo' },
-            { label: view === 'new' ? 'New' : 'Edit' },
-          ]}
+          breadcrumbs={[{ label: 'SEO', href: '/seo' }, { label: view === 'new' ? 'New' : 'Edit' }]}
         />
         <Card>
           <Card.Body>
-            <SeoEditorForm
-              entry={editing}
-              onSaved={handleSaved}
-              onCancel={handleCancel}
-            />
+            <SeoEditorForm entry={editing} onSaved={handleSaved} onCancel={handleCancel} />
           </Card.Body>
         </Card>
       </div>
@@ -74,23 +76,21 @@ export default function SeoContent() {
       <PageHeader
         title="SEO Management"
         breadcrumbs={[{ label: 'SEO' }]}
-        action={can('seo:create') ? (
-          <Button variant="primary" onClick={handleNew}>
-            <Icon icon="solar:add-circle-bold" className="me-1" />Add Route
-          </Button>
-        ) : undefined}
+        action={
+          can('seo:create') ? (
+            <Button variant="primary" onClick={handleNew}>
+              <Icon icon="solar:add-circle-bold" className="me-1" />
+              Add Route
+            </Button>
+          ) : undefined
+        }
       />
 
       <ApiErrorAlert error={error as ApiError | null} />
 
       <Card>
         <Card.Body>
-          <SeoRoutesTable
-            data={entries}
-            loading={loading}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+          <SeoRoutesTable data={entries} loading={loading} onEdit={handleEdit} onDelete={handleDelete} />
         </Card.Body>
       </Card>
     </div>

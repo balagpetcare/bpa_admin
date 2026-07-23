@@ -18,12 +18,8 @@ export type RoadmapItemUpdatePayload = Partial<RoadmapItemCreatePayload>
 export const roadmapItemsApi = {
   list: (params?: PaginationQuery & { status?: RoadmapItemStatus; year?: number; isActive?: boolean }) =>
     api.getPaginated<RoadmapItem>('/admin/roadmap-items', params),
-  getById: (id: string) =>
-    api.get<RoadmapItem>(`/admin/roadmap-items/${id}`),
-  create: (data: RoadmapItemCreatePayload) =>
-    api.post<RoadmapItem>('/admin/roadmap-items', data),
-  update: (id: string, data: RoadmapItemUpdatePayload) =>
-    api.patch<RoadmapItem>(`/admin/roadmap-items/${id}`, data),
-  remove: (id: string) =>
-    api.delete<void>(`/admin/roadmap-items/${id}`),
+  getById: (id: string) => api.get<RoadmapItem>(`/admin/roadmap-items/${id}`),
+  create: (data: RoadmapItemCreatePayload) => api.post<RoadmapItem>('/admin/roadmap-items', data),
+  update: (id: string, data: RoadmapItemUpdatePayload) => api.patch<RoadmapItem>(`/admin/roadmap-items/${id}`, data),
+  remove: (id: string) => api.delete<void>(`/admin/roadmap-items/${id}`),
 }

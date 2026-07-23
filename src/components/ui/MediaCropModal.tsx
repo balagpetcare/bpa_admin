@@ -16,15 +16,7 @@ interface MediaCropModalProps {
   onCrop: (cropData: { x: number; y: number; width: number; height: number }) => Promise<void>
 }
 
-export default function MediaCropModal({
-  show,
-  onHide,
-  imageUrl,
-  aspectRatio = 1,
-  targetWidth,
-  targetHeight,
-  onCrop,
-}: MediaCropModalProps) {
+export default function MediaCropModal({ show, onHide, imageUrl, aspectRatio = 1, targetWidth, targetHeight, onCrop }: MediaCropModalProps) {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)

@@ -10,7 +10,13 @@ import { contactDepartmentApi, type ContactDepartment } from '@/lib/api/contact-
 import type { ApiError } from '@/lib/api'
 
 const EMPTY: Partial<ContactDepartment> = {
-  slug: '', nameEn: '', nameBn: '', description: '', contactEmail: '', isActive: true, sortOrder: 0,
+  slug: '',
+  nameEn: '',
+  nameBn: '',
+  description: '',
+  contactEmail: '',
+  isActive: true,
+  sortOrder: 0,
 }
 
 export default function ContactDepartmentsPage() {
@@ -22,8 +28,16 @@ export default function ContactDepartmentsPage() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
 
-  const openCreate = () => { setEditing(EMPTY); setSaveError(''); setModalOpen(true) }
-  const openEdit = (d: ContactDepartment) => { setEditing({ ...d }); setSaveError(''); setModalOpen(true) }
+  const openCreate = () => {
+    setEditing(EMPTY)
+    setSaveError('')
+    setModalOpen(true)
+  }
+  const openEdit = (d: ContactDepartment) => {
+    setEditing({ ...d })
+    setSaveError('')
+    setModalOpen(true)
+  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -57,10 +71,7 @@ export default function ContactDepartmentsPage() {
     <div className="container-fluid">
       <PageHeader
         title="Contact Departments"
-        breadcrumbs={[
-          { label: 'Contact Inquiries', href: '/contact-inquiries' },
-          { label: 'Departments' },
-        ]}
+        breadcrumbs={[{ label: 'Contact Inquiries', href: '/contact-inquiries' }, { label: 'Departments' }]}
         action={
           <Button size="sm" onClick={openCreate}>
             <Icon icon="solar:add-circle-bold" className="me-1" /> Add Department
@@ -73,7 +84,9 @@ export default function ContactDepartmentsPage() {
       <Card>
         <Card.Body>
           {loading ? (
-            <div className="text-center py-4"><Spinner /></div>
+            <div className="text-center py-4">
+              <Spinner />
+            </div>
           ) : !departments?.length ? (
             <p className="text-muted text-center py-4">No departments yet.</p>
           ) : (
@@ -92,14 +105,18 @@ export default function ContactDepartmentsPage() {
                 <tbody>
                   {departments.map((d) => (
                     <tr key={d.id}>
-                      <td><code>{d.slug}</code></td>
+                      <td>
+                        <code>{d.slug}</code>
+                      </td>
                       <td>
                         <div>{d.nameEn}</div>
                         {d.nameBn && <small className="text-muted">{d.nameBn}</small>}
                       </td>
                       <td className="text-muted small">{d.contactEmail ?? '—'}</td>
                       <td>{d.sortOrder}</td>
-                      <td><Badge bg={d.isActive ? 'success' : 'secondary'}>{d.isActive ? 'Active' : 'Inactive'}</Badge></td>
+                      <td>
+                        <Badge bg={d.isActive ? 'success' : 'secondary'}>{d.isActive ? 'Active' : 'Inactive'}</Badge>
+                      </td>
                       <td>
                         <div className="d-flex gap-1">
                           <Button size="sm" variant="outline-primary" onClick={() => openEdit(d)}>
@@ -126,7 +143,9 @@ export default function ContactDepartmentsPage() {
         <Modal.Body>
           {saveError && <div className="alert alert-danger">{saveError}</div>}
           <Form.Group className="mb-3">
-            <Form.Label>Slug <span className="text-danger">*</span></Form.Label>
+            <Form.Label>
+              Slug <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control
               value={editing.slug ?? ''}
               onChange={(e) => setEditing((d) => ({ ...d, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') }))}
@@ -134,7 +153,9 @@ export default function ContactDepartmentsPage() {
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Name (English) <span className="text-danger">*</span></Form.Label>
+            <Form.Label>
+              Name (English) <span className="text-danger">*</span>
+            </Form.Label>
             <Form.Control value={editing.nameEn ?? ''} onChange={(e) => setEditing((d) => ({ ...d, nameEn: e.target.value }))} />
           </Form.Group>
           <Form.Group className="mb-3">
@@ -143,26 +164,47 @@ export default function ContactDepartmentsPage() {
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Department Email</Form.Label>
-            <Form.Control type="email" value={editing.contactEmail ?? ''} onChange={(e) => setEditing((d) => ({ ...d, contactEmail: e.target.value }))} placeholder="dept@bpa.org.bd" />
+            <Form.Control
+              type="email"
+              value={editing.contactEmail ?? ''}
+              onChange={(e) => setEditing((d) => ({ ...d, contactEmail: e.target.value }))}
+              placeholder="dept@bpa.org.bd"
+            />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Description</Form.Label>
-            <Form.Control as="textarea" rows={2} value={editing.description ?? ''} onChange={(e) => setEditing((d) => ({ ...d, description: e.target.value }))} />
+            <Form.Control
+              as="textarea"
+              rows={2}
+              value={editing.description ?? ''}
+              onChange={(e) => setEditing((d) => ({ ...d, description: e.target.value }))}
+            />
           </Form.Group>
           <div className="row g-3">
             <div className="col">
               <Form.Group>
                 <Form.Label>Sort Order</Form.Label>
-                <Form.Control type="number" value={editing.sortOrder ?? 0} onChange={(e) => setEditing((d) => ({ ...d, sortOrder: parseInt(e.target.value) || 0 }))} />
+                <Form.Control
+                  type="number"
+                  value={editing.sortOrder ?? 0}
+                  onChange={(e) => setEditing((d) => ({ ...d, sortOrder: parseInt(e.target.value) || 0 }))}
+                />
               </Form.Group>
             </div>
             <div className="col d-flex align-items-end pb-1">
-              <Form.Check type="switch" label="Active" checked={editing.isActive ?? true} onChange={(e) => setEditing((d) => ({ ...d, isActive: e.target.checked }))} />
+              <Form.Check
+                type="switch"
+                label="Active"
+                checked={editing.isActive ?? true}
+                onChange={(e) => setEditing((d) => ({ ...d, isActive: e.target.checked }))}
+              />
             </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={() => setModalOpen(false)}>
+            Cancel
+          </Button>
           <Button onClick={handleSave} disabled={saving}>
             {saving ? <Spinner size="sm" /> : 'Save'}
           </Button>

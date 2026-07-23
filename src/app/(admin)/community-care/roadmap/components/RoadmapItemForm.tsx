@@ -42,8 +42,8 @@ export default function RoadmapItemForm({ itemId, initialValues }: RoadmapItemFo
     isActive: initialValues?.isActive ?? true,
   })
 
-  function set<K extends keyof typeof form>(key: K, value: typeof form[K]) {
-    setForm(f => ({ ...f, [key]: value }))
+  function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
+    setForm((f) => ({ ...f, [key]: value }))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -59,12 +59,7 @@ export default function RoadmapItemForm({ itemId, initialValues }: RoadmapItemFo
       sortOrder: Number(form.sortOrder),
       isActive: form.isActive,
     }
-    const result = await mutate(
-      () => isEdit
-        ? roadmapItemsApi.update(itemId, payload)
-        : roadmapItemsApi.create(payload),
-      undefined,
-    )
+    const result = await mutate(() => (isEdit ? roadmapItemsApi.update(itemId, payload) : roadmapItemsApi.create(payload)), undefined)
     if (result) router.push('/community-care/roadmap')
   }
 
@@ -86,68 +81,127 @@ export default function RoadmapItemForm({ itemId, initialValues }: RoadmapItemFo
               {/* Phase & Year */}
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Phase <span className="text-danger">*</span></Form.Label>
-                  <Form.Control value={form.phase} onChange={e => set('phase', e.target.value)} required placeholder="e.g. Phase 1 – Foundation" />
+                  <Form.Label>
+                    Phase <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Control value={form.phase} onChange={(e) => set('phase', e.target.value)} required placeholder="e.g. Phase 1 – Foundation" />
                   <Form.Text className="text-muted">Short phase label, e.g. &quot;Phase 1&quot; or &quot;Q2 2026&quot;</Form.Text>
                 </Form.Group>
               </Col>
               <Col md={3}>
                 <Form.Group>
-                  <Form.Label>Year <span className="text-danger">*</span></Form.Label>
-                  <Form.Select value={form.year} onChange={e => set('year', e.target.value)}>
-                    {YEAR_OPTIONS.map(y => <option key={y} value={y}>{y}</option>)}
+                  <Form.Label>
+                    Year <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Select value={form.year} onChange={(e) => set('year', e.target.value)}>
+                    {YEAR_OPTIONS.map((y) => (
+                      <option key={y} value={y}>
+                        {y}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
               <Col md={3}>
                 <Form.Group>
-                  <Form.Label>Status <span className="text-danger">*</span></Form.Label>
-                  <Form.Select value={form.status} onChange={e => set('status', e.target.value as RoadmapItemStatus)}>
-                    {STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  <Form.Label>
+                    Status <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Select value={form.status} onChange={(e) => set('status', e.target.value as RoadmapItemStatus)}>
+                    {STATUS_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
 
               {/* English */}
-              <Col xs={12}><hr className="my-1" /><h6 className="text-muted text-uppercase fw-semibold mb-0" style={{ fontSize: '0.7rem', letterSpacing: '0.08em' }}>English Content</h6></Col>
+              <Col xs={12}>
+                <hr className="my-1" />
+                <h6 className="text-muted text-uppercase fw-semibold mb-0" style={{ fontSize: '0.7rem', letterSpacing: '0.08em' }}>
+                  English Content
+                </h6>
+              </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Title (English) <span className="text-danger">*</span></Form.Label>
-                  <Form.Control value={form.titleEn} onChange={e => set('titleEn', e.target.value)} required placeholder="e.g. Community Fund Launch" />
+                  <Form.Label>
+                    Title (English) <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Control
+                    value={form.titleEn}
+                    onChange={(e) => set('titleEn', e.target.value)}
+                    required
+                    placeholder="e.g. Community Fund Launch"
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
                   <Form.Label>Description (English)</Form.Label>
-                  <Form.Control as="textarea" rows={2} value={form.descriptionEn} onChange={e => set('descriptionEn', e.target.value)} placeholder="Optional milestone description in English" />
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={form.descriptionEn}
+                    onChange={(e) => set('descriptionEn', e.target.value)}
+                    placeholder="Optional milestone description in English"
+                  />
                 </Form.Group>
               </Col>
 
               {/* Bangla */}
-              <Col xs={12}><hr className="my-1" /><h6 className="text-muted text-uppercase fw-semibold mb-0" style={{ fontSize: '0.7rem', letterSpacing: '0.08em' }}>বাংলা কন্টেন্ট</h6></Col>
+              <Col xs={12}>
+                <hr className="my-1" />
+                <h6 className="text-muted text-uppercase fw-semibold mb-0" style={{ fontSize: '0.7rem', letterSpacing: '0.08em' }}>
+                  বাংলা কন্টেন্ট
+                </h6>
+              </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>শিরোনাম (বাংলা) <span className="text-danger">*</span></Form.Label>
-                  <Form.Control value={form.titleBn} onChange={e => set('titleBn', e.target.value)} required placeholder="যেমন: কমিউনিটি ফান্ড চালু" />
+                  <Form.Label>
+                    শিরোনাম (বাংলা) <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Control
+                    value={form.titleBn}
+                    onChange={(e) => set('titleBn', e.target.value)}
+                    required
+                    placeholder="যেমন: কমিউনিটি ফান্ড চালু"
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
                   <Form.Label>বিবরণ (বাংলা)</Form.Label>
-                  <Form.Control as="textarea" rows={2} value={form.descriptionBn} onChange={e => set('descriptionBn', e.target.value)} placeholder="ঐচ্ছিক মাইলফলক বিবরণ বাংলায়" />
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={form.descriptionBn}
+                    onChange={(e) => set('descriptionBn', e.target.value)}
+                    placeholder="ঐচ্ছিক মাইলফলক বিবরণ বাংলায়"
+                  />
                 </Form.Group>
               </Col>
 
               {/* Meta */}
-              <Col xs={12}><hr className="my-1" /></Col>
+              <Col xs={12}>
+                <hr className="my-1" />
+              </Col>
               <Col md={3}>
                 <Form.Group>
                   <Form.Label>Sort Order</Form.Label>
-                  <Form.Control type="number" min={0} value={form.sortOrder} onChange={e => set('sortOrder', e.target.value)} />
+                  <Form.Control type="number" min={0} value={form.sortOrder} onChange={(e) => set('sortOrder', e.target.value)} />
                 </Form.Group>
               </Col>
               <Col md={3} className="d-flex align-items-end">
-                <Form.Check type="switch" id="roadmap-isActive" label="Active" checked={form.isActive} onChange={e => set('isActive', e.target.checked)} className="mb-1" />
+                <Form.Check
+                  type="switch"
+                  id="roadmap-isActive"
+                  label="Active"
+                  checked={form.isActive}
+                  onChange={(e) => set('isActive', e.target.checked)}
+                  className="mb-1"
+                />
               </Col>
             </Row>
 
@@ -157,7 +211,9 @@ export default function RoadmapItemForm({ itemId, initialValues }: RoadmapItemFo
                 <Icon icon="solar:check-circle-bold" className="me-1" />
                 {isEdit ? 'Save Changes' : 'Create Item'}
               </Button>
-              <Button variant="outline-secondary" onClick={() => router.push('/community-care/roadmap')}>Cancel</Button>
+              <Button variant="outline-secondary" onClick={() => router.push('/community-care/roadmap')}>
+                Cancel
+              </Button>
             </div>
           </Form>
         </Card.Body>

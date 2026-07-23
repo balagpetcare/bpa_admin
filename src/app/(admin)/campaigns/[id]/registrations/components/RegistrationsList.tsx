@@ -1,9 +1,7 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import {
-  Alert, Badge, Button, Card, Col, Dropdown, Form, InputGroup, Row, Table,
-} from 'react-bootstrap'
+import { Alert, Badge, Button, Card, Col, Dropdown, Form, InputGroup, Row, Table } from 'react-bootstrap'
 import { Icon } from '@iconify/react'
 import Link from 'next/link'
 import PageHeader from '@/components/ui/PageHeader'
@@ -29,8 +27,12 @@ const STATUS_COLORS: Record<CampaignRegistrationStatus, string> = {
 }
 
 const PAY_COLORS: Record<string, string> = {
-  success: 'success', pending: 'warning', failed: 'danger',
-  cancelled: 'secondary', pending_review: 'info', refunded: 'info',
+  success: 'success',
+  pending: 'warning',
+  failed: 'danger',
+  cancelled: 'secondary',
+  pending_review: 'info',
+  refunded: 'info',
 }
 
 export default function RegistrationsList({ campaignId }: { campaignId: string }) {
@@ -67,11 +69,11 @@ export default function RegistrationsList({ campaignId }: { campaignId: string }
   function handleExport(type: 'csv' | 'xlsx') {
     setExportError(null)
     try {
-      const url = type === 'csv'
-        ? campaignsApi.exportCsvUrl(campaignId, buildExportQs())
-        : campaignsApi.exportXlsxUrl(campaignId, buildExportQs())
+      const url = type === 'csv' ? campaignsApi.exportCsvUrl(campaignId, buildExportQs()) : campaignsApi.exportXlsxUrl(campaignId, buildExportQs())
       const a = document.createElement('a')
-      a.href = url; a.download = ''; a.click()
+      a.href = url
+      a.download = ''
+      a.click()
     } catch {
       setExportError('Export failed. Please try again.')
     }
@@ -92,23 +94,22 @@ export default function RegistrationsList({ campaignId }: { campaignId: string }
     <div className="container-fluid">
       <PageHeader
         title="Registrations"
-        breadcrumbs={[
-          { label: 'Campaigns', href: '/campaigns' },
-          { label: 'Detail', href: `/campaigns/${campaignId}` },
-          { label: 'Registrations' },
-        ]}
+        breadcrumbs={[{ label: 'Campaigns', href: '/campaigns' }, { label: 'Detail', href: `/campaigns/${campaignId}` }, { label: 'Registrations' }]}
         action={
           <div className="d-flex gap-2 flex-wrap">
             <Link href={`/campaigns/${campaignId}/participants`} className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1">
-              <Icon icon="solar:users-group-two-rounded-bold" />Participants View
+              <Icon icon="solar:users-group-two-rounded-bold" />
+              Participants View
             </Link>
             {can('campaigns:read') && (
               <>
                 <Button size="sm" variant="outline-success" onClick={() => handleExport('csv')} className="d-flex align-items-center gap-1">
-                  <Icon icon="solar:file-text-bold" />CSV
+                  <Icon icon="solar:file-text-bold" />
+                  CSV
                 </Button>
                 <Button size="sm" variant="outline-primary" onClick={() => handleExport('xlsx')} className="d-flex align-items-center gap-1">
-                  <Icon icon="solar:file-bold" />Excel
+                  <Icon icon="solar:file-bold" />
+                  Excel
                 </Button>
               </>
             )}
@@ -116,8 +117,16 @@ export default function RegistrationsList({ campaignId }: { campaignId: string }
         }
       />
 
-      {exportError && <Alert variant="danger" dismissible onClose={() => setExportError(null)}>{exportError}</Alert>}
-      {actionError && <Alert variant="danger" dismissible onClose={() => setActionError(null)}>{actionError}</Alert>}
+      {exportError && (
+        <Alert variant="danger" dismissible onClose={() => setExportError(null)}>
+          {exportError}
+        </Alert>
+      )}
+      {actionError && (
+        <Alert variant="danger" dismissible onClose={() => setActionError(null)}>
+          {actionError}
+        </Alert>
+      )}
       <ApiErrorAlert error={error as ApiError | null} />
 
       {/* Payment summary bar */}
@@ -135,8 +144,10 @@ export default function RegistrationsList({ campaignId }: { campaignId: string }
                 <Card
                   className={`border-0 shadow-sm border-start border-4 border-${variant} cursor-pointer`}
                   style={{ cursor: 'pointer' }}
-                  onClick={() => { setPaymentStatus(key === paymentStatus ? '' : key); setPage(1) }}
-                >
+                  onClick={() => {
+                    setPaymentStatus(key === paymentStatus ? '' : key)
+                    setPage(1)
+                  }}>
                   <Card.Body className="py-2 px-3 d-flex align-items-center gap-3">
                     <Icon icon={icon} className={`fs-24 text-${variant}`} />
                     <div>
@@ -158,10 +169,26 @@ export default function RegistrationsList({ campaignId }: { campaignId: string }
         <Card.Body className="py-2">
           <div className="d-flex gap-2 flex-wrap align-items-center">
             <InputGroup style={{ maxWidth: 280 }} size="sm">
-              <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
-              <Form.Control placeholder="Booking ref, owner name, phone…" value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} />
+              <InputGroup.Text>
+                <Icon icon="solar:magnifer-bold" />
+              </InputGroup.Text>
+              <Form.Control
+                placeholder="Booking ref, owner name, phone…"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value)
+                  setPage(1)
+                }}
+              />
             </InputGroup>
-            <Form.Select size="sm" style={{ maxWidth: 170 }} value={status} onChange={e => { setStatus(e.target.value); setPage(1) }}>
+            <Form.Select
+              size="sm"
+              style={{ maxWidth: 170 }}
+              value={status}
+              onChange={(e) => {
+                setStatus(e.target.value)
+                setPage(1)
+              }}>
               <option value="">All Statuses</option>
               <option value="pending_payment">Pending Payment</option>
               <option value="paid">Paid</option>
@@ -173,7 +200,15 @@ export default function RegistrationsList({ campaignId }: { campaignId: string }
               <option value="cancelled">Cancelled</option>
             </Form.Select>
             {(search || status || paymentStatus) && (
-              <Button size="sm" variant="outline-secondary" onClick={() => { setSearch(''); setStatus(''); setPaymentStatus(''); setPage(1) }}>
+              <Button
+                size="sm"
+                variant="outline-secondary"
+                onClick={() => {
+                  setSearch('')
+                  setStatus('')
+                  setPaymentStatus('')
+                  setPage(1)
+                }}>
                 Reset
               </Button>
             )}
@@ -207,69 +242,88 @@ export default function RegistrationsList({ campaignId }: { campaignId: string }
                       <div className="text-muted">No registrations found</div>
                     </td>
                   </tr>
-                ) : items.map(r => (
-                  <tr key={r.id}>
-                    <td><code className="text-primary">{r.bookingNumber}</code></td>
-                    <td>
-                      <div className="fw-semibold">{r.owner.ownerName}</div>
-                      <small className="text-muted">{r.owner.mobile}</small>
-                    </td>
-                    <td>
-                      <div>{dayjs(r.session.sessionDate).format('MMM D, YYYY')}</div>
-                      <small className="text-muted">{r.session.startTime} · {r.session.venue?.name ?? '—'}</small>
-                    </td>
-                    <td>{r._count?.petBookings ?? r.petBookings?.length ?? 0}</td>
-                    <td>৳{r.totalAmountBdt}</td>
-                    <td>
-                      {r.payment ? (
-                        <Badge bg={PAY_COLORS[r.payment.status] ?? 'secondary'} className="text-capitalize">
-                          {r.payment.status}
+                ) : (
+                  items.map((r) => (
+                    <tr key={r.id}>
+                      <td>
+                        <code className="text-primary">{r.bookingNumber}</code>
+                      </td>
+                      <td>
+                        <div className="fw-semibold">{r.owner.ownerName}</div>
+                        <small className="text-muted">{r.owner.mobile}</small>
+                      </td>
+                      <td>
+                        <div>{dayjs(r.session.sessionDate).format('MMM D, YYYY')}</div>
+                        <small className="text-muted">
+                          {r.session.startTime} · {r.session.venue?.name ?? '—'}
+                        </small>
+                      </td>
+                      <td>{r._count?.petBookings ?? r.petBookings?.length ?? 0}</td>
+                      <td>৳{r.totalAmountBdt}</td>
+                      <td>
+                        {r.payment ? (
+                          <Badge bg={PAY_COLORS[r.payment.status] ?? 'secondary'} className="text-capitalize">
+                            {r.payment.status}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted small">—</span>
+                        )}
+                      </td>
+                      <td>
+                        <Badge bg={STATUS_COLORS[r.status]} className="text-capitalize">
+                          {r.status.replace(/_/g, ' ')}
                         </Badge>
-                      ) : <span className="text-muted small">—</span>}
-                    </td>
-                    <td>
-                      <Badge bg={STATUS_COLORS[r.status]} className="text-capitalize">
-                        {r.status.replace(/_/g, ' ')}
-                      </Badge>
-                    </td>
-                    <td><small>{dayjs(r.createdAt).format('MMM D, YYYY')}</small></td>
-                    <td>
-                      <Dropdown align="end">
-                        <Dropdown.Toggle size="sm" variant="soft-secondary" className="no-caret d-flex align-items-center gap-1">
-                          <Icon icon="solar:menu-dots-bold" />
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item as={Link} href={`/campaigns/${campaignId}/registrations/${r.id}`} className="d-flex align-items-center gap-2">
-                            <Icon icon="solar:eye-bold" className="text-primary" />View Detail
-                          </Dropdown.Item>
-                          {r.payment && (
-                            <Dropdown.Item className="d-flex align-items-center gap-2" disabled>
-                              <Icon icon="solar:bill-list-bold" className="text-success" />View Payment
-                            </Dropdown.Item>
-                          )}
-                          {can('campaigns:update') && r.status !== 'cancelled' && (
+                      </td>
+                      <td>
+                        <small>{dayjs(r.createdAt).format('MMM D, YYYY')}</small>
+                      </td>
+                      <td>
+                        <Dropdown align="end">
+                          <Dropdown.Toggle size="sm" variant="soft-secondary" className="no-caret d-flex align-items-center gap-1">
+                            <Icon icon="solar:menu-dots-bold" />
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu>
                             <Dropdown.Item
-                              className="d-flex align-items-center gap-2 text-danger"
-                              onClick={() => handleCancel(r.id)}
-                            >
-                              <Icon icon="solar:close-circle-bold" className="text-danger" />Cancel Booking
+                              as={Link}
+                              href={`/campaigns/${campaignId}/registrations/${r.id}`}
+                              className="d-flex align-items-center gap-2">
+                              <Icon icon="solar:eye-bold" className="text-primary" />
+                              View Detail
                             </Dropdown.Item>
-                          )}
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </tr>
-                ))}
+                            {r.payment && (
+                              <Dropdown.Item className="d-flex align-items-center gap-2" disabled>
+                                <Icon icon="solar:bill-list-bold" className="text-success" />
+                                View Payment
+                              </Dropdown.Item>
+                            )}
+                            {can('campaigns:update') && r.status !== 'cancelled' && (
+                              <Dropdown.Item className="d-flex align-items-center gap-2 text-danger" onClick={() => handleCancel(r.id)}>
+                                <Icon icon="solar:close-circle-bold" className="text-danger" />
+                                Cancel Booking
+                              </Dropdown.Item>
+                            )}
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </Table>
           </LoadingOverlay>
         </Card.Body>
         {meta && meta.totalPages > 1 && (
           <Card.Footer className="bg-white border-top d-flex justify-content-between align-items-center py-2">
-            <small className="text-muted">Page {page} of {meta.totalPages}</small>
+            <small className="text-muted">
+              Page {page} of {meta.totalPages}
+            </small>
             <div className="d-flex gap-1">
-              <Button size="sm" variant="soft-secondary" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>‹ Prev</Button>
-              <Button size="sm" variant="soft-secondary" disabled={page >= meta.totalPages} onClick={() => setPage(p => p + 1)}>Next ›</Button>
+              <Button size="sm" variant="soft-secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+                ‹ Prev
+              </Button>
+              <Button size="sm" variant="soft-secondary" disabled={page >= meta.totalPages} onClick={() => setPage((p) => p + 1)}>
+                Next ›
+              </Button>
             </div>
           </Card.Footer>
         )}

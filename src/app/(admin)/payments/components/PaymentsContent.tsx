@@ -23,13 +23,14 @@ export default function PaymentsContent() {
   const [refreshKey, setRefreshKey] = useState(0)
 
   const fetchFn = useCallback(
-    () => paymentsApi.list({
-      page,
-      limit: 20,
-      search: search || undefined,
-      status: status || undefined,
-      gateway: gateway || undefined,
-    }),
+    () =>
+      paymentsApi.list({
+        page,
+        limit: 20,
+        search: search || undefined,
+        status: status || undefined,
+        gateway: gateway || undefined,
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [page, search, status, gateway, refreshKey],
   )
@@ -40,10 +41,22 @@ export default function PaymentsContent() {
 
   const pendingCount = payments.filter((p) => p.status === 'pending').length
 
-  const handleView = (p: Payment) => { setSelected(p); setModalOpen(true) }
-  const handleSearch = (v: string) => { setSearch(v); setPage(1) }
-  const handleStatus = (v: PaymentStatus | '') => { setStatus(v); setPage(1) }
-  const handleGateway = (v: PaymentGateway | '') => { setGateway(v); setPage(1) }
+  const handleView = (p: Payment) => {
+    setSelected(p)
+    setModalOpen(true)
+  }
+  const handleSearch = (v: string) => {
+    setSearch(v)
+    setPage(1)
+  }
+  const handleStatus = (v: PaymentStatus | '') => {
+    setStatus(v)
+    setPage(1)
+  }
+  const handleGateway = (v: PaymentGateway | '') => {
+    setGateway(v)
+    setPage(1)
+  }
   const handleSynced = (updated: Payment) => {
     setSelected(updated)
     setRefreshKey((k) => k + 1)
@@ -91,20 +104,19 @@ export default function PaymentsContent() {
                 {meta.total} payment{meta.total !== 1 ? 's' : ''} · Page {meta.page} of {meta.totalPages}
               </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage(p => p - 1)}>‹</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage(p => p + 1)}>›</Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                  ‹
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  ›
+                </Button>
               </div>
             </div>
           )}
         </Card.Body>
       </Card>
 
-      <PaymentDetailsModal
-        payment={selected}
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSynced={handleSynced}
-      />
+      <PaymentDetailsModal payment={selected} isOpen={modalOpen} onClose={() => setModalOpen(false)} onSynced={handleSynced} />
     </div>
   )
 }

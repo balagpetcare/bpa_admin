@@ -28,11 +28,7 @@ const TOOLBAR_MODULES = {
   ],
 }
 
-const FORMATS = [
-  'header', 'bold', 'italic', 'underline', 'strike',
-  'list', 'indent', 'blockquote', 'code-block',
-  'link', 'image', 'align',
-]
+const FORMATS = ['header', 'bold', 'italic', 'underline', 'strike', 'list', 'indent', 'blockquote', 'code-block', 'link', 'image', 'align']
 
 export default function MailComposePage() {
   const router = useRouter()
@@ -55,14 +51,16 @@ export default function MailComposePage() {
   const [selectedTemplateKey, setSelectedTemplateKey] = useState('')
 
   // Attachments State
-  const [attachments, setAttachments] = useState<Array<{
-    id: string
-    filename: string
-    contentType: string
-    size: number
-    storagePath: string
-    url: string
-  }>>([])
+  const [attachments, setAttachments] = useState<
+    Array<{
+      id: string
+      filename: string
+      contentType: string
+      size: number
+      storagePath: string
+      url: string
+    }>
+  >([])
   const [uploadingFiles, setUploadingFiles] = useState(false)
   const [hasUploadError, setHasUploadError] = useState(false)
 
@@ -70,25 +68,22 @@ export default function MailComposePage() {
     setLoading(true)
     setError('')
     try {
-      const [accs, layouts] = await Promise.all([
-        mailApi.listAccounts(),
-        emailLayoutsApi.list(),
-      ])
+      const [accs, layouts] = await Promise.all([mailApi.listAccounts(), emailLayoutsApi.list()])
 
-      const activeAccounts = accs.filter(a => a.status === 'active')
+      const activeAccounts = accs.filter((a) => a.status === 'active')
       setAccounts(activeAccounts)
-      
-      const activeLayouts = layouts.filter(l => l.status === 'active')
+
+      const activeLayouts = layouts.filter((l) => l.status === 'active')
       setTemplates(activeLayouts)
 
       // Set default from account
-      const defaultAcc = activeAccounts.find(a => a.isDefault) || activeAccounts[0]
+      const defaultAcc = activeAccounts.find((a) => a.isDefault) || activeAccounts[0]
       if (defaultAcc) {
         setFromAccountId(defaultAcc.id)
       }
 
       // Set default template if exists
-      const defaultLayout = activeLayouts.find(l => l.isDefault)
+      const defaultLayout = activeLayouts.find((l) => l.isDefault)
       if (defaultLayout) {
         setSelectedTemplateKey(defaultLayout.id)
       }
@@ -124,7 +119,7 @@ export default function MailComposePage() {
         }
 
         const uploaded = await mediaApi.upload(file)
-        setAttachments(prev => [
+        setAttachments((prev) => [
           ...prev,
           {
             id: uploaded.id,
@@ -146,7 +141,7 @@ export default function MailComposePage() {
   }
 
   const handleRemoveAttachment = (index: number) => {
-    setAttachments(prev => {
+    setAttachments((prev) => {
       const updated = prev.filter((_, i) => i !== index)
       if (updated.length === 0) {
         setHasUploadError(false)
@@ -169,7 +164,10 @@ export default function MailComposePage() {
 
     const normalizeEmails = (input: string) => {
       if (!input) return undefined
-      const list = input.split(',').map(s => s.trim()).filter(Boolean)
+      const list = input
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
       return list.length > 0 ? list : undefined
     }
 
@@ -192,14 +190,14 @@ export default function MailComposePage() {
         subject,
         bodyHtml,
         plainText: bodyHtml.replace(/<[^>]*>/g, ''), // Plain text strip
-        attachmentIds: attachments.length > 0 ? attachments.map(a => a.id) : undefined,
+        attachmentIds: attachments.length > 0 ? attachments.map((a) => a.id) : undefined,
         useTemplate,
         layoutKey: useTemplate && selectedTemplateKey ? selectedTemplateKey : undefined,
       }
 
       await mailApi.sendMail(payload)
       setSuccess('Email sent successfully.')
-      
+
       // Redirect to sent logs
       setTimeout(() => {
         router.push('/mail/inbox?status=sent_success')
@@ -230,8 +228,22 @@ export default function MailComposePage() {
 
       <PageHeader title="Compose Email" breadcrumbs={[{ label: 'Mail' }, { label: 'Compose' }]} />
 
-      {error && <Alert variant="danger" dismissible onClose={() => { setError(''); setHasUploadError(false); }}>{error}</Alert>}
-      {success && <Alert variant="success" dismissible onClose={() => setSuccess('')}>{success}</Alert>}
+      {error && (
+        <Alert
+          variant="danger"
+          dismissible
+          onClose={() => {
+            setError('')
+            setHasUploadError(false)
+          }}>
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert variant="success" dismissible onClose={() => setSuccess('')}>
+          {success}
+        </Alert>
+      )}
 
       {loading ? (
         <div className="text-center py-5">
@@ -243,9 +255,7 @@ export default function MailComposePage() {
           <Card.Body className="text-center py-5">
             <Icon icon="solar:danger-bold" className="text-danger mb-3" width="48" />
             <h5 className="fw-bold">No Active Mail Accounts Configured</h5>
-            <p className="text-muted">
-              You must configure and activate at least one cPanel mail account before composing messages.
-            </p>
+            <p className="text-muted">You must configure and activate at least one cPanel mail account before composing messages.</p>
             <Button as={Link as any} href="/mail/accounts" variant="primary" size="sm">
               Go to Mail Accounts
             </Button>
@@ -262,13 +272,9 @@ export default function MailComposePage() {
                 <Col md={12}>
                   <Form.Group className="mb-3">
                     <Form.Label className="fw-semibold">From Account *</Form.Label>
-                    <Form.Select
-                      required
-                      value={fromAccountId}
-                      onChange={e => setFromAccountId(e.target.value)}
-                    >
+                    <Form.Select required value={fromAccountId} onChange={(e) => setFromAccountId(e.target.value)}>
                       <option value="">-- Choose Mailbox --</option>
-                      {accounts.map(acc => (
+                      {accounts.map((acc) => (
                         <option key={acc.id} value={acc.id}>
                           {acc.fromName} &lt;{acc.emailAddress}&gt;
                         </option>
@@ -285,7 +291,7 @@ export default function MailComposePage() {
                       required
                       placeholder="Enter recipient email addresses (comma-separated for multiple)"
                       value={toInput}
-                      onChange={e => setToInput(e.target.value)}
+                      onChange={(e) => setToInput(e.target.value)}
                     />
                   </Form.Group>
                 </Col>
@@ -297,11 +303,11 @@ export default function MailComposePage() {
                       type="text"
                       placeholder="Comma-separated emails (optional)"
                       value={ccInput}
-                      onChange={e => setCcInput(e.target.value)}
+                      onChange={(e) => setCcInput(e.target.value)}
                     />
                   </Form.Group>
                 </Col>
-                
+
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label className="fw-semibold">Bcc</Form.Label>
@@ -309,7 +315,7 @@ export default function MailComposePage() {
                       type="text"
                       placeholder="Comma-separated emails (optional)"
                       value={bccInput}
-                      onChange={e => setBccInput(e.target.value)}
+                      onChange={(e) => setBccInput(e.target.value)}
                     />
                   </Form.Group>
                 </Col>
@@ -322,7 +328,7 @@ export default function MailComposePage() {
                       required
                       placeholder="Enter message subject"
                       value={subject}
-                      onChange={e => setSubject(e.target.value)}
+                      onChange={(e) => setSubject(e.target.value)}
                     />
                   </Form.Group>
                 </Col>
@@ -351,18 +357,15 @@ export default function MailComposePage() {
                     id="useTemplateSwitch"
                     label="Wrap with centralized Email Layout"
                     checked={useTemplate}
-                    onChange={e => setUseTemplate(e.target.checked)}
+                    onChange={(e) => setUseTemplate(e.target.checked)}
                   />
                 </Col>
                 <Col md={8}>
                   {useTemplate && (
                     <Form.Group className="mb-0">
-                      <Form.Select
-                        value={selectedTemplateKey}
-                        onChange={e => setSelectedTemplateKey(e.target.value)}
-                      >
+                      <Form.Select value={selectedTemplateKey} onChange={(e) => setSelectedTemplateKey(e.target.value)}>
                         <option value="">-- Choose Active Template --</option>
-                        {templates.map(tpl => (
+                        {templates.map((tpl) => (
                           <option key={tpl.id} value={tpl.id}>
                             {tpl.name} ({tpl.locale === 'bn' ? 'Bangla' : 'English'})
                           </option>
@@ -379,12 +382,7 @@ export default function MailComposePage() {
                 <div className="border border-dashed p-4 text-center rounded bg-white">
                   <Icon icon="solar:upload-minimalistic-linear" width="40" className="text-secondary mb-2" />
                   <div>
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      disabled={uploadingFiles}
-                      style={{ position: 'relative', overflow: 'hidden' }}
-                    >
+                    <Button variant="outline-primary" size="sm" disabled={uploadingFiles} style={{ position: 'relative', overflow: 'hidden' }}>
                       {uploadingFiles ? 'Uploading Files...' : 'Choose Files'}
                       <input
                         type="file"

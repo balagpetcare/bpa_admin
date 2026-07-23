@@ -22,21 +22,45 @@ export default function OverviewTrafficTab({ overview, traffic, loading }: Overv
     donations: { total: 0, growth: 0 },
     campaigns: { active: 0, registrations: 0 },
     petCensus: { total: 0, growth: 0 },
-    support: { total: 0, growth: 0 }
+    support: { total: 0, growth: 0 },
   }
 
   const t = traffic ?? {
     trafficPoints: [],
     topPages: [],
     deviceBreakdown: [],
-    referrers: []
+    referrers: [],
   }
 
   const kpis = [
-    { label: 'Total Users', value: o.users.total, sub: `+${o.users.growth} new users`, icon: 'solar:users-group-two-rounded-bold-duotone', color: 'primary' },
-    { label: 'Membership Growth', value: o.memberships.total, sub: `+${o.memberships.growth} new members`, icon: 'solar:card-bold-duotone', color: 'info' },
-    { label: 'Donations Received', value: o.donations.total, sub: `+${o.donations.growth} today/period`, icon: 'solar:hand-money-bold-duotone', color: 'success' },
-    { label: 'Contact Inquiries', value: o.support.total, sub: `+${o.support.growth} active tickets`, icon: 'solar:inbox-unread-bold-duotone', color: 'danger' }
+    {
+      label: 'Total Users',
+      value: o.users.total,
+      sub: `+${o.users.growth} new users`,
+      icon: 'solar:users-group-two-rounded-bold-duotone',
+      color: 'primary',
+    },
+    {
+      label: 'Membership Growth',
+      value: o.memberships.total,
+      sub: `+${o.memberships.growth} new members`,
+      icon: 'solar:card-bold-duotone',
+      color: 'info',
+    },
+    {
+      label: 'Donations Received',
+      value: o.donations.total,
+      sub: `+${o.donations.growth} today/period`,
+      icon: 'solar:hand-money-bold-duotone',
+      color: 'success',
+    },
+    {
+      label: 'Contact Inquiries',
+      value: o.support.total,
+      sub: `+${o.support.growth} active tickets`,
+      icon: 'solar:inbox-unread-bold-duotone',
+      color: 'danger',
+    },
   ]
 
   // Apex Traffic chart
@@ -52,19 +76,19 @@ export default function OverviewTrafficTab({ overview, traffic, loading }: Overv
       categories,
       labels: { rotate: -30, style: { fontSize: '10px', colors: '#6c757d' } },
       axisBorder: { show: false },
-      axisTicks: { show: false }
+      axisTicks: { show: false },
     },
     yaxis: { labels: { style: { colors: '#6c757d' } } },
     colors: ['#0d6efd', '#20c997'],
     grid: { borderColor: '#f1f1f1', strokeDashArray: 3 },
     legend: { position: 'top', horizontalAlign: 'right' },
     dataLabels: { enabled: false },
-    tooltip: { shared: true }
+    tooltip: { shared: true },
   }
 
   const trafficChartSeries = [
     { name: 'Page Views', data: views },
-    { name: 'Unique Visitors', data: visitors }
+    { name: 'Unique Visitors', data: visitors },
   ]
 
   // Device breakdown
@@ -99,8 +123,12 @@ export default function OverviewTrafficTab({ overview, traffic, loading }: Overv
             <Card.Header className="bg-transparent border-light py-3 d-flex align-items-center justify-content-between">
               <h6 className="mb-0 fw-bold text-dark">Website Traffic Performance</h6>
               <div className="d-flex gap-2 align-items-center">
-                <Badge bg="primary-subtle" className="text-primary border border-primary border-primary-subtle fs-11">Page Views</Badge>
-                <Badge bg="success-subtle" className="text-success border border-success border-success-subtle fs-11">Unique Visitors</Badge>
+                <Badge bg="primary-subtle" className="text-primary border border-primary border-primary-subtle fs-11">
+                  Page Views
+                </Badge>
+                <Badge bg="success-subtle" className="text-success border border-success border-success-subtle fs-11">
+                  Unique Visitors
+                </Badge>
               </div>
             </Card.Header>
             <Card.Body>
@@ -137,15 +165,15 @@ export default function OverviewTrafficTab({ overview, traffic, loading }: Overv
                       <div key={d.device} className="small">
                         <div className="d-flex justify-content-between mb-1">
                           <span className="text-dark fw-semibold">{d.device}</span>
-                          <span className="text-muted">{percent}% ({d.count})</span>
+                          <span className="text-muted">
+                            {percent}% ({d.count})
+                          </span>
                         </div>
                         <ProgressBar now={percent} variant={variant} style={{ height: '5px' }} />
                       </div>
                     )
                   })}
-                  {t.deviceBreakdown.length === 0 && (
-                    <span className="text-muted text-center py-2 d-block fs-12">No device logs available.</span>
-                  )}
+                  {t.deviceBreakdown.length === 0 && <span className="text-muted text-center py-2 d-block fs-12">No device logs available.</span>}
                 </div>
               </div>
 
@@ -156,15 +184,15 @@ export default function OverviewTrafficTab({ overview, traffic, loading }: Overv
                   {t.referrers.map((r, idx) => (
                     <div key={r.referrer} className="d-flex align-items-center justify-content-between py-1 border-bottom border-light">
                       <span className="text-dark small text-truncate fw-semibold">
-                        <span className="text-muted me-2">#{idx+1}</span>
+                        <span className="text-muted me-2">#{idx + 1}</span>
                         {r.referrer}
                       </span>
-                      <Badge bg="secondary-subtle" className="text-secondary border border-secondary-subtle fs-11">{r.count} sessions</Badge>
+                      <Badge bg="secondary-subtle" className="text-secondary border border-secondary-subtle fs-11">
+                        {r.count} sessions
+                      </Badge>
                     </div>
                   ))}
-                  {t.referrers.length === 0 && (
-                    <span className="text-muted text-center py-2 d-block fs-12">No referrer logs.</span>
-                  )}
+                  {t.referrers.length === 0 && <span className="text-muted text-center py-2 d-block fs-12">No referrer logs.</span>}
                 </div>
               </div>
             </Card.Body>
@@ -191,7 +219,7 @@ export default function OverviewTrafficTab({ overview, traffic, loading }: Overv
                   {t.topPages.map((page, idx) => (
                     <tr key={page.path} className="border-bottom border-light">
                       <td className="ps-3 small fw-semibold text-dark">
-                        <span className="text-muted me-2">#{idx+1}</span>
+                        <span className="text-muted me-2">#{idx + 1}</span>
                         <code>{page.path}</code>
                       </td>
                       <td className="text-end fw-bold text-dark pe-3">{page.pageViews.toLocaleString()}</td>
@@ -199,7 +227,9 @@ export default function OverviewTrafficTab({ overview, traffic, loading }: Overv
                   ))}
                   {t.topPages.length === 0 && (
                     <tr>
-                      <td colSpan={2} className="text-center text-muted py-4">No page logs recorded.</td>
+                      <td colSpan={2} className="text-center text-muted py-4">
+                        No page logs recorded.
+                      </td>
                     </tr>
                   )}
                 </tbody>

@@ -21,68 +21,67 @@ export default function RolesTable({ data, loading, onEdit, onDeleted }: RolesTa
 
   return (
     <LoadingOverlay loading={loading}>
-    <div className="table-responsive">
-      <Table hover className="table-centered align-middle mb-0">
-        <thead className="table-light">
-          <tr>
-            <th>Role Name</th>
-            <th>Description</th>
-            <th>Permissions</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.length === 0 ? (
+      <div className="table-responsive">
+        <Table hover className="table-centered align-middle mb-0">
+          <thead className="table-light">
             <tr>
-              <td colSpan={4}>
-                <EmptyState
-                  icon="solar:shield-keyhole-minimalistic-bold-duotone"
-                  title="No roles found"
-                  description="Create the first role to start managing permissions."
-                />
-              </td>
+              <th>Role Name</th>
+              <th>Description</th>
+              <th>Permissions</th>
+              <th>Actions</th>
             </tr>
-          ) : (
-            data.map((role) => (
-              <tr key={role.id}>
-                <td className="fw-semibold">{role.name}</td>
-                <td className="text-muted">{role.description ?? <span className="text-muted fst-italic">No description</span>}</td>
-                <td>
-                  <Badge bg="info" className="fw-normal">
-                    {role.permissions.length} permission{role.permissions.length !== 1 ? 's' : ''}
-                  </Badge>
-                </td>
-                <td>
-                  <div className="d-flex gap-1">
-                    {can('roles:update') && (
-                      <Button variant="soft-primary" size="sm" onClick={() => onEdit(role)} title="Edit">
-                        <Icon icon="solar:pen-bold" />
-                      </Button>
-                    )}
-                    {can('roles:delete') && (
-                      <Button
-                        variant="soft-danger"
-                        size="sm"
-                        title="Delete"
-                        onClick={async () => {
-                          const ok = await confirmDelete(role.name)
-                          if (ok) {
-                            await rolesApi.remove(role.id)
-                            onDeleted()
-                          }
-                        }}
-                      >
-                        <Icon icon="solar:trash-bin-trash-bold" />
-                      </Button>
-                    )}
-                  </div>
+          </thead>
+          <tbody>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={4}>
+                  <EmptyState
+                    icon="solar:shield-keyhole-minimalistic-bold-duotone"
+                    title="No roles found"
+                    description="Create the first role to start managing permissions."
+                  />
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </Table>
-    </div>
+            ) : (
+              data.map((role) => (
+                <tr key={role.id}>
+                  <td className="fw-semibold">{role.name}</td>
+                  <td className="text-muted">{role.description ?? <span className="text-muted fst-italic">No description</span>}</td>
+                  <td>
+                    <Badge bg="info" className="fw-normal">
+                      {role.permissions.length} permission{role.permissions.length !== 1 ? 's' : ''}
+                    </Badge>
+                  </td>
+                  <td>
+                    <div className="d-flex gap-1">
+                      {can('roles:update') && (
+                        <Button variant="soft-primary" size="sm" onClick={() => onEdit(role)} title="Edit">
+                          <Icon icon="solar:pen-bold" />
+                        </Button>
+                      )}
+                      {can('roles:delete') && (
+                        <Button
+                          variant="soft-danger"
+                          size="sm"
+                          title="Delete"
+                          onClick={async () => {
+                            const ok = await confirmDelete(role.name)
+                            if (ok) {
+                              await rolesApi.remove(role.id)
+                              onDeleted()
+                            }
+                          }}>
+                          <Icon icon="solar:trash-bin-trash-bold" />
+                        </Button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </Table>
+      </div>
     </LoadingOverlay>
   )
 }

@@ -8,7 +8,12 @@ import { Icon } from '@iconify/react'
 import { getPublishIssues } from '../campaign-workflow'
 
 export default function CampaignReviewStep() {
-  const { form: { getValues }, isEdit, campaign, goToStep } = useWizardContext()
+  const {
+    form: { getValues },
+    isEdit,
+    campaign,
+    goToStep,
+  } = useWizardContext()
   const values = getValues()
   const issues = getPublishIssues(values, campaign, new Date(), values.status, undefined)
   const warnings = issues.filter((item) => item.severity === 'warning')
@@ -16,10 +21,12 @@ export default function CampaignReviewStep() {
 
   return (
     <Card>
-      <Card.Header><h5 className="mb-0">Review & Publish</h5></Card.Header>
+      <Card.Header>
+        <h5 className="mb-0">Review & Publish</h5>
+      </Card.Header>
       <Card.Body>
         <Alert variant="info">
-          Please review the campaign details before completing the setup. 
+          Please review the campaign details before completing the setup.
           {values.status === 'published' && ' This campaign will be immediately visible to the public.'}
         </Alert>
 
@@ -35,7 +42,11 @@ export default function CampaignReviewStep() {
                 <li key={item.message}>
                   {item.message}
                   {isPlanIssue && (
-                    <Button variant="link" className="p-0 ms-2 text-decoration-none align-baseline" style={{ fontSize: 'inherit' }} onClick={() => goToStep('plans')}>
+                    <Button
+                      variant="link"
+                      className="p-0 ms-2 text-decoration-none align-baseline"
+                      style={{ fontSize: 'inherit' }}
+                      onClick={() => goToStep('plans')}>
                       Fix in Plans step
                     </Button>
                   )}
@@ -49,30 +60,58 @@ export default function CampaignReviewStep() {
           <Col md={6}>
             <h6 className="fw-bold border-bottom pb-2">Campaign Identity</h6>
             <div className="d-flex flex-column gap-1">
-              <div><strong>Slug:</strong> {values.slug || '-'}</div>
-              <div><strong>Title (EN):</strong> {values.titleEn || '-'}</div>
-              <div><strong>Title (BN):</strong> {values.titleBn || '-'}</div>
-              <div><strong>Status:</strong> <span className="badge bg-secondary">{values.status}</span></div>
+              <div>
+                <strong>Slug:</strong> {values.slug || '-'}
+              </div>
+              <div>
+                <strong>Title (EN):</strong> {values.titleEn || '-'}
+              </div>
+              <div>
+                <strong>Title (BN):</strong> {values.titleBn || '-'}
+              </div>
+              <div>
+                <strong>Status:</strong> <span className="badge bg-secondary">{values.status}</span>
+              </div>
             </div>
           </Col>
 
           <Col md={6}>
             <h6 className="fw-bold border-bottom pb-2">Schedule</h6>
             <div className="d-flex flex-column gap-1">
-              <div><strong>Offer Starts:</strong> {values.offerStartAt ? new Date(values.offerStartAt).toLocaleString() : '-'}</div>
-              <div><strong>Offer Ends:</strong> {values.offerEndAt ? new Date(values.offerEndAt).toLocaleString() : '-'}</div>
-              <div><strong>App Starts:</strong> {values.applicationStartAt ? new Date(values.applicationStartAt).toLocaleString() : '-'}</div>
-              <div><strong>App Ends:</strong> {values.applicationEndAt ? new Date(values.applicationEndAt).toLocaleString() : '-'}</div>
+              <div>
+                <strong>Offer Starts:</strong> {values.offerStartAt ? new Date(values.offerStartAt).toLocaleString() : '-'}
+              </div>
+              <div>
+                <strong>Offer Ends:</strong> {values.offerEndAt ? new Date(values.offerEndAt).toLocaleString() : '-'}
+              </div>
+              <div>
+                <strong>App Starts:</strong> {values.applicationStartAt ? new Date(values.applicationStartAt).toLocaleString() : '-'}
+              </div>
+              <div>
+                <strong>App Ends:</strong> {values.applicationEndAt ? new Date(values.applicationEndAt).toLocaleString() : '-'}
+              </div>
             </div>
           </Col>
-          
+
           <Col md={6}>
             <h6 className="fw-bold border-bottom pb-2">Support Info</h6>
             <div className="d-flex flex-column gap-1">
-              <div><Icon icon="solar:phone-bold" className="me-2 text-muted" />{values.supportPhone || '-'}</div>
-              <div><Icon icon="solar:letter-bold" className="me-2 text-muted" />{values.supportEmail || '-'}</div>
-              <div><Icon icon="bi:whatsapp" className="me-2 text-muted" />{values.supportWhatsapp || '-'}</div>
-              <div><Icon icon="solar:map-point-bold" className="me-2 text-muted" />{values.supportAddress || '-'}</div>
+              <div>
+                <Icon icon="solar:phone-bold" className="me-2 text-muted" />
+                {values.supportPhone || '-'}
+              </div>
+              <div>
+                <Icon icon="solar:letter-bold" className="me-2 text-muted" />
+                {values.supportEmail || '-'}
+              </div>
+              <div>
+                <Icon icon="bi:whatsapp" className="me-2 text-muted" />
+                {values.supportWhatsapp || '-'}
+              </div>
+              <div>
+                <Icon icon="solar:map-point-bold" className="me-2 text-muted" />
+                {values.supportAddress || '-'}
+              </div>
             </div>
           </Col>
 

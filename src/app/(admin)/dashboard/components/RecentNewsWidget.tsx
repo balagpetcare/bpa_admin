@@ -9,7 +9,9 @@ export default function RecentNewsWidget({ items }: { items: NewsListItem[] }) {
     <Card className="h-100">
       <Card.Header className="d-flex justify-content-between align-items-center">
         <h5 className="mb-0">Recent News</h5>
-        <Link href="/cms/news" className="text-muted small">View all →</Link>
+        <Link href="/cms/news" className="text-muted small">
+          View all →
+        </Link>
       </Card.Header>
       <Card.Body className="p-0">
         {items.length === 0 ? (

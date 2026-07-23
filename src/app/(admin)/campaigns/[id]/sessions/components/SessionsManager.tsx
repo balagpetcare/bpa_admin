@@ -28,33 +28,60 @@ export default function SessionsManager({ campaignId }: { campaignId: string }) 
   const { mutate, loading: saving } = useApiMutation<unknown, unknown>()
 
   const sessionsFn = useCallback(() => campaignsApi.listSessions(campaignId), [campaignId])
-  const venuesFn = useCallback(() => locationsApi.listVenues({
-    isActive: true,
-    divisionId: venueLocationFilter.divisionId,
-    districtId: venueLocationFilter.districtId,
-    upazilaId: venueLocationFilter.upazilaId,
-    unionId: venueLocationFilter.unionId,
-    cityCorporationId: venueLocationFilter.cityCorporationId,
-    cityZoneId: venueLocationFilter.cityZoneId,
-    wardId: venueLocationFilter.wardId,
-  }), [venueLocationFilter])
+  const venuesFn = useCallback(
+    () =>
+      locationsApi.listVenues({
+        isActive: true,
+        divisionId: venueLocationFilter.divisionId,
+        districtId: venueLocationFilter.districtId,
+        upazilaId: venueLocationFilter.upazilaId,
+        unionId: venueLocationFilter.unionId,
+        cityCorporationId: venueLocationFilter.cityCorporationId,
+        cityZoneId: venueLocationFilter.cityZoneId,
+        wardId: venueLocationFilter.wardId,
+      }),
+    [venueLocationFilter],
+  )
   const { data: sessions, loading, error, refetch } = useApi(sessionsFn, [campaignId])
   const { data: venues } = useApi(venuesFn, [venueLocationFilter])
 
-  function openCreate() { setEditing(null); setForm(EMPTY); setVenueLocationFilter({}); setShowModal(true) }
+  function openCreate() {
+    setEditing(null)
+    setForm(EMPTY)
+    setVenueLocationFilter({})
+    setShowModal(true)
+  }
   function openEdit(s: CampaignSession) {
     setEditing(s)
-    setForm({ venueId: s.venue?.id ?? '', sessionDate: s.sessionDate.slice(0, 10), startTime: s.startTime, endTime: s.endTime, capacity: String(s.capacity), notes: s.notes ?? '' })
+    setForm({
+      venueId: s.venue?.id ?? '',
+      sessionDate: s.sessionDate.slice(0, 10),
+      startTime: s.startTime,
+      endTime: s.endTime,
+      capacity: String(s.capacity),
+      notes: s.notes ?? '',
+    })
     setVenueLocationFilter({})
     setShowModal(true)
   }
 
   async function handleSave() {
     if (!form.venueId || !form.sessionDate) return
-    const dto = { venueId: form.venueId, sessionDate: form.sessionDate, startTime: form.startTime, endTime: form.endTime, capacity: Number(form.capacity), notes: form.notes || undefined }
-    if (editing) { await mutate(() => campaignsApi.updateSession(campaignId, editing.id, dto), undefined) }
-    else { await mutate(() => campaignsApi.createSession(campaignId, dto), undefined) }
-    setShowModal(false); refetch()
+    const dto = {
+      venueId: form.venueId,
+      sessionDate: form.sessionDate,
+      startTime: form.startTime,
+      endTime: form.endTime,
+      capacity: Number(form.capacity),
+      notes: form.notes || undefined,
+    }
+    if (editing) {
+      await mutate(() => campaignsApi.updateSession(campaignId, editing.id, dto), undefined)
+    } else {
+      await mutate(() => campaignsApi.createSession(campaignId, dto), undefined)
+    }
+    setShowModal(false)
+    refetch()
   }
 
   async function handleDelete(sessionId: string) {
@@ -71,7 +98,8 @@ export default function SessionsManager({ campaignId }: { campaignId: string }) 
         action={
           can('campaign_sessions:create') ? (
             <Button variant="primary" onClick={openCreate}>
-              <Icon icon="solar:add-circle-bold" className="me-1" />Add Session
+              <Icon icon="solar:add-circle-bold" className="me-1" />
+              Add Session
             </Button>
           ) : undefined
         }
@@ -82,27 +110,52 @@ export default function SessionsManager({ campaignId }: { campaignId: string }) 
           <LoadingOverlay loading={loading}>
             <Table hover className="table-centered align-middle mb-0">
               <thead className="table-light">
-                <tr><th>Date</th><th>Time</th><th>Venue</th><th>Capacity</th><th>Notes</th><th className="text-end">Actions</th></tr>
+                <tr>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Venue</th>
+                  <th>Capacity</th>
+                  <th>Notes</th>
+                  <th className="text-end">Actions</th>
+                </tr>
               </thead>
               <tbody>
                 {(sessions ?? []).length === 0 ? (
-                  <tr><td colSpan={6} className="text-center py-4 text-muted">No sessions yet</td></tr>
-                ) : (sessions ?? []).map((s: CampaignSession) => (
-                  <tr key={s.id}>
-                    <td>{new Date(s.sessionDate).toLocaleDateString()}</td>
-                    <td>{s.startTime} – {s.endTime}</td>
-                    <td>
-                      {s.venue?.name ?? <span className="text-muted">—</span>}
-                      <div className="text-muted small">{s.venue?.location?.nameEn ?? s.venue?.zone?.cityCorporation?.name}</div>
-                    </td>
-                    <td>{s.bookedCount} / {s.capacity}</td>
-                    <td>{s.notes ?? <span className="text-muted">—</span>}</td>
-                    <td className="text-end">
-                      {can('campaign_sessions:update') && <Button variant="soft-primary" size="sm" className="me-1" onClick={() => openEdit(s)}><Icon icon="solar:pen-bold" /></Button>}
-                      {can('campaign_sessions:delete') && <Button variant="soft-danger" size="sm" onClick={() => handleDelete(s.id)}><Icon icon="solar:trash-bin-trash-bold" /></Button>}
+                  <tr>
+                    <td colSpan={6} className="text-center py-4 text-muted">
+                      No sessions yet
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  (sessions ?? []).map((s: CampaignSession) => (
+                    <tr key={s.id}>
+                      <td>{new Date(s.sessionDate).toLocaleDateString()}</td>
+                      <td>
+                        {s.startTime} – {s.endTime}
+                      </td>
+                      <td>
+                        {s.venue?.name ?? <span className="text-muted">—</span>}
+                        <div className="text-muted small">{s.venue?.location?.nameEn ?? s.venue?.zone?.cityCorporation?.name}</div>
+                      </td>
+                      <td>
+                        {s.bookedCount} / {s.capacity}
+                      </td>
+                      <td>{s.notes ?? <span className="text-muted">—</span>}</td>
+                      <td className="text-end">
+                        {can('campaign_sessions:update') && (
+                          <Button variant="soft-primary" size="sm" className="me-1" onClick={() => openEdit(s)}>
+                            <Icon icon="solar:pen-bold" />
+                          </Button>
+                        )}
+                        {can('campaign_sessions:delete') && (
+                          <Button variant="soft-danger" size="sm" onClick={() => handleDelete(s.id)}>
+                            <Icon icon="solar:trash-bin-trash-bold" />
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </Table>
           </LoadingOverlay>
@@ -110,7 +163,9 @@ export default function SessionsManager({ campaignId }: { campaignId: string }) 
       </Card>
 
       <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton><Modal.Title>{editing ? 'Edit' : 'Add'} Session</Modal.Title></Modal.Header>
+        <Modal.Header closeButton>
+          <Modal.Title>{editing ? 'Edit' : 'Add'} Session</Modal.Title>
+        </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3">
@@ -119,11 +174,12 @@ export default function SessionsManager({ campaignId }: { campaignId: string }) 
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Venue</Form.Label>
-              <Form.Select value={form.venueId} onChange={(e) => setForm(f => ({ ...f, venueId: e.target.value }))}>
+              <Form.Select value={form.venueId} onChange={(e) => setForm((f) => ({ ...f, venueId: e.target.value }))}>
                 <option value="">Select venue</option>
                 {(venues ?? []).map((v: Venue) => (
                   <option key={v.id} value={v.id}>
-                    {v.name}{v.location ? ` — ${v.location.nameEn}` : ''}
+                    {v.name}
+                    {v.location ? ` — ${v.location.nameEn}` : ''}
                   </option>
                 ))}
               </Form.Select>
@@ -135,31 +191,35 @@ export default function SessionsManager({ campaignId }: { campaignId: string }) 
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Date</Form.Label>
-              <Form.Control type="date" value={form.sessionDate} onChange={(e) => setForm(f => ({ ...f, sessionDate: e.target.value }))} />
+              <Form.Control type="date" value={form.sessionDate} onChange={(e) => setForm((f) => ({ ...f, sessionDate: e.target.value }))} />
             </Form.Group>
             <Row className="g-2 mb-3">
               <Col>
                 <Form.Label>Start Time</Form.Label>
-                <Form.Control type="time" value={form.startTime} onChange={(e) => setForm(f => ({ ...f, startTime: e.target.value }))} />
+                <Form.Control type="time" value={form.startTime} onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))} />
               </Col>
               <Col>
                 <Form.Label>End Time</Form.Label>
-                <Form.Control type="time" value={form.endTime} onChange={(e) => setForm(f => ({ ...f, endTime: e.target.value }))} />
+                <Form.Control type="time" value={form.endTime} onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))} />
               </Col>
             </Row>
             <Form.Group className="mb-3">
               <Form.Label>Capacity</Form.Label>
-              <Form.Control type="number" min="1" value={form.capacity} onChange={(e) => setForm(f => ({ ...f, capacity: e.target.value }))} />
+              <Form.Control type="number" min="1" value={form.capacity} onChange={(e) => setForm((f) => ({ ...f, capacity: e.target.value }))} />
             </Form.Group>
             <Form.Group>
               <Form.Label>Notes</Form.Label>
-              <Form.Control as="textarea" rows={2} value={form.notes} onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))} />
+              <Form.Control as="textarea" rows={2} value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving…' : editing ? 'Update' : 'Create'}</Button>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving…' : editing ? 'Update' : 'Create'}
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

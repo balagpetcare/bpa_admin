@@ -31,7 +31,9 @@ const PermissionsList = () => {
       <Col xl={12}>
         <Card>
           <div className="d-flex card-header justify-content-between align-items-center">
-            <CardTitle as={'h4'} className="mb-0">All Permissions</CardTitle>
+            <CardTitle as={'h4'} className="mb-0">
+              All Permissions
+            </CardTitle>
           </div>
           <div className="table-responsive">
             <table className="table align-middle mb-0 table-hover table-centered">

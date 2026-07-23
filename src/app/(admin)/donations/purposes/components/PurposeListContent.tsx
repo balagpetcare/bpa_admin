@@ -32,7 +32,8 @@ export default function PurposeListContent() {
         breadcrumbs={[{ label: 'Donations' }, { label: 'Purposes' }]}
         action={
           <Link href="/donations/purposes/create" className="btn btn-primary btn-sm">
-            <Icon icon="solar:add-circle-bold" className="me-1" />New Purpose
+            <Icon icon="solar:add-circle-bold" className="me-1" />
+            New Purpose
           </Link>
         }
       />
@@ -55,7 +56,11 @@ export default function PurposeListContent() {
               </thead>
               <tbody>
                 {(purposes ?? []).length === 0 ? (
-                  <tr><td colSpan={7} className="text-center py-4 text-muted">No purposes found.</td></tr>
+                  <tr>
+                    <td colSpan={7} className="text-center py-4 text-muted">
+                      No purposes found.
+                    </td>
+                  </tr>
                 ) : (
                   (purposes ?? []).map((p: DonationPurpose, idx: number) => (
                     <tr key={p.id} style={{ cursor: 'pointer' }} onClick={() => router.push(`/donations/purposes/${p.id}`)}>
@@ -63,19 +68,23 @@ export default function PurposeListContent() {
                       <td>
                         <div className="fw-semibold">{p.titleEn}</div>
                         {p.titleBn && <div className="text-muted small">{p.titleBn}</div>}
-                        <div className="text-muted" style={{ fontSize: '11px' }}>{p.slug}</div>
+                        <div className="text-muted" style={{ fontSize: '11px' }}>
+                          {p.slug}
+                        </div>
                       </td>
                       <td>
-                        {p.icon
-                          ? <span className="badge bg-light text-dark font-monospace">{p.icon}</span>
-                          : <span className="text-muted">—</span>}
+                        {p.icon ? <span className="badge bg-light text-dark font-monospace">{p.icon}</span> : <span className="text-muted">—</span>}
                       </td>
                       <td>
-                        {p.suggestedAmounts?.length
-                          ? p.suggestedAmounts.map((a) => (
-                              <Badge key={a} bg="light" text="dark" className="me-1">৳{a.toLocaleString()}</Badge>
-                            ))
-                          : <span className="text-muted small">—</span>}
+                        {p.suggestedAmounts?.length ? (
+                          p.suggestedAmounts.map((a) => (
+                            <Badge key={a} bg="light" text="dark" className="me-1">
+                              ৳{a.toLocaleString()}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-muted small">—</span>
+                        )}
                       </td>
                       <td onClick={(e) => e.stopPropagation()}>
                         <Badge bg={p.isActive ? 'success-subtle' : 'secondary-subtle'} text={p.isActive ? 'success' : 'secondary'}>

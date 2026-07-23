@@ -33,26 +33,35 @@ export default function MediaPageContent() {
 
   const mimeFilter = MIME_FILTER[filterType]
 
-  const fetchFn = useCallback(
-    () => mediaApi.list({ page, limit: 30, search: search || undefined, mimeType: mimeFilter }),
-    [page, search, mimeFilter],
-  )
+  const fetchFn = useCallback(() => mediaApi.list({ page, limit: 30, search: search || undefined, mimeType: mimeFilter }), [page, search, mimeFilter])
 
   const { data, loading, error, refetch } = useApi(fetchFn, [page, search, mimeFilter])
 
   const files = data?.data ?? []
   const meta = data?.meta ?? null
 
-  const handleSearch = (val: string) => { setSearch(val); setPage(1) }
-  const handleFilterChange = (type: MediaFilterType) => { setFilterType(type); setPage(1) }
+  const handleSearch = (val: string) => {
+    setSearch(val)
+    setPage(1)
+  }
+  const handleFilterChange = (type: MediaFilterType) => {
+    setFilterType(type)
+    setPage(1)
+  }
 
   const handleUploaded = (newFiles: MediaFile[]) => {
     void newFiles
     refetch()
   }
 
-  const handleView = (file: MediaFile) => { setSelectedFile(file); setDetailOpen(true) }
-  const handleUpdated = (updated: MediaFile) => { setSelectedFile(updated); refetch() }
+  const handleView = (file: MediaFile) => {
+    setSelectedFile(file)
+    setDetailOpen(true)
+  }
+  const handleUpdated = (updated: MediaFile) => {
+    setSelectedFile(updated)
+    refetch()
+  }
 
   return (
     <div className="container-fluid">
@@ -83,11 +92,7 @@ export default function MediaPageContent() {
                 <InputGroup.Text>
                   <Icon icon="solar:magnifer-bold" />
                 </InputGroup.Text>
-                <Form.Control
-                  placeholder="Search files..."
-                  value={search}
-                  onChange={(e) => handleSearch(e.target.value)}
-                />
+                <Form.Control placeholder="Search files..." value={search} onChange={(e) => handleSearch(e.target.value)} />
               </InputGroup>
             </Col>
           </Row>

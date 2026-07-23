@@ -35,16 +35,17 @@ export default function MembershipCampaignWizardHeader() {
 
             return (
               <React.Fragment key={step.id}>
-                <div 
+                <div
                   className={`d-flex flex-column align-items-center position-relative ${isActive || isCompleted ? 'cursor-pointer' : ''}`}
                   style={{ minWidth: '120px', flex: 1, cursor: isCompleted || isActive ? 'pointer' : 'default' }}
                   onClick={() => {
                     if (isCompleted || isActive) goToStep(step.id)
                   }}
                   role="button"
-                  aria-current={isActive ? 'step' : undefined}
-                >
-                  <div className={`rounded-circle d-flex align-items-center justify-content-center mb-2 ${bgClass}`} style={{ width: '36px', height: '36px', zIndex: 2 }}>
+                  aria-current={isActive ? 'step' : undefined}>
+                  <div
+                    className={`rounded-circle d-flex align-items-center justify-content-center mb-2 ${bgClass}`}
+                    style={{ width: '36px', height: '36px', zIndex: 2 }}>
                     {hasError ? (
                       <Icon icon="solar:danger-circle-bold" width="20" />
                     ) : isCompleted ? (
@@ -56,7 +57,9 @@ export default function MembershipCampaignWizardHeader() {
                   <div className={`text-center small ${variantClass}`}>{step.title}</div>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className="d-none d-md-block flex-grow-1 align-self-start mt-3" style={{ height: '2px', backgroundColor: index < currentStepIndex ? 'var(--bs-success)' : 'var(--bs-border-color)' }}></div>
+                  <div
+                    className="d-none d-md-block flex-grow-1 align-self-start mt-3"
+                    style={{ height: '2px', backgroundColor: index < currentStepIndex ? 'var(--bs-success)' : 'var(--bs-border-color)' }}></div>
                 )}
               </React.Fragment>
             )
@@ -66,4 +69,3 @@ export default function MembershipCampaignWizardHeader() {
     </Card>
   )
 }
-

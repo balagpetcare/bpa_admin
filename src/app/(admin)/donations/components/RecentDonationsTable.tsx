@@ -28,17 +28,41 @@ function maskPhone(phone?: string): string {
 function getStatusBadge(status: string) {
   switch (status) {
     case 'success':
-      return <Badge bg="success-subtle" className="text-success border border-success-subtle px-2 py-1">Success</Badge>
+      return (
+        <Badge bg="success-subtle" className="text-success border border-success-subtle px-2 py-1">
+          Success
+        </Badge>
+      )
     case 'pending':
-      return <Badge bg="warning-subtle" className="text-warning border border-warning-subtle px-2 py-1">Pending</Badge>
+      return (
+        <Badge bg="warning-subtle" className="text-warning border border-warning-subtle px-2 py-1">
+          Pending
+        </Badge>
+      )
     case 'pending_review':
-      return <Badge bg="info-subtle" className="text-info border border-info-subtle px-2 py-1">Under Review</Badge>
+      return (
+        <Badge bg="info-subtle" className="text-info border border-info-subtle px-2 py-1">
+          Under Review
+        </Badge>
+      )
     case 'failed':
-      return <Badge bg="danger-subtle" className="text-danger border border-danger-subtle px-2 py-1">Failed</Badge>
+      return (
+        <Badge bg="danger-subtle" className="text-danger border border-danger-subtle px-2 py-1">
+          Failed
+        </Badge>
+      )
     case 'refunded':
-      return <Badge bg="secondary-subtle" className="text-secondary border border-secondary-subtle px-2 py-1">Refunded</Badge>
+      return (
+        <Badge bg="secondary-subtle" className="text-secondary border border-secondary-subtle px-2 py-1">
+          Refunded
+        </Badge>
+      )
     default:
-      return <Badge bg="light" className="text-dark px-2 py-1">{status}</Badge>
+      return (
+        <Badge bg="light" className="text-dark px-2 py-1">
+          {status}
+        </Badge>
+      )
   }
 }
 
@@ -81,13 +105,7 @@ export default function RecentDonationsTable({ donations }: Props) {
               <tbody>
                 {donations.map((d) => {
                   const targetName = d.isAnonymous ? 'Anonymous Donor' : d.donorName
-                  const targetContact = d.isAnonymous
-                    ? '—'
-                    : d.donorEmail
-                    ? maskEmail(d.donorEmail)
-                    : d.donorPhone
-                    ? maskPhone(d.donorPhone)
-                    : '—'
+                  const targetContact = d.isAnonymous ? '—' : d.donorEmail ? maskEmail(d.donorEmail) : d.donorPhone ? maskPhone(d.donorPhone) : '—'
 
                   const allocation = d.campaign?.titleEn || d.purpose?.titleEn || 'General Care Fund'
 
@@ -104,9 +122,7 @@ export default function RecentDonationsTable({ donations }: Props) {
                       <td className="text-truncate" style={{ maxWidth: '200px' }}>
                         <div className="d-flex flex-column">
                           <span className="text-dark small text-truncate">{allocation}</span>
-                          <span className="text-muted fs-11">
-                            {d.campaign ? 'Campaign' : d.purpose ? 'Purpose' : 'General'}
-                          </span>
+                          <span className="text-muted fs-11">{d.campaign ? 'Campaign' : d.purpose ? 'Purpose' : 'General'}</span>
                         </div>
                       </td>
                       <td className="small text-muted">{d.source || 'Online/EPS'}</td>

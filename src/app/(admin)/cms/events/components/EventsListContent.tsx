@@ -57,17 +57,31 @@ export default function EventsListContent() {
           <Row className="g-2 mb-3 align-items-center">
             <Col md={5}>
               <InputGroup>
-                <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
+                <InputGroup.Text>
+                  <Icon icon="solar:magnifer-bold" />
+                </InputGroup.Text>
                 <Form.Control
                   placeholder="Search events..."
                   value={search}
-                  onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+                  onChange={(e) => {
+                    setSearch(e.target.value)
+                    setPage(1)
+                  }}
                 />
               </InputGroup>
             </Col>
             <Col md={3}>
-              <Form.Select value={status} onChange={(e) => { setStatus(e.target.value as EventStatus | ''); setPage(1) }}>
-                {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              <Form.Select
+                value={status}
+                onChange={(e) => {
+                  setStatus(e.target.value as EventStatus | '')
+                  setPage(1)
+                }}>
+                {STATUS_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
               </Form.Select>
             </Col>
             <Col md="auto">
@@ -76,7 +90,10 @@ export default function EventsListContent() {
                 id="upcomingOnly"
                 label="Upcoming only"
                 checked={upcoming}
-                onChange={(e) => { setUpcoming(e.target.checked); setPage(1) }}
+                onChange={(e) => {
+                  setUpcoming(e.target.checked)
+                  setPage(1)
+                }}
               />
             </Col>
           </Row>
@@ -89,8 +106,12 @@ export default function EventsListContent() {
                 {meta.total} event{meta.total !== 1 ? 's' : ''} · Page {meta.page} of {meta.totalPages}
               </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage(p => p - 1)}>‹</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage(p => p + 1)}>›</Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                  ‹
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  ›
+                </Button>
               </div>
             </div>
           )}

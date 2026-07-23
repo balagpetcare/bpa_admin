@@ -97,7 +97,7 @@ export default function MailThreadDetailsPage() {
   const [mailboxId, setMailboxId] = useState('')
   const [subject, setSubject] = useState('')
   const [internalNotes, setInternalNotes] = useState<MailInternalNote[]>([])
-  
+
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -120,14 +120,16 @@ export default function MailThreadDetailsPage() {
   const [submittingNote, setSubmittingNote] = useState(false)
 
   // Attachments State
-  const [attachments, setAttachments] = useState<Array<{
-    id: string
-    filename: string
-    contentType: string
-    size: number
-    storagePath: string
-    url: string
-  }>>([])
+  const [attachments, setAttachments] = useState<
+    Array<{
+      id: string
+      filename: string
+      contentType: string
+      size: number
+      storagePath: string
+      url: string
+    }>
+  >([])
   const [uploadingFiles, setUploadingFiles] = useState(false)
   const [hasUploadError, setHasUploadError] = useState(false)
 
@@ -137,7 +139,7 @@ export default function MailThreadDetailsPage() {
     setError('')
     try {
       const res = await mailApi.getThreadDetails(threadId)
-      
+
       // Sort messages chronologically (oldest to newest)
       const sortedMsgs = res.messages.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       setMessages(sortedMsgs)
@@ -160,16 +162,13 @@ export default function MailThreadDetailsPage() {
   // Load active accounts and layouts
   const loadConfig = async () => {
     try {
-      const [accs, layouts] = await Promise.all([
-        mailApi.listAccounts(),
-        emailLayoutsApi.list(),
-      ])
-      setAccounts(accs.filter(a => a.status === 'active'))
-      const activeLayouts = layouts.filter(l => l.status === 'active')
+      const [accs, layouts] = await Promise.all([mailApi.listAccounts(), emailLayoutsApi.list()])
+      setAccounts(accs.filter((a) => a.status === 'active'))
+      const activeLayouts = layouts.filter((l) => l.status === 'active')
       setTemplates(activeLayouts)
-      
+
       // Select default template if it exists
-      const defaultLayout = activeLayouts.find(l => l.isDefault)
+      const defaultLayout = activeLayouts.find((l) => l.isDefault)
       if (defaultLayout) {
         setSelectedTemplateKey(defaultLayout.id)
       }
@@ -185,7 +184,7 @@ export default function MailThreadDetailsPage() {
 
   // Find sender account info
   const senderAccount = useMemo(() => {
-    return accounts.find(a => a.id === mailboxId)
+    return accounts.find((a) => a.id === mailboxId)
   }, [accounts, mailboxId])
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -209,7 +208,7 @@ export default function MailThreadDetailsPage() {
         }
 
         const uploaded = await mediaApi.upload(file)
-        setAttachments(prev => [
+        setAttachments((prev) => [
           ...prev,
           {
             id: uploaded.id,
@@ -231,7 +230,7 @@ export default function MailThreadDetailsPage() {
   }
 
   const handleRemoveAttachment = (index: number) => {
-    setAttachments(prev => {
+    setAttachments((prev) => {
       const updated = prev.filter((_, i) => i !== index)
       if (updated.length === 0) {
         setHasUploadError(false)
@@ -266,13 +265,11 @@ export default function MailThreadDetailsPage() {
         subject: subject.startsWith('Re:') ? subject : `Re: ${subject}`,
         bodyHtml: replyBody,
         plainText: replyBody.replace(/<[^>]*>/g, ''), // Strip html tags for plain text fallback
-        attachmentIds: attachments.length > 0 ? attachments.map(a => a.id) : undefined,
+        attachmentIds: attachments.length > 0 ? attachments.map((a) => a.id) : undefined,
         useTemplate,
         layoutKey: useTemplate && selectedTemplateKey ? selectedTemplateKey : undefined,
         inReplyTo: latestMsg.messageId,
-        references: latestMsg.references 
-          ? `${latestMsg.references} ${latestMsg.messageId}` 
-          : latestMsg.messageId,
+        references: latestMsg.references ? `${latestMsg.references} ${latestMsg.messageId}` : latestMsg.messageId,
         threadId,
       }
 
@@ -280,7 +277,7 @@ export default function MailThreadDetailsPage() {
       setSuccess('Reply sent successfully.')
       setReplyBody('')
       setAttachments([])
-      
+
       // Reload thread to show new message
       await loadThread()
     } catch (err: any) {
@@ -298,7 +295,7 @@ export default function MailThreadDetailsPage() {
     setError('')
     try {
       const newNote = await mailApi.createInternalNote(threadId, noteText)
-      setInternalNotes(prev => [...prev, newNote])
+      setInternalNotes((prev) => [...prev, newNote])
       setNoteText('')
       setSuccess('Internal note added successfully.')
     } catch (err: any) {
@@ -343,10 +340,27 @@ export default function MailThreadDetailsPage() {
         <span className="text-secondary small">Email Thread details</span>
       </div>
 
-      <PageHeader title={subject || 'Conversation Thread'} breadcrumbs={[{ label: 'Mail' }, { label: 'Inbox', href: '/mail/inbox' }, { label: 'Thread' }]} />
+      <PageHeader
+        title={subject || 'Conversation Thread'}
+        breadcrumbs={[{ label: 'Mail' }, { label: 'Inbox', href: '/mail/inbox' }, { label: 'Thread' }]}
+      />
 
-      {error && <Alert variant="danger" dismissible onClose={() => { setError(''); setHasUploadError(false); }}>{error}</Alert>}
-      {success && <Alert variant="success" dismissible onClose={() => setSuccess('')}>{success}</Alert>}
+      {error && (
+        <Alert
+          variant="danger"
+          dismissible
+          onClose={() => {
+            setError('')
+            setHasUploadError(false)
+          }}>
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert variant="success" dismissible onClose={() => setSuccess('')}>
+          {success}
+        </Alert>
+      )}
 
       {loading ? (
         <div className="text-center py-5">
@@ -362,28 +376,38 @@ export default function MailThreadDetailsPage() {
               {messages.map((msg, index) => {
                 const isSentByMe = msg.status !== 'received'
                 return (
-                  <Card key={msg.id} className={`border-0 shadow-sm ${isSentByMe ? 'border-start border-success border-4' : 'border-start border-primary border-4'}`}>
+                  <Card
+                    key={msg.id}
+                    className={`border-0 shadow-sm ${isSentByMe ? 'border-start border-success border-4' : 'border-start border-primary border-4'}`}>
                     <Card.Header className="bg-transparent border-0 pt-3 pb-2 d-flex justify-content-between align-items-start">
                       <div>
                         <div className="d-flex align-items-center gap-2 flex-wrap">
                           <h6 className="mb-0 fw-bold text-dark">{msg.fromName || msg.fromAddress}</h6>
                           <span className="small text-muted">&lt;{msg.fromAddress}&gt;</span>
-                          {isSentByMe && <Badge bg="success-subtle" className="text-success border border-success">Sent Log</Badge>}
-                          {!isSentByMe && <Badge bg="primary-subtle" className="text-primary border border-primary">Incoming</Badge>}
+                          {isSentByMe && (
+                            <Badge bg="success-subtle" className="text-success border border-success">
+                              Sent Log
+                            </Badge>
+                          )}
+                          {!isSentByMe && (
+                            <Badge bg="primary-subtle" className="text-primary border border-primary">
+                              Incoming
+                            </Badge>
+                          )}
                         </div>
                         <div className="small text-muted mt-1" style={{ fontSize: '12px' }}>
                           To:{' '}
                           {msg.recipients
-                            ?.filter(r => r.type === 'to')
-                            .map(r => r.emailAddress)
+                            ?.filter((r) => r.type === 'to')
+                            .map((r) => r.emailAddress)
                             .join(', ') || senderAccount?.emailAddress}
-                          {msg.recipients?.some(r => r.type === 'cc') && (
+                          {msg.recipients?.some((r) => r.type === 'cc') && (
                             <>
                               {' '}
                               | CC:{' '}
                               {msg.recipients
-                                .filter(r => r.type === 'cc')
-                                .map(r => r.emailAddress)
+                                .filter((r) => r.type === 'cc')
+                                .map((r) => r.emailAddress)
                                 .join(', ')}
                             </>
                           )}
@@ -391,7 +415,7 @@ export default function MailThreadDetailsPage() {
                       </div>
                       <span className="small text-secondary">{formatDate(msg.date)}</span>
                     </Card.Header>
-                    
+
                     <Card.Body className="pt-1 pb-3">
                       {/* Render Sanitized bodyHtml inside our isolated frame */}
                       <div className="border rounded bg-white p-2 mb-3">
@@ -441,23 +465,27 @@ export default function MailThreadDetailsPage() {
                   <Icon icon="solar:notes-bold" width="20" className="text-warning" />
                   Internal Discussion Notes (Private)
                 </h6>
-                <Badge bg="warning" className="text-dark">Team Only</Badge>
+                <Badge bg="warning" className="text-dark">
+                  Team Only
+                </Badge>
               </Card.Header>
               <Card.Body className="pt-0">
                 <p className="small text-muted mb-3">These notes are only visible to BPA Staff/Admins and are never sent to the client.</p>
-                
+
                 {internalNotes.length === 0 ? (
                   <p className="text-muted small italic mb-3">No internal discussion logged for this thread.</p>
                 ) : (
                   <div className="d-flex flex-column gap-2 mb-3" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                    {internalNotes.map(note => (
+                    {internalNotes.map((note) => (
                       <div key={note.id} className="p-3 rounded bg-white border border-warning-subtle small shadow-sm">
                         <div className="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom">
                           <span className="fw-bold text-dark d-flex align-items-center gap-1">
                             <Icon icon="solar:user-circle-bold-duotone" width="16" className="text-secondary" />
                             {note.createdBy?.name || 'Staff User'}
                           </span>
-                          <span className="text-muted" style={{ fontSize: '11px' }}>{formatDate(note.createdAt)}</span>
+                          <span className="text-muted" style={{ fontSize: '11px' }}>
+                            {formatDate(note.createdAt)}
+                          </span>
                         </div>
                         <div className="text-secondary mt-1" dangerouslySetInnerHTML={{ __html: note.note }} />
                       </div>
@@ -472,7 +500,7 @@ export default function MailThreadDetailsPage() {
                       rows={2}
                       placeholder="Add an internal note or discussion point for team members..."
                       value={noteText}
-                      onChange={e => setNoteText(e.target.value)}
+                      onChange={(e) => setNoteText(e.target.value)}
                     />
                   </Form.Group>
                   <div className="d-flex justify-content-end">
@@ -506,12 +534,10 @@ export default function MailThreadDetailsPage() {
                             <option value="">{mailboxId}</option>
                           )}
                         </Form.Select>
-                        <Form.Text className="text-muted">
-                          Replies are always dispatched from the original mailbox.
-                        </Form.Text>
+                        <Form.Text className="text-muted">Replies are always dispatched from the original mailbox.</Form.Text>
                       </Form.Group>
                     </Col>
-                    
+
                     <Col md={12}>
                       <Form.Group className="mb-3">
                         <Form.Label className="fw-semibold">To Recipients</Form.Label>
@@ -520,7 +546,7 @@ export default function MailThreadDetailsPage() {
                           required
                           placeholder="Comma separated emails"
                           value={replyToAddresses.join(', ')}
-                          onChange={e => setReplyToAddresses(e.target.value.split(',').map(s => s.trim()))}
+                          onChange={(e) => setReplyToAddresses(e.target.value.split(',').map((s) => s.trim()))}
                         />
                       </Form.Group>
                     </Col>
@@ -532,11 +558,11 @@ export default function MailThreadDetailsPage() {
                           type="text"
                           placeholder="Comma separated emails (optional)"
                           value={ccAddresses.join(', ')}
-                          onChange={e => setCcAddresses(e.target.value ? e.target.value.split(',').map(s => s.trim()) : [])}
+                          onChange={(e) => setCcAddresses(e.target.value ? e.target.value.split(',').map((s) => s.trim()) : [])}
                         />
                       </Form.Group>
                     </Col>
-                    
+
                     <Col md={6}>
                       <Form.Group className="mb-3">
                         <Form.Label className="fw-semibold">Bcc</Form.Label>
@@ -544,7 +570,7 @@ export default function MailThreadDetailsPage() {
                           type="text"
                           placeholder="Comma separated emails (optional)"
                           value={bccAddresses.join(', ')}
-                          onChange={e => setBccAddresses(e.target.value ? e.target.value.split(',').map(s => s.trim()) : [])}
+                          onChange={(e) => setBccAddresses(e.target.value ? e.target.value.split(',').map((s) => s.trim()) : [])}
                         />
                       </Form.Group>
                     </Col>
@@ -573,19 +599,15 @@ export default function MailThreadDetailsPage() {
                         id="useTemplateSwitch"
                         label="Apply central layout"
                         checked={useTemplate}
-                        onChange={e => setUseTemplate(e.target.checked)}
+                        onChange={(e) => setUseTemplate(e.target.checked)}
                       />
                     </Col>
                     <Col md={8}>
                       {useTemplate && (
                         <Form.Group className="mb-0">
-                          <Form.Select
-                            size="sm"
-                            value={selectedTemplateKey}
-                            onChange={e => setSelectedTemplateKey(e.target.value)}
-                          >
+                          <Form.Select size="sm" value={selectedTemplateKey} onChange={(e) => setSelectedTemplateKey(e.target.value)}>
                             <option value="">-- Select Active Layout Setting --</option>
-                            {templates.map(tpl => (
+                            {templates.map((tpl) => (
                               <option key={tpl.id} value={tpl.id}>
                                 {tpl.name} ({tpl.locale === 'bn' ? 'Bangla' : 'English'})
                               </option>
@@ -602,12 +624,7 @@ export default function MailThreadDetailsPage() {
                     <div className="border border-dashed p-3 text-center rounded bg-white">
                       <Icon icon="solar:upload-minimalistic-linear" width="32" className="text-secondary mb-2" />
                       <div>
-                        <Button
-                          variant="outline-primary"
-                          size="sm"
-                          disabled={uploadingFiles}
-                          style={{ position: 'relative', overflow: 'hidden' }}
-                        >
+                        <Button variant="outline-primary" size="sm" disabled={uploadingFiles} style={{ position: 'relative', overflow: 'hidden' }}>
                           {uploadingFiles ? 'Uploading Files...' : 'Choose Files'}
                           <input
                             type="file"
@@ -618,9 +635,7 @@ export default function MailThreadDetailsPage() {
                           />
                         </Button>
                       </div>
-                      <span className="small text-muted d-block mt-2">
-                        Supported: PDF, Images, Word/Excel, ZIP. Limit: 15MB. Blocked: .exe, .js
-                      </span>
+                      <span className="small text-muted d-block mt-2">Supported: PDF, Images, Word/Excel, ZIP. Limit: 15MB. Blocked: .exe, .js</span>
                     </div>
 
                     {attachments.length > 0 && (
@@ -698,9 +713,7 @@ export default function MailThreadDetailsPage() {
                 <h6 className="mb-0 fw-bold">Contact Email History</h6>
               </Card.Header>
               <Card.Body className="p-3">
-                <p className="small text-muted">
-                  Displays historical communication index for CRM analysis.
-                </p>
+                <p className="small text-muted">Displays historical communication index for CRM analysis.</p>
                 <div className="d-grid">
                   <Button
                     variant="outline-secondary"
@@ -710,8 +723,7 @@ export default function MailThreadDetailsPage() {
                         const targetEmail = messages[messages.length - 1].fromAddress
                         router.push(`/contacts?email=${targetEmail}`)
                       }
-                    }}
-                  >
+                    }}>
                     View CRM History
                   </Button>
                 </div>

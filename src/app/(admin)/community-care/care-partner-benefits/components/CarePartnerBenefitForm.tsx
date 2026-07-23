@@ -42,8 +42,8 @@ export default function CarePartnerBenefitForm({ benefitId, initialValues }: Car
     isActive: initialValues?.isActive ?? true,
   })
 
-  function set<K extends keyof typeof form>(key: K, value: typeof form[K]) {
-    setForm(f => ({ ...f, [key]: value }))
+  function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
+    setForm((f) => ({ ...f, [key]: value }))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -59,9 +59,7 @@ export default function CarePartnerBenefitForm({ benefitId, initialValues }: Car
       isActive: form.isActive,
     }
     const result = await mutate(
-      () => isEdit
-        ? carePartnerBenefitsApi.update(benefitId, payload)
-        : carePartnerBenefitsApi.create(payload),
+      () => (isEdit ? carePartnerBenefitsApi.update(benefitId, payload) : carePartnerBenefitsApi.create(payload)),
       undefined,
     )
     if (result) router.push('/community-care/care-partner-benefits')
@@ -83,13 +81,19 @@ export default function CarePartnerBenefitForm({ benefitId, initialValues }: Car
           <Form onSubmit={handleSubmit}>
             <Row className="g-3">
               {/* English Fields */}
-              <Col xs={12}><h6 className="text-muted text-uppercase fw-semibold mb-0" style={{ fontSize: '0.7rem', letterSpacing: '0.08em' }}>English Content</h6></Col>
+              <Col xs={12}>
+                <h6 className="text-muted text-uppercase fw-semibold mb-0" style={{ fontSize: '0.7rem', letterSpacing: '0.08em' }}>
+                  English Content
+                </h6>
+              </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Title (English) <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Title (English) <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     value={form.titleEn}
-                    onChange={e => set('titleEn', e.target.value)}
+                    onChange={(e) => set('titleEn', e.target.value)}
                     required
                     placeholder="e.g. Free Annual Health Camp"
                   />
@@ -102,20 +106,27 @@ export default function CarePartnerBenefitForm({ benefitId, initialValues }: Car
                     as="textarea"
                     rows={2}
                     value={form.descriptionEn}
-                    onChange={e => set('descriptionEn', e.target.value)}
+                    onChange={(e) => set('descriptionEn', e.target.value)}
                     placeholder="Optional description in English"
                   />
                 </Form.Group>
               </Col>
 
               {/* Bangla Fields */}
-              <Col xs={12}><hr className="my-1" /><h6 className="text-muted text-uppercase fw-semibold mb-0" style={{ fontSize: '0.7rem', letterSpacing: '0.08em' }}>বাংলা কন্টেন্ট</h6></Col>
+              <Col xs={12}>
+                <hr className="my-1" />
+                <h6 className="text-muted text-uppercase fw-semibold mb-0" style={{ fontSize: '0.7rem', letterSpacing: '0.08em' }}>
+                  বাংলা কন্টেন্ট
+                </h6>
+              </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>শিরোনাম (বাংলা) <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    শিরোনাম (বাংলা) <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     value={form.titleBn}
-                    onChange={e => set('titleBn', e.target.value)}
+                    onChange={(e) => set('titleBn', e.target.value)}
                     required
                     placeholder="যেমন: বিনামূল্যে বার্ষিক স্বাস্থ্য ক্যাম্প"
                   />
@@ -128,42 +139,41 @@ export default function CarePartnerBenefitForm({ benefitId, initialValues }: Car
                     as="textarea"
                     rows={2}
                     value={form.descriptionBn}
-                    onChange={e => set('descriptionBn', e.target.value)}
+                    onChange={(e) => set('descriptionBn', e.target.value)}
                     placeholder="ঐচ্ছিক বিবরণ বাংলায়"
                   />
                 </Form.Group>
               </Col>
 
               {/* Meta */}
-              <Col xs={12}><hr className="my-1" /></Col>
+              <Col xs={12}>
+                <hr className="my-1" />
+              </Col>
               <Col md={4}>
                 <Form.Group>
-                  <Form.Label>Category <span className="text-danger">*</span></Form.Label>
-                  <Form.Select value={form.category} onChange={e => set('category', e.target.value as CarePartnerBenefitCategory)}>
-                    {CATEGORY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  <Form.Label>
+                    Category <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Select value={form.category} onChange={(e) => set('category', e.target.value as CarePartnerBenefitCategory)}>
+                    {CATEGORY_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
               <Col md={4}>
                 <Form.Group>
                   <Form.Label>Icon</Form.Label>
-                  <Form.Control
-                    value={form.icon}
-                    onChange={e => set('icon', e.target.value)}
-                    placeholder="e.g. solar:hospital-bold"
-                  />
+                  <Form.Control value={form.icon} onChange={(e) => set('icon', e.target.value)} placeholder="e.g. solar:hospital-bold" />
                   <Form.Text className="text-muted">Iconify icon key (optional)</Form.Text>
                 </Form.Group>
               </Col>
               <Col md={2}>
                 <Form.Group>
                   <Form.Label>Sort Order</Form.Label>
-                  <Form.Control
-                    type="number"
-                    min={0}
-                    value={form.sortOrder}
-                    onChange={e => set('sortOrder', e.target.value)}
-                  />
+                  <Form.Control type="number" min={0} value={form.sortOrder} onChange={(e) => set('sortOrder', e.target.value)} />
                 </Form.Group>
               </Col>
               <Col md={2} className="d-flex align-items-end">
@@ -172,7 +182,7 @@ export default function CarePartnerBenefitForm({ benefitId, initialValues }: Car
                   id="benefit-isActive"
                   label="Active"
                   checked={form.isActive}
-                  onChange={e => set('isActive', e.target.checked)}
+                  onChange={(e) => set('isActive', e.target.checked)}
                   className="mb-1"
                 />
               </Col>

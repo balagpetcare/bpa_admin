@@ -34,7 +34,11 @@ export default function ServicesManager({ campaignId }: { campaignId: string }) 
   const { data: campaign } = useApi(campaignFn, [campaignId])
   const { data: vaccinesData } = useApi(vaccinesFn, [])
 
-  function openCreate() { setEditing(null); setForm(EMPTY); setShowModal(true) }
+  function openCreate() {
+    setEditing(null)
+    setForm(EMPTY)
+    setShowModal(true)
+  }
   function openEdit(s: CampaignService) {
     setEditing(s)
     setForm({
@@ -56,9 +60,13 @@ export default function ServicesManager({ campaignId }: { campaignId: string }) 
       vaccineCatalogId: form.vaccineCatalogId || undefined,
       priceBdt: form.priceBdt !== '' ? Math.round(Number(form.priceBdt)) : undefined,
     }
-    if (editing) { await mutate(() => campaignsApi.updateService(campaignId, editing.id, dto), undefined) }
-    else { await mutate(() => campaignsApi.createService(campaignId, dto), undefined) }
-    setShowModal(false); refetch()
+    if (editing) {
+      await mutate(() => campaignsApi.updateService(campaignId, editing.id, dto), undefined)
+    } else {
+      await mutate(() => campaignsApi.createService(campaignId, dto), undefined)
+    }
+    setShowModal(false)
+    refetch()
   }
 
   async function handleDelete(serviceId: string) {
@@ -71,7 +79,7 @@ export default function ServicesManager({ campaignId }: { campaignId: string }) 
   const serviceList: CampaignService[] = services ?? []
 
   // Pricing summary
-  const servicesWithPrice = serviceList.filter(s => s.priceBdt != null && s.priceBdt > 0)
+  const servicesWithPrice = serviceList.filter((s) => s.priceBdt != null && s.priceBdt > 0)
   const servicesTotalBdt = servicesWithPrice.reduce((sum, s) => sum + (s.priceBdt ?? 0), 0)
   const campaignFeeBdt = campaign ? Number(campaign.basePriceBdt ?? 0) : 0
   const discountAmountBdt = servicesTotalBdt - campaignFeeBdt
@@ -86,7 +94,8 @@ export default function ServicesManager({ campaignId }: { campaignId: string }) 
         action={
           can('campaign_services:create') ? (
             <Button variant="primary" onClick={openCreate}>
-              <Icon icon="solar:add-circle-bold" className="me-1" />Add Service
+              <Icon icon="solar:add-circle-bold" className="me-1" />
+              Add Service
             </Button>
           ) : undefined
         }
@@ -108,7 +117,9 @@ export default function ServicesManager({ campaignId }: { campaignId: string }) 
                 <div className="bg-light rounded p-3 text-center">
                   <div className="text-muted small fw-semibold text-uppercase mb-1">Services Total Value</div>
                   <div className="fs-4 fw-bold text-dark">৳{servicesTotalBdt.toLocaleString()}</div>
-                  <div className="text-muted small">{servicesWithPrice.length} service{servicesWithPrice.length !== 1 ? 's' : ''}</div>
+                  <div className="text-muted small">
+                    {servicesWithPrice.length} service{servicesWithPrice.length !== 1 ? 's' : ''}
+                  </div>
                 </div>
               </div>
               <div className="col-sm-6 col-lg-3">
@@ -161,34 +172,44 @@ export default function ServicesManager({ campaignId }: { campaignId: string }) 
               </thead>
               <tbody>
                 {serviceList.length === 0 ? (
-                  <tr><td colSpan={5} className="text-center py-4 text-muted">No services yet</td></tr>
-                ) : serviceList.map((s: CampaignService) => (
-                  <tr key={s.id}>
-                    <td className="text-muted">{s.sortOrder}</td>
-                    <td>
-                      <div className="fw-semibold">{s.name}</div>
-                      <div className="text-muted small">{s.description}</div>
-                    </td>
-                    <td>{s.vaccineCatalog?.name ?? <span className="text-muted">—</span>}</td>
-                    <td>
-                      {s.priceBdt != null
-                        ? <Badge bg="success-subtle" text="success" className="fw-semibold">{fmt(s.priceBdt)}</Badge>
-                        : <span className="text-muted small">Not set</span>}
-                    </td>
-                    <td className="text-end">
-                      {can('campaign_services:update') && (
-                        <Button variant="soft-primary" size="sm" className="me-1" onClick={() => openEdit(s)}>
-                          <Icon icon="solar:pen-bold" />
-                        </Button>
-                      )}
-                      {can('campaign_services:delete') && (
-                        <Button variant="soft-danger" size="sm" onClick={() => handleDelete(s.id)}>
-                          <Icon icon="solar:trash-bin-trash-bold" />
-                        </Button>
-                      )}
+                  <tr>
+                    <td colSpan={5} className="text-center py-4 text-muted">
+                      No services yet
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  serviceList.map((s: CampaignService) => (
+                    <tr key={s.id}>
+                      <td className="text-muted">{s.sortOrder}</td>
+                      <td>
+                        <div className="fw-semibold">{s.name}</div>
+                        <div className="text-muted small">{s.description}</div>
+                      </td>
+                      <td>{s.vaccineCatalog?.name ?? <span className="text-muted">—</span>}</td>
+                      <td>
+                        {s.priceBdt != null ? (
+                          <Badge bg="success-subtle" text="success" className="fw-semibold">
+                            {fmt(s.priceBdt)}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted small">Not set</span>
+                        )}
+                      </td>
+                      <td className="text-end">
+                        {can('campaign_services:update') && (
+                          <Button variant="soft-primary" size="sm" className="me-1" onClick={() => openEdit(s)}>
+                            <Icon icon="solar:pen-bold" />
+                          </Button>
+                        )}
+                        {can('campaign_services:delete') && (
+                          <Button variant="soft-danger" size="sm" onClick={() => handleDelete(s.id)}>
+                            <Icon icon="solar:trash-bin-trash-bold" />
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </Table>
           </LoadingOverlay>
@@ -202,12 +223,10 @@ export default function ServicesManager({ campaignId }: { campaignId: string }) 
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>Service Name <span className="text-danger">*</span></Form.Label>
-              <Form.Control
-                value={form.name}
-                onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
-                required
-              />
+              <Form.Label>
+                Service Name <span className="text-danger">*</span>
+              </Form.Label>
+              <Form.Control value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Description</Form.Label>
@@ -215,18 +234,17 @@ export default function ServicesManager({ campaignId }: { campaignId: string }) 
                 as="textarea"
                 rows={2}
                 value={form.description}
-                onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
+                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Vaccine (optional)</Form.Label>
-              <Form.Select
-                value={form.vaccineCatalogId}
-                onChange={(e) => setForm(f => ({ ...f, vaccineCatalogId: e.target.value }))}
-              >
+              <Form.Select value={form.vaccineCatalogId} onChange={(e) => setForm((f) => ({ ...f, vaccineCatalogId: e.target.value }))}>
                 <option value="">None</option>
                 {vaccines.map((v: VaccineCatalog) => (
-                  <option key={v.id} value={v.id}>{v.name}</option>
+                  <option key={v.id} value={v.id}>
+                    {v.name}
+                  </option>
                 ))}
               </Form.Select>
             </Form.Group>
@@ -238,25 +256,20 @@ export default function ServicesManager({ campaignId }: { campaignId: string }) 
                 step="1"
                 placeholder="e.g. 600"
                 value={form.priceBdt}
-                onChange={(e) => setForm(f => ({ ...f, priceBdt: e.target.value }))}
+                onChange={(e) => setForm((f) => ({ ...f, priceBdt: e.target.value }))}
               />
-              <Form.Text className="text-muted">
-                Market value of this service. Used to calculate campaign discount.
-              </Form.Text>
+              <Form.Text className="text-muted">Market value of this service. Used to calculate campaign discount.</Form.Text>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Sort Order</Form.Label>
-              <Form.Control
-                type="number"
-                min="0"
-                value={form.sortOrder}
-                onChange={(e) => setForm(f => ({ ...f, sortOrder: e.target.value }))}
-              />
+              <Form.Control type="number" min="0" value={form.sortOrder} onChange={(e) => setForm((f) => ({ ...f, sortOrder: e.target.value }))} />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
           <Button variant="primary" onClick={handleSave} disabled={saving}>
             {saving ? 'Saving…' : editing ? 'Update' : 'Create'}
           </Button>

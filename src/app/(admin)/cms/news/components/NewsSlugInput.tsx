@@ -16,7 +16,7 @@ function toSlug(str: string): string {
 interface NewsSlugInputProps {
   value: string
   onChange: (slug: string) => void
-  title: string   // source title for auto-generation
+  title: string // source title for auto-generation
 }
 
 export default function NewsSlugInput({ value, onChange, title }: NewsSlugInputProps) {
@@ -46,17 +46,11 @@ export default function NewsSlugInput({ value, onChange, title }: NewsSlugInputP
       <Form.Label className="fw-semibold">Slug</Form.Label>
       <InputGroup>
         <InputGroup.Text className="text-muted small">/</InputGroup.Text>
-        <Form.Control
-          value={value}
-          onChange={handleManualChange}
-          disabled={!locked}
-          placeholder="auto-generated-from-title"
-        />
+        <Form.Control value={value} onChange={handleManualChange} disabled={!locked} placeholder="auto-generated-from-title" />
         <Button
           variant={locked ? 'outline-primary' : 'outline-secondary'}
           onClick={handleLockToggle}
-          title={locked ? 'Currently manual — click to auto-sync from title' : 'Currently auto — click to lock and edit manually'}
-        >
+          title={locked ? 'Currently manual — click to auto-sync from title' : 'Currently auto — click to lock and edit manually'}>
           <Icon icon={locked ? 'solar:lock-keyhole-bold' : 'solar:lock-keyhole-unlocked-bold'} />
         </Button>
         {!locked && (

@@ -13,5 +13,9 @@ const MAP: Record<SocialImpactProgramType, { bg: string; label: string }> = {
 
 export default function SocialImpactProgramTypeBadge({ impactType }: { impactType: SocialImpactProgramType }) {
   const { bg, label } = MAP[impactType] ?? { bg: 'secondary', label: impactType }
-  return <Badge bg={`${bg}-subtle`} text={bg}>{label}</Badge>
+  return (
+    <Badge bg={`${bg}-subtle`} text={bg}>
+      {label}
+    </Badge>
+  )
 }

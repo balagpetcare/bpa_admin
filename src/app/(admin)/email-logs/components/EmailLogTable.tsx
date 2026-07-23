@@ -63,8 +63,10 @@ export default function EmailLogTable({ data, loading, onView }: EmailLogTablePr
             variant="soft-primary"
             size="sm"
             title="View details"
-            onClick={(e) => { e.stopPropagation(); onView(row.original) }}
-          >
+            onClick={(e) => {
+              e.stopPropagation()
+              onView(row.original)
+            }}>
             <Icon icon="solar:eye-bold" />
           </Button>
         ),
@@ -92,11 +94,7 @@ export default function EmailLogTable({ data, loading, onView }: EmailLogTablePr
             {data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length}>
-                  <EmptyState
-                    icon="solar:letter-bold-duotone"
-                    title="No email logs found"
-                    description="No email records match the current filter."
-                  />
+                  <EmptyState icon="solar:letter-bold-duotone" title="No email logs found" description="No email records match the current filter." />
                 </td>
               </tr>
             ) : (

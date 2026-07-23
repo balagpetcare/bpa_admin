@@ -79,9 +79,14 @@ export default function DonationListContent() {
         action={
           <Button variant="outline-success" size="sm" onClick={handleExportCsv} disabled={csvExporting}>
             {csvExporting ? (
-              <><span className="spinner-border spinner-border-sm me-1" />Exporting…</>
+              <>
+                <span className="spinner-border spinner-border-sm me-1" />
+                Exporting…
+              </>
             ) : (
-              <><Icon icon="solar:export-bold" className="me-1" /> Export CSV</>
+              <>
+                <Icon icon="solar:export-bold" className="me-1" /> Export CSV
+              </>
             )}
           </Button>
         }
@@ -95,24 +100,57 @@ export default function DonationListContent() {
           <Row className="g-2 mb-3">
             <Col md={4}>
               <InputGroup size="sm">
-                <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
+                <InputGroup.Text>
+                  <Icon icon="solar:magnifer-bold" />
+                </InputGroup.Text>
                 <Form.Control
                   placeholder="Search reference, name, email..."
                   value={search}
-                  onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+                  onChange={(e) => {
+                    setSearch(e.target.value)
+                    setPage(1)
+                  }}
                 />
               </InputGroup>
             </Col>
             <Col md={2}>
-              <Form.Select size="sm" value={status} onChange={(e) => { setStatus(e.target.value); setPage(1) }}>
-                {STATUS_OPTS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              <Form.Select
+                size="sm"
+                value={status}
+                onChange={(e) => {
+                  setStatus(e.target.value)
+                  setPage(1)
+                }}>
+                {STATUS_OPTS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
               </Form.Select>
             </Col>
             <Col md={2}>
-              <Form.Control size="sm" type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1) }} placeholder="From" />
+              <Form.Control
+                size="sm"
+                type="date"
+                value={dateFrom}
+                onChange={(e) => {
+                  setDateFrom(e.target.value)
+                  setPage(1)
+                }}
+                placeholder="From"
+              />
             </Col>
             <Col md={2}>
-              <Form.Control size="sm" type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1) }} placeholder="To" />
+              <Form.Control
+                size="sm"
+                type="date"
+                value={dateTo}
+                onChange={(e) => {
+                  setDateTo(e.target.value)
+                  setPage(1)
+                }}
+                placeholder="To"
+              />
             </Col>
           </Row>
 
@@ -133,7 +171,11 @@ export default function DonationListContent() {
               </thead>
               <tbody>
                 {donations.length === 0 ? (
-                  <tr><td colSpan={9} className="text-center py-4 text-muted">No donations found.</td></tr>
+                  <tr>
+                    <td colSpan={9} className="text-center py-4 text-muted">
+                      No donations found.
+                    </td>
+                  </tr>
                 ) : (
                   donations.map((d) => (
                     <tr key={d.id} style={{ cursor: 'pointer' }} onClick={() => setDetail(d)}>
@@ -142,33 +184,66 @@ export default function DonationListContent() {
                       </td>
                       <td>
                         <div className="fw-semibold">{d.isAnonymous ? <em className="text-muted">Anonymous</em> : d.donorName}</div>
-                        <div className="text-muted" style={{ fontSize: '11px' }}>{d.donorEmail || d.donorPhone || ''}</div>
-                        {d.donorCountry && <div className="text-muted" style={{ fontSize: '11px' }}>{d.donorCountry}</div>}
+                        <div className="text-muted" style={{ fontSize: '11px' }}>
+                          {d.donorEmail || d.donorPhone || ''}
+                        </div>
+                        {d.donorCountry && (
+                          <div className="text-muted" style={{ fontSize: '11px' }}>
+                            {d.donorCountry}
+                          </div>
+                        )}
                       </td>
                       <td className="fw-bold text-success">
                         {d.currency} {Number(d.amount).toLocaleString()}
                       </td>
                       <td>
-                        {d.campaign && <div style={{ fontSize: '11px' }}><Badge bg="primary-subtle" text="primary">{d.campaign.titleEn}</Badge></div>}
-                        {d.purpose && <div style={{ fontSize: '11px' }}><Badge bg="success-subtle" text="success">{d.purpose.titleEn}</Badge></div>}
+                        {d.campaign && (
+                          <div style={{ fontSize: '11px' }}>
+                            <Badge bg="primary-subtle" text="primary">
+                              {d.campaign.titleEn}
+                            </Badge>
+                          </div>
+                        )}
+                        {d.purpose && (
+                          <div style={{ fontSize: '11px' }}>
+                            <Badge bg="success-subtle" text="success">
+                              {d.purpose.titleEn}
+                            </Badge>
+                          </div>
+                        )}
                         {!d.campaign && !d.purpose && <span className="text-muted fst-italic">General Fund</span>}
                       </td>
                       <td>
-                        {d.qrSlug
-                          ? <Badge bg="info-subtle" text="info">QR: {d.qrSlug}</Badge>
-                          : d.source
-                          ? <span className="text-muted small">{d.source}</span>
-                          : <span className="text-muted">—</span>}
+                        {d.qrSlug ? (
+                          <Badge bg="info-subtle" text="info">
+                            QR: {d.qrSlug}
+                          </Badge>
+                        ) : d.source ? (
+                          <span className="text-muted small">{d.source}</span>
+                        ) : (
+                          <span className="text-muted">—</span>
+                        )}
                       </td>
                       <td onClick={(e) => e.stopPropagation()}>
-                        <Badge bg={`${STATUS_VARIANT[d.status] ?? 'secondary'}-subtle`} text={STATUS_VARIANT[d.status] ?? 'secondary'} className="text-capitalize">
+                        <Badge
+                          bg={`${STATUS_VARIANT[d.status] ?? 'secondary'}-subtle`}
+                          text={STATUS_VARIANT[d.status] ?? 'secondary'}
+                          className="text-capitalize">
                           {d.status.replace('_', ' ')}
                         </Badge>
                       </td>
-                      <td><Badge bg="light" text="dark">EPS</Badge></td>
+                      <td>
+                        <Badge bg="light" text="dark">
+                          EPS
+                        </Badge>
+                      </td>
                       <td className="text-muted small">
                         <div>{fmt(d.createdAt)}</div>
-                        {d.paidAt && <div className="text-success" style={{ fontSize: '10px' }}>Paid: {fmt(d.paidAt)}</div>}
+                        {d.paidAt && (
+                          <div className="text-success" style={{ fontSize: '10px' }}>
+                            Paid: {fmt(d.paidAt)}
+                          </div>
+                        )}
                       </td>
                       <td className="text-end" onClick={(e) => e.stopPropagation()}>
                         <div className="d-flex gap-1 justify-content-end">
@@ -181,8 +256,7 @@ export default function DonationListContent() {
                               title="Download Receipt"
                               href={`${API_BASE}/public/donations/receipt/${d.referenceNo}/pdf`}
                               target="_blank"
-                              rel="noopener noreferrer"
-                            >
+                              rel="noopener noreferrer">
                               <Icon icon="solar:download-bold" />
                             </a>
                           )}
@@ -197,10 +271,16 @@ export default function DonationListContent() {
 
           {meta && (meta.totalPages ?? 1) > 1 && (
             <div className="d-flex justify-content-between align-items-center mt-3">
-              <small className="text-muted">{meta.total} total · Page {meta.page} of {meta.totalPages}</small>
+              <small className="text-muted">
+                {meta.total} total · Page {meta.page} of {meta.totalPages}
+              </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>‹</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>›</Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                  ‹
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  ›
+                </Button>
               </div>
             </div>
           )}
@@ -221,20 +301,25 @@ export default function DonationListContent() {
                 {detail.donorEmail && <p className="mb-0 small text-muted">{detail.donorEmail}</p>}
                 {detail.donorPhone && <p className="mb-0 small text-muted">{detail.donorPhone}</p>}
                 {detail.donorCountry && <p className="mb-0 small text-muted">{detail.donorCountry}</p>}
-                {detail.organizationName && <p className="mb-0 small"><strong>Org:</strong> {detail.organizationName}</p>}
+                {detail.organizationName && (
+                  <p className="mb-0 small">
+                    <strong>Org:</strong> {detail.organizationName}
+                  </p>
+                )}
               </Col>
               <Col md={6}>
                 <p className="text-muted small mb-1 fw-bold text-uppercase">Payment</p>
-                <p className="mb-1 fs-4 fw-bold text-success">{detail.currency} {Number(detail.amount).toLocaleString()}</p>
-                <Badge bg={`${STATUS_VARIANT[detail.status] ?? 'secondary'}-subtle`} text={STATUS_VARIANT[detail.status] ?? 'secondary'} className="text-capitalize">
+                <p className="mb-1 fs-4 fw-bold text-success">
+                  {detail.currency} {Number(detail.amount).toLocaleString()}
+                </p>
+                <Badge
+                  bg={`${STATUS_VARIANT[detail.status] ?? 'secondary'}-subtle`}
+                  text={STATUS_VARIANT[detail.status] ?? 'secondary'}
+                  className="text-capitalize">
                   {detail.status.replace('_', ' ')}
                 </Badge>
-                {detail.gatewayTransactionId && (
-                  <p className="mb-0 small text-muted mt-2">Txn: {detail.gatewayTransactionId}</p>
-                )}
-                {detail.payment?.epsTxnId && (
-                  <p className="mb-0 small text-muted">EPS Txn: {detail.payment.epsTxnId}</p>
-                )}
+                {detail.gatewayTransactionId && <p className="mb-0 small text-muted mt-2">Txn: {detail.gatewayTransactionId}</p>}
+                {detail.payment?.epsTxnId && <p className="mb-0 small text-muted">EPS Txn: {detail.payment.epsTxnId}</p>}
               </Col>
               {detail.campaign && (
                 <Col md={6}>
@@ -268,12 +353,13 @@ export default function DonationListContent() {
               className="btn btn-success btn-sm"
               href={`${API_BASE}/public/donations/receipt/${detail.referenceNo}/pdf`}
               target="_blank"
-              rel="noopener noreferrer"
-            >
+              rel="noopener noreferrer">
               <Icon icon="solar:download-bold" className="me-1" /> Download Receipt PDF
             </a>
           )}
-          <Button variant="secondary" size="sm" onClick={() => setDetail(null)}>Close</Button>
+          <Button variant="secondary" size="sm" onClick={() => setDetail(null)}>
+            Close
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

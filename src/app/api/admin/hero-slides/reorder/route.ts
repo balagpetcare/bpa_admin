@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 export async function PATCH(request: NextRequest) {
   try {
-    const body = await request.json() as { ids?: string[] }
+    const body = (await request.json()) as { ids?: string[] }
     if (!Array.isArray(body.ids)) {
       return fail('VALIDATION_ERROR', 'The "ids" field must be an array.', 400)
     }

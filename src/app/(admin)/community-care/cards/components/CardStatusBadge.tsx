@@ -10,5 +10,9 @@ const MAP: Record<CarePartnerCardStatus, { bg: string; label: string }> = {
 
 export default function CardStatusBadge({ status }: { status: CarePartnerCardStatus }) {
   const { bg, label } = MAP[status] ?? { bg: 'secondary', label: status }
-  return <Badge bg={`${bg}-subtle`} text={bg}>{label}</Badge>
+  return (
+    <Badge bg={`${bg}-subtle`} text={bg}>
+      {label}
+    </Badge>
+  )
 }

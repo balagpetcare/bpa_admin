@@ -25,15 +25,19 @@ export default function DoctorsContent() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
   const { mutate, loading: saving, error: mutationError, clearError } = useApiMutation<unknown, unknown>()
 
-  const fetchFn = useCallback(() => doctorsApi.list({
-    page,
-    limit: 20,
-    search: search || undefined,
-    isActive: isActiveFilter
-  }), [page, search, isActiveFilter])
-  
+  const fetchFn = useCallback(
+    () =>
+      doctorsApi.list({
+        page,
+        limit: 20,
+        search: search || undefined,
+        isActive: isActiveFilter,
+      }),
+    [page, search, isActiveFilter],
+  )
+
   const { data, loading, error, refetch } = useApi(fetchFn, [page, search, isActiveFilter])
-  
+
   // Defensive normalize function to get Doctor[] from any response shape
   const doctors: Doctor[] = (() => {
     let items: any[] = []
@@ -42,15 +46,14 @@ export default function DoctorsContent() {
     else if (data.data) {
       if (Array.isArray(data.data)) items = data.data
       else if (Array.isArray((data.data as any).items)) items = (data.data as any).items
-    }
-    else if (Array.isArray((data as any).items)) items = (data as any).items
+    } else if (Array.isArray((data as any).items)) items = (data as any).items
 
     return items.map((d: any) => {
       // Map licenseNo alias to licenseNumber if needed
       const licenseNumber = d.licenseNumber || d.licenseNo
       return {
         ...d,
-        licenseNumber
+        licenseNumber,
       } as Doctor
     })
   })()
@@ -63,12 +66,25 @@ export default function DoctorsContent() {
   })()
 
   function openCreate() {
-    setEditing(null); setForm(EMPTY_FORM); setSuccessMsg(null); clearError(); setShowModal(true)
+    setEditing(null)
+    setForm(EMPTY_FORM)
+    setSuccessMsg(null)
+    clearError()
+    setShowModal(true)
   }
   function openEdit(d: Doctor) {
     setEditing(d)
-    setForm({ name: d.name, email: d.email ?? '', phone: d.phone ?? '', licenseNumber: d.licenseNumber ?? '', specialization: d.specialization ?? '', bio: d.bio ?? '' })
-    setSuccessMsg(null); clearError(); setShowModal(true)
+    setForm({
+      name: d.name,
+      email: d.email ?? '',
+      phone: d.phone ?? '',
+      licenseNumber: d.licenseNumber ?? '',
+      specialization: d.specialization ?? '',
+      bio: d.bio ?? '',
+    })
+    setSuccessMsg(null)
+    clearError()
+    setShowModal(true)
   }
 
   async function handleSave() {
@@ -78,14 +94,18 @@ export default function DoctorsContent() {
     // Client-side validation
     if (!form.name.trim()) return
     if (!form.licenseNumber.trim()) {
-      setForm(f => ({ ...f, licenseNumber: '' })) // ensure field is empty for the UI
+      setForm((f) => ({ ...f, licenseNumber: '' })) // ensure field is empty for the UI
       return
     }
 
     // Always send licenseNumber. Do NOT coerce empty string → undefined.
     const dto: {
-      name: string; email?: string; phone?: string; licenseNumber: string;
-      specialization?: string; bio?: string;
+      name: string
+      email?: string
+      phone?: string
+      licenseNumber: string
+      specialization?: string
+      bio?: string
     } = {
       name: form.name,
       licenseNumber: form.licenseNumber,
@@ -128,7 +148,8 @@ export default function DoctorsContent() {
         action={
           can('doctors:create') ? (
             <Button variant="primary" onClick={openCreate}>
-              <Icon icon="solar:add-circle-bold" className="me-1" />New Doctor
+              <Icon icon="solar:add-circle-bold" className="me-1" />
+              New Doctor
             </Button>
           ) : undefined
         }
@@ -139,7 +160,7 @@ export default function DoctorsContent() {
         </Alert>
       )}
       <ApiErrorAlert error={error as ApiError | null} />
-      
+
       {/* Duplicate license conflict helper when list is empty */}
       {mutationError && (mutationError.status === 409 || mutationError.code === 'CONFLICT') && doctors.length === 0 && (
         <Alert variant="warning" dismissible>
@@ -152,19 +173,26 @@ export default function DoctorsContent() {
           <Row className="g-2 mb-3 align-items-center">
             <Col md={5}>
               <InputGroup>
-                <InputGroup.Text><Icon icon="solar:magnifer-bold" /></InputGroup.Text>
+                <InputGroup.Text>
+                  <Icon icon="solar:magnifer-bold" />
+                </InputGroup.Text>
                 <Form.Control
                   placeholder="Search doctors..."
                   value={search}
-                  onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+                  onChange={(e) => {
+                    setSearch(e.target.value)
+                    setPage(1)
+                  }}
                 />
               </InputGroup>
             </Col>
             <Col md={3}>
               <Form.Select
                 value={isActiveFilter}
-                onChange={(e) => { setIsActiveFilter(e.target.value as 'true' | 'false' | 'all'); setPage(1) }}
-              >
+                onChange={(e) => {
+                  setIsActiveFilter(e.target.value as 'true' | 'false' | 'all')
+                  setPage(1)
+                }}>
                 <option value="true">Active Doctors</option>
                 <option value="false">Inactive Doctors</option>
                 <option value="all">All Doctors</option>
@@ -234,17 +262,28 @@ export default function DoctorsContent() {
           </LoadingOverlay>
           {meta && meta.totalPages > 1 && (
             <div className="d-flex justify-content-between align-items-center mt-3">
-              <small className="text-muted">{meta.total} doctors · Page {meta.page} of {meta.totalPages}</small>
+              <small className="text-muted">
+                {meta.total} doctors · Page {meta.page} of {meta.totalPages}
+              </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage(p => p - 1)}>‹</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage(p => p + 1)}>›</Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                  ‹
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  ›
+                </Button>
               </div>
             </div>
           )}
         </Card.Body>
       </Card>
 
-      <Modal show={showModal} onHide={() => { clearError(); setShowModal(false) }}>
+      <Modal
+        show={showModal}
+        onHide={() => {
+          clearError()
+          setShowModal(false)
+        }}>
         <Modal.Header closeButton>
           <Modal.Title>{editing ? 'Edit' : 'Add'} Doctor</Modal.Title>
         </Modal.Header>
@@ -261,25 +300,30 @@ export default function DoctorsContent() {
                 </Form.Label>
                 <Form.Control
                   value={form[field]}
-                  onChange={(e) => setForm(f => ({ ...f, [field]: e.target.value }))}
+                  onChange={(e) => setForm((f) => ({ ...f, [field]: e.target.value }))}
                   required={field === 'name' || field === 'licenseNumber'}
                   isInvalid={field === 'licenseNumber' && !form.licenseNumber.trim()}
                 />
                 {field === 'licenseNumber' && !form.licenseNumber.trim() && (
-                  <Form.Control.Feedback type="invalid">
-                    License number is required
-                  </Form.Control.Feedback>
+                  <Form.Control.Feedback type="invalid">License number is required</Form.Control.Feedback>
                 )}
               </Form.Group>
             ))}
             <Form.Group className="mb-3">
               <Form.Label>Bio</Form.Label>
-              <Form.Control as="textarea" rows={3} value={form.bio} onChange={(e) => setForm(f => ({ ...f, bio: e.target.value }))} />
+              <Form.Control as="textarea" rows={3} value={form.bio} onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))} />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => { clearError(); setShowModal(false) }}>Cancel</Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              clearError()
+              setShowModal(false)
+            }}>
+            Cancel
+          </Button>
           <Button variant="primary" onClick={handleSave} disabled={saving || !form.name.trim() || !form.licenseNumber.trim()}>
             {saving ? 'Saving…' : editing ? 'Update' : 'Create'}
           </Button>

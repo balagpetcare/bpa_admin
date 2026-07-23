@@ -20,11 +20,18 @@ import {
 import type { ApiError } from '@/lib/api'
 
 const EMPTY: Partial<ContactPriorityRule> = {
-  contactTypeSlug: '', categorySlug: '', priority: 'normal', departmentId: undefined, isActive: true, sortOrder: 0,
+  contactTypeSlug: '',
+  categorySlug: '',
+  priority: 'normal',
+  departmentId: undefined,
+  isActive: true,
+  sortOrder: 0,
 }
 
 const PRIORITY_VARIANT: Record<InquiryPriority, string> = {
-  normal: 'secondary', high: 'warning', urgent: 'danger',
+  normal: 'secondary',
+  high: 'warning',
+  urgent: 'danger',
 }
 
 export default function PriorityRulesPage() {
@@ -36,9 +43,18 @@ export default function PriorityRulesPage() {
   const [departments, setDepartments] = useState<ContactDepartment[]>([])
 
   useEffect(() => {
-    contactTypeApi.list().then(setTypes).catch(() => null)
-    inquiryCategoryApi.list().then(setCategories).catch(() => null)
-    contactDepartmentApi.list().then(setDepartments).catch(() => null)
+    contactTypeApi
+      .list()
+      .then(setTypes)
+      .catch(() => null)
+    inquiryCategoryApi
+      .list()
+      .then(setCategories)
+      .catch(() => null)
+    contactDepartmentApi
+      .list()
+      .then(setDepartments)
+      .catch(() => null)
   }, [])
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -46,8 +62,16 @@ export default function PriorityRulesPage() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
 
-  const openCreate = () => { setEditing(EMPTY); setSaveError(''); setModalOpen(true) }
-  const openEdit = (r: ContactPriorityRule) => { setEditing({ ...r, departmentId: r.departmentId ?? undefined }); setSaveError(''); setModalOpen(true) }
+  const openCreate = () => {
+    setEditing(EMPTY)
+    setSaveError('')
+    setModalOpen(true)
+  }
+  const openEdit = (r: ContactPriorityRule) => {
+    setEditing({ ...r, departmentId: r.departmentId ?? undefined })
+    setSaveError('')
+    setModalOpen(true)
+  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -89,10 +113,7 @@ export default function PriorityRulesPage() {
     <div className="container-fluid">
       <PageHeader
         title="Priority Rules"
-        breadcrumbs={[
-          { label: 'Contact Inquiries', href: '/contact-inquiries' },
-          { label: 'Priority Rules' },
-        ]}
+        breadcrumbs={[{ label: 'Contact Inquiries', href: '/contact-inquiries' }, { label: 'Priority Rules' }]}
         action={
           <Button size="sm" onClick={openCreate}>
             <Icon icon="solar:add-circle-bold" className="me-1" /> Add Rule
@@ -103,14 +124,16 @@ export default function PriorityRulesPage() {
       <ApiErrorAlert error={error as ApiError | null} />
 
       <p className="text-muted small mb-3">
-        Rules auto-assign priority and department when a new inquiry matches a contact type or category slug.
-        More specific rules (type + category) take precedence over less specific ones.
+        Rules auto-assign priority and department when a new inquiry matches a contact type or category slug. More specific rules (type + category)
+        take precedence over less specific ones.
       </p>
 
       <Card>
         <Card.Body>
           {loading ? (
-            <div className="text-center py-4"><Spinner /></div>
+            <div className="text-center py-4">
+              <Spinner />
+            </div>
           ) : !rules?.length ? (
             <p className="text-muted text-center py-4">No priority rules yet.</p>
           ) : (
@@ -129,15 +152,19 @@ export default function PriorityRulesPage() {
                 <tbody>
                   {rules.map((r) => (
                     <tr key={r.id}>
-                      <td><code className="text-muted">{r.contactTypeSlug ?? '(any)'}</code></td>
-                      <td><code className="text-muted">{r.categorySlug ?? '(any)'}</code></td>
                       <td>
-                        <Badge bg={PRIORITY_VARIANT[r.priority]}>
-                          {r.priority.charAt(0).toUpperCase() + r.priority.slice(1)}
-                        </Badge>
+                        <code className="text-muted">{r.contactTypeSlug ?? '(any)'}</code>
+                      </td>
+                      <td>
+                        <code className="text-muted">{r.categorySlug ?? '(any)'}</code>
+                      </td>
+                      <td>
+                        <Badge bg={PRIORITY_VARIANT[r.priority]}>{r.priority.charAt(0).toUpperCase() + r.priority.slice(1)}</Badge>
                       </td>
                       <td className="text-muted small">{r.department?.nameEn ?? '—'}</td>
-                      <td><Badge bg={r.isActive ? 'success' : 'secondary'}>{r.isActive ? 'Active' : 'Inactive'}</Badge></td>
+                      <td>
+                        <Badge bg={r.isActive ? 'success' : 'secondary'}>{r.isActive ? 'Active' : 'Inactive'}</Badge>
+                      </td>
                       <td>
                         <div className="d-flex gap-1">
                           <Button size="sm" variant="outline-primary" onClick={() => openEdit(r)}>
@@ -168,7 +195,11 @@ export default function PriorityRulesPage() {
             {types.length > 0 ? (
               <Form.Select value={editing.contactTypeSlug ?? ''} onChange={(e) => setEditing((d) => ({ ...d, contactTypeSlug: e.target.value }))}>
                 <option value="">(any contact type)</option>
-                {types.map((t) => <option key={t.slug} value={t.slug}>{t.labelEn} ({t.slug})</option>)}
+                {types.map((t) => (
+                  <option key={t.slug} value={t.slug}>
+                    {t.labelEn} ({t.slug})
+                  </option>
+                ))}
               </Form.Select>
             ) : (
               <Form.Control
@@ -183,7 +214,11 @@ export default function PriorityRulesPage() {
             {categories.length > 0 ? (
               <Form.Select value={editing.categorySlug ?? ''} onChange={(e) => setEditing((d) => ({ ...d, categorySlug: e.target.value }))}>
                 <option value="">(any category)</option>
-                {categories.map((c) => <option key={c.slug} value={c.slug}>{c.labelEn} ({c.slug})</option>)}
+                {categories.map((c) => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.labelEn} ({c.slug})
+                  </option>
+                ))}
               </Form.Select>
             ) : (
               <Form.Control
@@ -194,8 +229,12 @@ export default function PriorityRulesPage() {
             )}
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Assign Priority <span className="text-danger">*</span></Form.Label>
-            <Form.Select value={editing.priority ?? 'normal'} onChange={(e) => setEditing((d) => ({ ...d, priority: e.target.value as InquiryPriority }))}>
+            <Form.Label>
+              Assign Priority <span className="text-danger">*</span>
+            </Form.Label>
+            <Form.Select
+              value={editing.priority ?? 'normal'}
+              onChange={(e) => setEditing((d) => ({ ...d, priority: e.target.value as InquiryPriority }))}>
               <option value="normal">Normal</option>
               <option value="high">High</option>
               <option value="urgent">Urgent</option>
@@ -203,25 +242,42 @@ export default function PriorityRulesPage() {
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Auto-assign Department</Form.Label>
-            <Form.Select value={editing.departmentId ?? ''} onChange={(e) => setEditing((d) => ({ ...d, departmentId: e.target.value || undefined }))}>
+            <Form.Select
+              value={editing.departmentId ?? ''}
+              onChange={(e) => setEditing((d) => ({ ...d, departmentId: e.target.value || undefined }))}>
               <option value="">(no auto-assign)</option>
-              {departments.map((d) => <option key={d.id} value={d.id}>{d.nameEn}</option>)}
+              {departments.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.nameEn}
+                </option>
+              ))}
             </Form.Select>
           </Form.Group>
           <div className="row g-3">
             <div className="col">
               <Form.Group>
                 <Form.Label>Sort Order</Form.Label>
-                <Form.Control type="number" value={editing.sortOrder ?? 0} onChange={(e) => setEditing((d) => ({ ...d, sortOrder: parseInt(e.target.value) || 0 }))} />
+                <Form.Control
+                  type="number"
+                  value={editing.sortOrder ?? 0}
+                  onChange={(e) => setEditing((d) => ({ ...d, sortOrder: parseInt(e.target.value) || 0 }))}
+                />
               </Form.Group>
             </div>
             <div className="col d-flex align-items-end pb-1">
-              <Form.Check type="switch" label="Active" checked={editing.isActive ?? true} onChange={(e) => setEditing((d) => ({ ...d, isActive: e.target.checked }))} />
+              <Form.Check
+                type="switch"
+                label="Active"
+                checked={editing.isActive ?? true}
+                onChange={(e) => setEditing((d) => ({ ...d, isActive: e.target.checked }))}
+              />
             </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>
+          <Button variant="secondary" onClick={() => setModalOpen(false)}>
+            Cancel
+          </Button>
           <Button onClick={handleSave} disabled={saving}>
             {saving ? <Spinner size="sm" /> : 'Save'}
           </Button>

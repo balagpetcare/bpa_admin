@@ -11,8 +11,12 @@ export default function HeroSliderEmptyState() {
           Hero slides are not published yet, so the homepage is showing a safe fallback instead of an empty banner.
         </p>
         <div className="d-flex flex-wrap gap-2">
-          <Link href="/dashboard" className="btn btn-light">Open Dashboard</Link>
-          <Link href="/cms/hero-slider" className="btn btn-outline-light">Manage Hero Slides</Link>
+          <Link href="/dashboard" className="btn btn-light">
+            Open Dashboard
+          </Link>
+          <Link href="/cms/hero-slider" className="btn btn-outline-light">
+            Manage Hero Slides
+          </Link>
         </div>
       </div>
     </section>

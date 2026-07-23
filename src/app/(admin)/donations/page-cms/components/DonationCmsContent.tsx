@@ -7,13 +7,21 @@ import PageHeader from '@/components/ui/PageHeader'
 import ApiErrorAlert from '@/components/ui/ApiErrorAlert'
 import LoadingOverlay from '@/components/ui/LoadingOverlay'
 import { useApi, useApiMutation } from '@/hooks/useApi'
-import { getPageSettings as getDonationPageSettings, updatePageSettings as updateDonationPageSettings, type DonationPageSettings } from '@/lib/api/donations.api'
+import {
+  getPageSettings as getDonationPageSettings,
+  updatePageSettings as updateDonationPageSettings,
+  type DonationPageSettings,
+} from '@/lib/api/donations.api'
 import type { ApiError } from '@/lib/api'
 
 type FaqItem = { questionEn: string; questionBn: string; answerEn: string; answerBn: string }
 
 function parseFaqs(raw: string | undefined): FaqItem[] {
-  try { return JSON.parse(raw ?? '[]') } catch { return [] }
+  try {
+    return JSON.parse(raw ?? '[]')
+  } catch {
+    return []
+  }
 }
 
 export default function DonationCmsContent() {
@@ -41,7 +49,7 @@ export default function DonationCmsContent() {
   }
 
   function updateFaq(i: number, field: keyof FaqItem, value: string) {
-    setFaqs((f) => f.map((faq, idx) => idx === i ? { ...faq, [field]: value } : faq))
+    setFaqs((f) => f.map((faq, idx) => (idx === i ? { ...faq, [field]: value } : faq)))
   }
 
   function removeFaq(i: number) {
@@ -52,23 +60,31 @@ export default function DonationCmsContent() {
     e.preventDefault()
     const payload = { ...form, faqJson: JSON.stringify(faqs) }
     const result = await mutate(() => updateDonationPageSettings(payload), undefined)
-    if (result) { setSaved(true); setTimeout(() => setSaved(false), 3000); refetch() }
+    if (result) {
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+      refetch()
+    }
   }
 
   return (
     <div className="container-fluid">
-      <PageHeader
-        title="Donation Page CMS"
-        breadcrumbs={[{ label: 'Donations', href: '/donations' }, { label: 'Page CMS' }]}
-      />
+      <PageHeader title="Donation Page CMS" breadcrumbs={[{ label: 'Donations', href: '/donations' }, { label: 'Page CMS' }]} />
       <ApiErrorAlert error={(error || saveError) as ApiError | null} />
-      {saved && <Alert variant="success" className="py-2"><Icon icon="solar:check-circle-bold" className="me-2" />Settings saved successfully.</Alert>}
+      {saved && (
+        <Alert variant="success" className="py-2">
+          <Icon icon="solar:check-circle-bold" className="me-2" />
+          Settings saved successfully.
+        </Alert>
+      )}
 
       <LoadingOverlay loading={loading}>
         <Form onSubmit={handleSave}>
           {/* Hero Section */}
           <Card className="mb-4" id="hero">
-            <Card.Header><h6 className="mb-0">Hero Section</h6></Card.Header>
+            <Card.Header>
+              <h6 className="mb-0">Hero Section</h6>
+            </Card.Header>
             <Card.Body className="d-flex flex-column gap-3">
               <Row className="g-3">
                 <Col md={6}>
@@ -102,7 +118,12 @@ export default function DonationCmsContent() {
                 <Col md={6}>
                   <Form.Group>
                     <Form.Label>Hero Image URL</Form.Label>
-                    <Form.Control type="url" value={form.heroImageUrl ?? ''} onChange={(e) => set('heroImageUrl', e.target.value)} placeholder="https://..." />
+                    <Form.Control
+                      type="url"
+                      value={form.heroImageUrl ?? ''}
+                      onChange={(e) => set('heroImageUrl', e.target.value)}
+                      placeholder="https://..."
+                    />
                     {form.heroImageUrl && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={form.heroImageUrl} alt="hero preview" className="mt-2 rounded w-100" style={{ maxHeight: 140, objectFit: 'cover' }} />
@@ -112,7 +133,12 @@ export default function DonationCmsContent() {
                 <Col md={6}>
                   <Form.Group>
                     <Form.Label>Hero Video URL (optional)</Form.Label>
-                    <Form.Control type="url" value={form.heroVideoUrl ?? ''} onChange={(e) => set('heroVideoUrl', e.target.value)} placeholder="https://youtube.com/..." />
+                    <Form.Control
+                      type="url"
+                      value={form.heroVideoUrl ?? ''}
+                      onChange={(e) => set('heroVideoUrl', e.target.value)}
+                      placeholder="https://youtube.com/..."
+                    />
                   </Form.Group>
                 </Col>
               </Row>
@@ -129,42 +155,62 @@ export default function DonationCmsContent() {
 
           {/* CTA Texts */}
           <Card className="mb-4">
-            <Card.Header><h6 className="mb-0">CTA Texts</h6></Card.Header>
+            <Card.Header>
+              <h6 className="mb-0">CTA Texts</h6>
+            </Card.Header>
             <Card.Body className="d-flex flex-column gap-3">
               <Row className="g-3">
                 <Col md={6}>
                   <Form.Group>
                     <Form.Label>Primary CTA (English)</Form.Label>
-                    <Form.Control value={form.primaryCtaTextEn ?? ''} onChange={(e) => set('primaryCtaTextEn', e.target.value)} placeholder="Donate Now" />
+                    <Form.Control
+                      value={form.primaryCtaTextEn ?? ''}
+                      onChange={(e) => set('primaryCtaTextEn', e.target.value)}
+                      placeholder="Donate Now"
+                    />
                   </Form.Group>
                 </Col>
                 <Col md={6}>
                   <Form.Group>
                     <Form.Label>Secondary CTA (English)</Form.Label>
-                    <Form.Control value={form.secondaryCtaTextEn ?? ''} onChange={(e) => set('secondaryCtaTextEn', e.target.value)} placeholder="Learn How It Works" />
+                    <Form.Control
+                      value={form.secondaryCtaTextEn ?? ''}
+                      onChange={(e) => set('secondaryCtaTextEn', e.target.value)}
+                      placeholder="Learn How It Works"
+                    />
                   </Form.Group>
                 </Col>
               </Row>
               <Form.Group>
                 <Form.Label>Transparency Text (English)</Form.Label>
-                <Form.Control as="textarea" rows={2} value={form.transparencyTextEn ?? ''} onChange={(e) => set('transparencyTextEn', e.target.value)} placeholder="100% of your donation goes directly to animal care..." />
+                <Form.Control
+                  as="textarea"
+                  rows={2}
+                  value={form.transparencyTextEn ?? ''}
+                  onChange={(e) => set('transparencyTextEn', e.target.value)}
+                  placeholder="100% of your donation goes directly to animal care..."
+                />
               </Form.Group>
             </Card.Body>
           </Card>
 
           {/* Section Toggles */}
           <Card className="mb-4" id="settings">
-            <Card.Header><h6 className="mb-0">Section Visibility</h6></Card.Header>
+            <Card.Header>
+              <h6 className="mb-0">Section Visibility</h6>
+            </Card.Header>
             <Card.Body>
               <Row className="g-3">
-                {([
-                  ['showPurposeCards', 'Show Purposes Section'],
-                  ['showCampaigns', 'Show Active Campaigns'],
-                  ['showDonorWall', 'Show Donor Wall'],
-                  ['showImpactStories', 'Show Impact Stories'],
-                  ['showTransparency', 'Show Transparency Summary'],
-                  ['showQrSection', 'Show QR Code'],
-                ] as const).map(([key, label]) => (
+                {(
+                  [
+                    ['showPurposeCards', 'Show Purposes Section'],
+                    ['showCampaigns', 'Show Active Campaigns'],
+                    ['showDonorWall', 'Show Donor Wall'],
+                    ['showImpactStories', 'Show Impact Stories'],
+                    ['showTransparency', 'Show Transparency Summary'],
+                    ['showQrSection', 'Show QR Code'],
+                  ] as const
+                ).map(([key, label]) => (
                   <Col xs={12} sm={6} md={4} key={key}>
                     <Form.Check
                       type="switch"
@@ -180,11 +226,17 @@ export default function DonationCmsContent() {
 
           {/* SEO */}
           <Card className="mb-4">
-            <Card.Header><h6 className="mb-0">SEO</h6></Card.Header>
+            <Card.Header>
+              <h6 className="mb-0">SEO</h6>
+            </Card.Header>
             <Card.Body className="d-flex flex-column gap-3">
               <Form.Group>
                 <Form.Label>SEO Title (English)</Form.Label>
-                <Form.Control value={form.seoTitleEn ?? ''} onChange={(e) => set('seoTitleEn', e.target.value)} placeholder="Donate to BPA — Help Street Animals" />
+                <Form.Control
+                  value={form.seoTitleEn ?? ''}
+                  onChange={(e) => set('seoTitleEn', e.target.value)}
+                  placeholder="Donate to BPA — Help Street Animals"
+                />
               </Form.Group>
               <Form.Group>
                 <Form.Label>SEO Description (English)</Form.Label>
@@ -199,7 +251,8 @@ export default function DonationCmsContent() {
             <Card.Header className="d-flex justify-content-between align-items-center">
               <h6 className="mb-0">FAQ Section</h6>
               <Button type="button" variant="outline-primary" size="sm" onClick={addFaq}>
-                <Icon icon="solar:add-circle-bold" className="me-1" />Add Question
+                <Icon icon="solar:add-circle-bold" className="me-1" />
+                Add Question
               </Button>
             </Card.Header>
             <Card.Body className="d-flex flex-column gap-4">
@@ -209,7 +262,9 @@ export default function DonationCmsContent() {
               {faqs.map((faq, i) => (
                 <div key={i} className="border rounded p-3">
                   <div className="d-flex justify-content-between align-items-center mb-3">
-                    <Badge bg="secondary-subtle" text="secondary">FAQ #{i + 1}</Badge>
+                    <Badge bg="secondary-subtle" text="secondary">
+                      FAQ #{i + 1}
+                    </Badge>
                     <Button type="button" variant="soft-danger" size="sm" onClick={() => removeFaq(i)}>
                       <Icon icon="solar:trash-bin-trash-bold" />
                     </Button>
@@ -230,13 +285,25 @@ export default function DonationCmsContent() {
                     <Col md={6}>
                       <Form.Group>
                         <Form.Label className="small">Answer (EN)</Form.Label>
-                        <Form.Control as="textarea" size="sm" rows={2} value={faq.answerEn} onChange={(e) => updateFaq(i, 'answerEn', e.target.value)} />
+                        <Form.Control
+                          as="textarea"
+                          size="sm"
+                          rows={2}
+                          value={faq.answerEn}
+                          onChange={(e) => updateFaq(i, 'answerEn', e.target.value)}
+                        />
                       </Form.Group>
                     </Col>
                     <Col md={6}>
                       <Form.Group>
                         <Form.Label className="small">Answer (BN)</Form.Label>
-                        <Form.Control as="textarea" size="sm" rows={2} value={faq.answerBn} onChange={(e) => updateFaq(i, 'answerBn', e.target.value)} />
+                        <Form.Control
+                          as="textarea"
+                          size="sm"
+                          rows={2}
+                          value={faq.answerBn}
+                          onChange={(e) => updateFaq(i, 'answerBn', e.target.value)}
+                        />
                       </Form.Group>
                     </Col>
                   </Row>
@@ -247,7 +314,17 @@ export default function DonationCmsContent() {
 
           <div className="d-flex justify-content-end gap-2 mb-4">
             <Button type="submit" variant="primary" disabled={saving}>
-              {saving ? <><span className="spinner-border spinner-border-sm me-1" />Saving…</> : <><Icon icon="solar:diskette-bold" className="me-1" />Save Settings</>}
+              {saving ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-1" />
+                  Saving…
+                </>
+              ) : (
+                <>
+                  <Icon icon="solar:diskette-bold" className="me-1" />
+                  Save Settings
+                </>
+              )}
             </Button>
           </div>
         </Form>

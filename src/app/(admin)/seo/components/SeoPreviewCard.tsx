@@ -23,7 +23,9 @@ export default function SeoPreviewCard({ route, title, description, ogTitle, ogD
         <img src={ogImageUrl} alt="OG preview" className="w-100" style={{ maxHeight: 200, objectFit: 'cover' }} />
       )}
       <div className="p-3">
-        <div className="text-muted small mb-1" style={{ fontSize: 13 }}>{displayUrl}</div>
+        <div className="text-muted small mb-1" style={{ fontSize: 13 }}>
+          {displayUrl}
+        </div>
         <div className="fw-semibold text-primary" style={{ fontSize: 18, lineHeight: 1.3 }}>
           {ogTitle || displayTitle}
         </div>

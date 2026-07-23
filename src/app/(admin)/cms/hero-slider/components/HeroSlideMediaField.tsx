@@ -11,13 +11,7 @@ interface HeroSlideMediaFieldProps {
   mimeTypePrefix: 'image/' | 'video/'
 }
 
-export default function HeroSlideMediaField({
-  label,
-  value,
-  onChange,
-  helpText,
-  mimeTypePrefix,
-}: HeroSlideMediaFieldProps) {
+export default function HeroSlideMediaField({ label, value, onChange, helpText, mimeTypePrefix }: HeroSlideMediaFieldProps) {
   return (
     <MediaPickerInput
       label={label}

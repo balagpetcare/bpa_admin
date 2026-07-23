@@ -10,13 +10,9 @@ export interface VolunteerListParams {
 
 export const volunteersApi = {
   list: (params?: VolunteerListParams) =>
-    api.get<PaginatedResult<Volunteer>>(
-      '/volunteers',
-      params as Record<string, string | number | boolean | undefined>,
-    ),
+    api.get<PaginatedResult<Volunteer>>('/volunteers', params as Record<string, string | number | boolean | undefined>),
 
   getById: (id: string) => api.get<Volunteer>(`/volunteers/${id}`),
 
-  updateStatus: (id: string, status: VolunteerStatus) =>
-    api.patch<Volunteer>(`/volunteers/${id}/status`, { status }),
+  updateStatus: (id: string, status: VolunteerStatus) => api.patch<Volunteer>(`/volunteers/${id}/status`, { status }),
 }

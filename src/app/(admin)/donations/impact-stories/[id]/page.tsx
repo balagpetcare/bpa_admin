@@ -10,7 +10,12 @@ export default function EditImpactStoryPage() {
   const fn = useCallback(() => getImpactStory(id), [id])
   const { data, loading } = useApi(fn, [id])
 
-  if (loading) return <div className="d-flex justify-content-center p-5"><div className="spinner-border text-primary" /></div>
+  if (loading)
+    return (
+      <div className="d-flex justify-content-center p-5">
+        <div className="spinner-border text-primary" />
+      </div>
+    )
   if (!data) return null
 
   return <ImpactStoryForm storyId={id} initial={data} />

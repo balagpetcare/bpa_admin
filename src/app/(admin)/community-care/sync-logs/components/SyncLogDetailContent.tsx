@@ -31,7 +31,8 @@ export default function SyncLogDetailContent({ id }: { id: string }) {
         breadcrumbs={[{ label: 'Community Care Fund' }, { label: 'Sync Logs', href: '/community-care/sync-logs' }, { label: 'Detail' }]}
         action={
           <Button variant="outline-secondary" size="sm" onClick={() => router.push('/community-care/sync-logs')}>
-            <Icon icon="solar:arrow-left-bold" className="me-1" />Back
+            <Icon icon="solar:arrow-left-bold" className="me-1" />
+            Back
           </Button>
         }
       />

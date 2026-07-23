@@ -17,12 +17,8 @@ export type CarePartnerBenefitUpdatePayload = Partial<CarePartnerBenefitCreatePa
 export const carePartnerBenefitsApi = {
   list: (params?: PaginationQuery & { category?: CarePartnerBenefitCategory; isActive?: boolean }) =>
     api.getPaginated<CarePartnerBenefit>('/admin/care-partner-benefits', params),
-  getById: (id: string) =>
-    api.get<CarePartnerBenefit>(`/admin/care-partner-benefits/${id}`),
-  create: (data: CarePartnerBenefitCreatePayload) =>
-    api.post<CarePartnerBenefit>('/admin/care-partner-benefits', data),
-  update: (id: string, data: CarePartnerBenefitUpdatePayload) =>
-    api.patch<CarePartnerBenefit>(`/admin/care-partner-benefits/${id}`, data),
-  remove: (id: string) =>
-    api.delete<void>(`/admin/care-partner-benefits/${id}`),
+  getById: (id: string) => api.get<CarePartnerBenefit>(`/admin/care-partner-benefits/${id}`),
+  create: (data: CarePartnerBenefitCreatePayload) => api.post<CarePartnerBenefit>('/admin/care-partner-benefits', data),
+  update: (id: string, data: CarePartnerBenefitUpdatePayload) => api.patch<CarePartnerBenefit>(`/admin/care-partner-benefits/${id}`, data),
+  remove: (id: string) => api.delete<void>(`/admin/care-partner-benefits/${id}`),
 }

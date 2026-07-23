@@ -30,15 +30,19 @@ export default function PetCensusLandingPage() {
             <span className="pet-census-kicker">Pet Census 2026</span>
             <h1>বাংলাদেশ পেট এসোসিয়েশন জাতীয় পেট সেন্সাস</h1>
             <p className="pet-census-lead">
-              আপনার পরিবারে থাকা পোষা প্রাণীর তথ্য দিন, যাতে BPA ভবিষ্যতের কমিউনিটি পেট ক্লিনিক, ভ্যাকসিনেশন, সদস্যসেবা,
-              রেসকিউ ও ওয়েলফেয়ার পরিকল্পনা আরও পেশাদারভাবে করতে পারে।
+              আপনার পরিবারে থাকা পোষা প্রাণীর তথ্য দিন, যাতে BPA ভবিষ্যতের কমিউনিটি পেট ক্লিনিক, ভ্যাকসিনেশন, সদস্যসেবা, রেসকিউ ও ওয়েলফেয়ার পরিকল্পনা
+              আরও পেশাদারভাবে করতে পারে।
             </p>
             <p className="pet-census-sublead">
               Share your pet information so BPA can build smarter district-wise welfare planning across Bangladesh.
             </p>
             <div className="pet-census-actions">
-              <Link href="/pet-census/register" className="btn btn-primary btn-lg">Start Registration</Link>
-              <Link href="/pet-census/status" className="btn btn-outline-light btn-lg">Check Submission Status</Link>
+              <Link href="/pet-census/register" className="btn btn-primary btn-lg">
+                Start Registration
+              </Link>
+              <Link href="/pet-census/status" className="btn btn-outline-light btn-lg">
+                Check Submission Status
+              </Link>
             </div>
             <div className="pet-census-stats">
               <div>
@@ -96,11 +100,13 @@ export default function PetCensusLandingPage() {
               <span className="pet-census-kicker">Privacy Notice</span>
               <h2>Data used for BPA welfare planning only</h2>
               <p>
-                Your Pet Census information is collected for Bangladesh Pet Association planning, campaign prioritization, and
-                future community welfare support. We do not use this form for unrelated marketing or resale.
+                Your Pet Census information is collected for Bangladesh Pet Association planning, campaign prioritization, and future community
+                welfare support. We do not use this form for unrelated marketing or resale.
               </p>
             </div>
-            <Link href="/pet-census/register" className="btn btn-dark btn-lg">Register Your Pet</Link>
+            <Link href="/pet-census/register" className="btn btn-dark btn-lg">
+              Register Your Pet
+            </Link>
           </div>
         </div>
       </section>

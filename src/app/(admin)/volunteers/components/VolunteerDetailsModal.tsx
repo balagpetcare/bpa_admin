@@ -18,8 +18,12 @@ interface VolunteerDetailsModalProps {
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <Row className="mb-2">
-      <Col xs={4} className="text-muted fw-semibold small">{label}</Col>
-      <Col xs={8} className="small">{value ?? <span className="text-muted fst-italic">Not provided</span>}</Col>
+      <Col xs={4} className="text-muted fw-semibold small">
+        {label}
+      </Col>
+      <Col xs={8} className="small">
+        {value ?? <span className="text-muted fst-italic">Not provided</span>}
+      </Col>
     </Row>
   )
 }
@@ -46,7 +50,9 @@ export default function VolunteerDetailsModal({ volunteer, isOpen, onClose, onSt
   if (!volunteer) return null
 
   const statusColor: Record<VolunteerStatus, string> = {
-    pending: 'warning', approved: 'success', rejected: 'danger',
+    pending: 'warning',
+    approved: 'success',
+    rejected: 'danger',
   }
 
   return (
@@ -56,13 +62,14 @@ export default function VolunteerDetailsModal({ volunteer, isOpen, onClose, onSt
           <div className="d-flex align-items-center gap-2">
             <div
               className="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white fw-bold"
-              style={{ width: 36, height: 36, fontSize: 14, flexShrink: 0 }}
-            >
+              style={{ width: 36, height: 36, fontSize: 14, flexShrink: 0 }}>
               {volunteer.name.charAt(0).toUpperCase()}
             </div>
             <div>
               <div>{volunteer.name}</div>
-              <Badge bg={statusColor[volunteer.status]} className="fw-normal fs-6">{volunteer.status}</Badge>
+              <Badge bg={statusColor[volunteer.status]} className="fw-normal fs-6">
+                {volunteer.status}
+              </Badge>
             </div>
           </div>
         </Modal.Title>
@@ -93,7 +100,9 @@ export default function VolunteerDetailsModal({ volunteer, isOpen, onClose, onSt
       </Modal.Body>
       {can('volunteers:update') && volunteer.status === 'pending' && (
         <Modal.Footer>
-          <Button variant="light" onClick={onClose}>Close</Button>
+          <Button variant="light" onClick={onClose}>
+            Close
+          </Button>
           <Button variant="danger" onClick={() => changeStatus('rejected')} disabled={loading}>
             <Icon icon="solar:close-circle-bold" className="me-1" />
             Reject
@@ -106,7 +115,9 @@ export default function VolunteerDetailsModal({ volunteer, isOpen, onClose, onSt
       )}
       {volunteer.status !== 'pending' && (
         <Modal.Footer>
-          <Button variant="light" onClick={onClose}>Close</Button>
+          <Button variant="light" onClick={onClose}>
+            Close
+          </Button>
         </Modal.Footer>
       )}
     </Modal>

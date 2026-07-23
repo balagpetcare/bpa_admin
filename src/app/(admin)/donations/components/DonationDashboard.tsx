@@ -39,10 +39,7 @@ export default function DonationDashboard() {
       {/* Dashboard Top Header Action Bar */}
       <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
         <div>
-          <PageHeader
-            title="Care Fund Dashboard"
-            breadcrumbs={[{ label: 'Donations' }, { label: 'Dashboard' }]}
-          />
+          <PageHeader title="Care Fund Dashboard" breadcrumbs={[{ label: 'Donations' }, { label: 'Dashboard' }]} />
           <p className="text-muted small mb-0 mt-n2">
             Monitor donations, manual transfer verification requests, campaigns, and transparency reports.
           </p>
@@ -53,9 +50,7 @@ export default function DonationDashboard() {
           <Dropdown as={ButtonGroup}>
             <Button variant="outline-secondary" size="sm" className="d-flex align-items-center gap-1">
               <Icon icon="solar:calendar-bold-duotone" />
-              <span>
-                {dateFilter === 'all' ? 'All Time' : dateFilter === 'month' ? 'This Month' : 'This Year'}
-              </span>
+              <span>{dateFilter === 'all' ? 'All Time' : dateFilter === 'month' ? 'This Month' : 'This Year'}</span>
             </Button>
             <Dropdown.Toggle split variant="outline-secondary" size="sm" />
             <Dropdown.Menu align="end">
@@ -78,25 +73,14 @@ export default function DonationDashboard() {
             onClick={refetch}
             disabled={loading}
             className="d-flex align-items-center gap-1 border border-secondary-subtle"
-            title="Refresh statistics"
-          >
+            title="Refresh statistics">
             <Icon icon="solar:refresh-bold-duotone" className={loading ? 'spin' : ''} />
             <span>Refresh</span>
           </Button>
 
           {/* Export Action */}
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleExport}
-            disabled={isExporting || loading}
-            className="d-flex align-items-center gap-1"
-          >
-            {isExporting ? (
-              <Spinner animation="border" size="sm" />
-            ) : (
-              <Icon icon="solar:download-bold-duotone" />
-            )}
+          <Button variant="primary" size="sm" onClick={handleExport} disabled={isExporting || loading} className="d-flex align-items-center gap-1">
+            {isExporting ? <Spinner animation="border" size="sm" /> : <Icon icon="solar:download-bold-duotone" />}
             <span>Export CSV</span>
           </Button>
         </div>
@@ -109,12 +93,9 @@ export default function DonationDashboard() {
             <Icon icon="solar:danger-bold-duotone" className="fs-24 text-danger" />
             <h5 className="mb-0 fw-bold">Failed to load donation stats</h5>
           </div>
-          <p className="mb-0 text-dark-emphasis small">
-            {error.message || 'An unknown network error occurred while contacting the server.'}
-          </p>
+          <p className="mb-0 text-dark-emphasis small">{error.message || 'An unknown network error occurred while contacting the server.'}</p>
           <div className="text-muted fs-11">
-            <strong>Endpoint:</strong> /api/v1/admin/donations/dashboard-stats • <strong>Code:</strong>{' '}
-            {error.code || 'UNKNOWN'}
+            <strong>Endpoint:</strong> /api/v1/admin/donations/dashboard-stats • <strong>Code:</strong> {error.code || 'UNKNOWN'}
           </div>
           <div>
             <Button variant="danger" size="sm" onClick={refetch} className="px-4 mt-2">
@@ -146,9 +127,7 @@ export default function DonationDashboard() {
                   <PendingActionsPanel
                     pendingReviewCount={stats.pendingDonations}
                     failedCount={stats.failedDonations}
-                    recentPendingReview={
-                      (stats.recentDonations ?? []).filter((d) => d.status === 'pending_review')
-                    }
+                    recentPendingReview={(stats.recentDonations ?? []).filter((d) => d.status === 'pending_review')}
                   />
                 </Col>
               </Row>

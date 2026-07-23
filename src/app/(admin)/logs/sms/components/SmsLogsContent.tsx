@@ -33,17 +33,19 @@ export default function SmsLogsContent() {
   const filterDeps = [page, search, status, module, messageType, failureReason, isOtp, dateFrom, dateTo]
 
   const fetchFn = useCallback(
-    () => smsLogsApi.list({
-      page, limit: 20,
-      search: search || undefined,
-      status: status || undefined,
-      module: module || undefined,
-      messageType: messageType || undefined,
-      failureReason: failureReason || undefined,
-      isOtp: isOtp === '' ? undefined : isOtp === 'true',
-      dateFrom: dateFrom ? new Date(dateFrom).toISOString() : undefined,
-      dateTo: dateTo ? new Date(dateTo + 'T23:59:59').toISOString() : undefined,
-    }),
+    () =>
+      smsLogsApi.list({
+        page,
+        limit: 20,
+        search: search || undefined,
+        status: status || undefined,
+        module: module || undefined,
+        messageType: messageType || undefined,
+        failureReason: failureReason || undefined,
+        isOtp: isOtp === '' ? undefined : isOtp === 'true',
+        dateFrom: dateFrom ? new Date(dateFrom).toISOString() : undefined,
+        dateTo: dateTo ? new Date(dateTo + 'T23:59:59').toISOString() : undefined,
+      }),
     filterDeps,
   )
 
@@ -78,7 +80,10 @@ export default function SmsLogsContent() {
       if (result.skipped) {
         addToast(`Skipped: ${result.skipReason ?? 'unknown'}`, 'danger')
       } else {
-        addToast(result.status === 'sent' ? 'SMS resent successfully.' : `Resend failed (status: ${result.status})`, result.status === 'sent' ? 'success' : 'danger')
+        addToast(
+          result.status === 'sent' ? 'SMS resent successfully.' : `Resend failed (status: ${result.status})`,
+          result.status === 'sent' ? 'success' : 'danger',
+        )
       }
       refetch()
     } catch (err: unknown) {
@@ -104,8 +109,15 @@ export default function SmsLogsContent() {
   }
 
   const handleReset = () => {
-    setSearch(''); setStatus(''); setModule(''); setMessageType('');
-    setFailureReason(''); setIsOtp(''); setDateFrom(''); setDateTo(''); setPage(1)
+    setSearch('')
+    setStatus('')
+    setModule('')
+    setMessageType('')
+    setFailureReason('')
+    setIsOtp('')
+    setDateFrom('')
+    setDateTo('')
+    setPage(1)
   }
 
   return (
@@ -128,16 +140,46 @@ export default function SmsLogsContent() {
       <Card>
         <Card.Body>
           <SmsFilterBar
-            search={search} status={status} module={module} messageType={messageType}
-            failureReason={failureReason} isOtp={isOtp} dateFrom={dateFrom} dateTo={dateTo}
-            onSearchChange={(v) => { setSearch(v); setPage(1) }}
-            onStatusChange={(v) => { setStatus(v); setPage(1) }}
-            onModuleChange={(v) => { setModule(v); setPage(1) }}
-            onMessageTypeChange={(v) => { setMessageType(v); setPage(1) }}
-            onFailureReasonChange={(v) => { setFailureReason(v); setPage(1) }}
-            onIsOtpChange={(v) => { setIsOtp(v); setPage(1) }}
-            onDateFromChange={(v) => { setDateFrom(v); setPage(1) }}
-            onDateToChange={(v) => { setDateTo(v); setPage(1) }}
+            search={search}
+            status={status}
+            module={module}
+            messageType={messageType}
+            failureReason={failureReason}
+            isOtp={isOtp}
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+            onSearchChange={(v) => {
+              setSearch(v)
+              setPage(1)
+            }}
+            onStatusChange={(v) => {
+              setStatus(v)
+              setPage(1)
+            }}
+            onModuleChange={(v) => {
+              setModule(v)
+              setPage(1)
+            }}
+            onMessageTypeChange={(v) => {
+              setMessageType(v)
+              setPage(1)
+            }}
+            onFailureReasonChange={(v) => {
+              setFailureReason(v)
+              setPage(1)
+            }}
+            onIsOtpChange={(v) => {
+              setIsOtp(v)
+              setPage(1)
+            }}
+            onDateFromChange={(v) => {
+              setDateFrom(v)
+              setPage(1)
+            }}
+            onDateToChange={(v) => {
+              setDateTo(v)
+              setPage(1)
+            }}
             onReset={handleReset}
           />
 
@@ -149,26 +191,21 @@ export default function SmsLogsContent() {
                 {meta.total} record{meta.total !== 1 ? 's' : ''} · Page {meta.page} of {meta.totalPages}
               </small>
               <div className="d-flex gap-1">
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>‹</Button>
-                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>›</Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasPrev} onClick={() => setPage((p) => p - 1)}>
+                  ‹
+                </Button>
+                <Button size="sm" variant="outline-secondary" disabled={!meta.hasNext} onClick={() => setPage((p) => p + 1)}>
+                  ›
+                </Button>
               </div>
             </div>
           )}
         </Card.Body>
       </Card>
 
-      <SmsLogDetailsModal
-        log={selected}
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onResend={handleResendFromModal}
-      />
+      <SmsLogDetailsModal log={selected} isOpen={modalOpen} onClose={() => setModalOpen(false)} onResend={handleResendFromModal} />
 
-      <RetryFailedModal
-        isOpen={retryModalOpen}
-        onClose={() => setRetryModalOpen(false)}
-        onConfirm={handleRetryFailed}
-      />
+      <RetryFailedModal isOpen={retryModalOpen} onClose={() => setRetryModalOpen(false)} onConfirm={handleRetryFailed} />
 
       <ToastContainer position="bottom-end" className="p-3">
         {toasts.map((t) => (

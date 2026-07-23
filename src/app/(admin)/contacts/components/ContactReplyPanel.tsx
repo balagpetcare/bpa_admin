@@ -15,9 +15,7 @@ export default function ContactReplyPanel({ status, repliedAt }: ContactReplyPan
       <Alert variant="success" className="mb-0 py-2">
         <Icon icon="solar:check-circle-bold" className="me-2" />
         <strong>Replied</strong>
-        {repliedAt && (
-          <span className="text-muted ms-2 small">on {new Date(repliedAt).toLocaleDateString()}</span>
-        )}
+        {repliedAt && <span className="text-muted ms-2 small">on {new Date(repliedAt).toLocaleDateString()}</span>}
       </Alert>
     )
   }

@@ -17,12 +17,9 @@ export type DiagnosticCenterServiceUpdatePayload = Partial<DiagnosticCenterServi
 export const diagnosticCenterServicesApi = {
   list: (params?: PaginationQuery & { category?: DiagnosticServiceCategory; isActive?: boolean }) =>
     api.getPaginated<DiagnosticCenterService>('/admin/diagnostic-center-services', params),
-  getById: (id: string) =>
-    api.get<DiagnosticCenterService>(`/admin/diagnostic-center-services/${id}`),
-  create: (data: DiagnosticCenterServiceCreatePayload) =>
-    api.post<DiagnosticCenterService>('/admin/diagnostic-center-services', data),
+  getById: (id: string) => api.get<DiagnosticCenterService>(`/admin/diagnostic-center-services/${id}`),
+  create: (data: DiagnosticCenterServiceCreatePayload) => api.post<DiagnosticCenterService>('/admin/diagnostic-center-services', data),
   update: (id: string, data: DiagnosticCenterServiceUpdatePayload) =>
     api.patch<DiagnosticCenterService>(`/admin/diagnostic-center-services/${id}`, data),
-  remove: (id: string) =>
-    api.delete<void>(`/admin/diagnostic-center-services/${id}`),
+  remove: (id: string) => api.delete<void>(`/admin/diagnostic-center-services/${id}`),
 }

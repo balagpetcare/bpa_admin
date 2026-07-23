@@ -10,8 +10,5 @@ export function noContent() {
 }
 
 export function fail(code: string, message: string, status = 400, details?: unknown[]) {
-  return NextResponse.json(
-    { success: false, error: { code, message, details } },
-    { status },
-  )
+  return NextResponse.json({ success: false, error: { code, message, details } }, { status })
 }

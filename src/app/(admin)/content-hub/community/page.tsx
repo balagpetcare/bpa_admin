@@ -30,9 +30,7 @@ export default function CommunityPostsPage() {
 
   // Fetch categories once
   useEffect(() => {
-    contentApi.listCategories()
-      .then(setCategories)
-      .catch(console.error)
+    contentApi.listCategories().then(setCategories).catch(console.error)
   }, [])
 
   const fetchPosts = useCallback(async () => {
@@ -99,9 +97,7 @@ export default function CommunityPostsPage() {
 
   const handleToggle = async (id: string, field: keyof ContentPost, value: any) => {
     try {
-      setPosts((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
-      )
+      setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, [field]: value } : p)))
       await contentApi.updatePost(id, { [field]: value })
     } catch (err) {
       setError(err as ApiError)
@@ -111,9 +107,7 @@ export default function CommunityPostsPage() {
 
   const handleStatusChange = async (id: string, newStatus: 'draft' | 'published' | 'archived') => {
     try {
-      setPosts((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p))
-      )
+      setPosts((prev) => prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p)))
       const payload: Partial<ContentPost> = {
         status: newStatus,
         publishedAt: newStatus === 'published' ? new Date().toISOString() : null,
@@ -184,8 +178,7 @@ export default function CommunityPostsPage() {
                 onChange={(e) => {
                   setTypeFilter(e.target.value)
                   setPage(1)
-                }}
-              >
+                }}>
                 <option value="">All Community Types</option>
                 <option value="COMMUNITY_POST">Community Post</option>
                 <option value="ANNOUNCEMENT">Announcement</option>
@@ -202,8 +195,7 @@ export default function CommunityPostsPage() {
                 onChange={(e) => {
                   setCategoryId(e.target.value)
                   setPage(1)
-                }}
-              >
+                }}>
                 <option value="">All Categories</option>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -220,8 +212,7 @@ export default function CommunityPostsPage() {
                 onChange={(e) => {
                   setStatus(e.target.value)
                   setPage(1)
-                }}
-              >
+                }}>
                 <option value="">All Statuses</option>
                 <option value="published">Published</option>
                 <option value="draft">Draft</option>
@@ -249,7 +240,9 @@ export default function CommunityPostsPage() {
                     <th>Homepage</th>
                     <th>Comments</th>
                     <th>Stats</th>
-                    <th className="text-end" style={{ width: '120px' }}>Actions</th>
+                    <th className="text-end" style={{ width: '120px' }}>
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -276,21 +269,23 @@ export default function CommunityPostsPage() {
                                 style={{ width: '50px', height: '40px', objectFit: 'cover' }}
                               />
                             ) : (
-                              <div className="rounded bg-light d-flex align-items-center justify-content-center text-muted" style={{ width: '50px', height: '40px' }}>
+                              <div
+                                className="rounded bg-light d-flex align-items-center justify-content-center text-muted"
+                                style={{ width: '50px', height: '40px' }}>
                                 <Icon icon="solar:document-text-linear" width={20} />
                               </div>
                             )}
                             <div className="text-truncate" style={{ maxWidth: '240px' }}>
-                              <span className="fw-semibold text-dark d-block text-truncate" title={post.titleEn}>{post.titleEn}</span>
+                              <span className="fw-semibold text-dark d-block text-truncate" title={post.titleEn}>
+                                {post.titleEn}
+                              </span>
                               <span className="text-muted small d-block text-truncate">/{post.slug}</span>
                             </div>
                           </div>
                         </td>
                         <td>{renderTypeBadge(post.type)}</td>
                         <td>
-                          <span className="badge bg-light text-dark border">
-                            {post.category?.nameEn || 'Uncategorized'}
-                          </span>
+                          <span className="badge bg-light text-dark border">{post.category?.nameEn || 'Uncategorized'}</span>
                         </td>
                         <td>
                           <Form.Select
@@ -298,8 +293,7 @@ export default function CommunityPostsPage() {
                             value={post.status}
                             onChange={(e) => handleStatusChange(post.id, e.target.value as any)}
                             className="form-select-sm py-0 fw-medium"
-                            style={{ width: '110px' }}
-                          >
+                            style={{ width: '110px' }}>
                             <option value="draft">Draft</option>
                             <option value="published">Published</option>
                             <option value="archived">Archived</option>
@@ -339,9 +333,15 @@ export default function CommunityPostsPage() {
                         </td>
                         <td>
                           <div className="d-flex align-items-center gap-2 small text-muted">
-                            <span title="Views"><Icon icon="solar:eye-linear" /> {post.viewCount}</span>
-                            <span title="Likes"><Icon icon="solar:heart-linear" /> {post.likeCount}</span>
-                            <span title="Comments"><Icon icon="solar:chat-round-line-linear" /> {post.commentCount}</span>
+                            <span title="Views">
+                              <Icon icon="solar:eye-linear" /> {post.viewCount}
+                            </span>
+                            <span title="Likes">
+                              <Icon icon="solar:heart-linear" /> {post.likeCount}
+                            </span>
+                            <span title="Comments">
+                              <Icon icon="solar:chat-round-line-linear" /> {post.commentCount}
+                            </span>
                           </div>
                         </td>
                         <td>
@@ -367,20 +367,10 @@ export default function CommunityPostsPage() {
                   Showing {posts.length} of {meta.total} posts · Page {meta.page} of {meta.totalPages}
                 </small>
                 <div className="d-flex gap-1">
-                  <Button
-                    size="sm"
-                    variant="outline-secondary"
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => p - 1)}
-                  >
+                  <Button size="sm" variant="outline-secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
                     ‹ Previous
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="outline-secondary"
-                    disabled={page >= meta.totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                  >
+                  <Button size="sm" variant="outline-secondary" disabled={page >= meta.totalPages} onClick={() => setPage((p) => p + 1)}>
                     Next ›
                   </Button>
                 </div>

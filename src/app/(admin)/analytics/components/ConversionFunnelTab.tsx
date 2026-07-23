@@ -36,7 +36,7 @@ function FunnelCard({ title, icon, color, steps }: { title: string; icon: string
         {steps.map((step, idx) => {
           // Retention relative to the very first step
           const pctOfBase = Math.round((step.count / baseCount) * 100)
-          
+
           // Drop-off from previous step
           let dropOffText = ''
           if (idx > 0) {
